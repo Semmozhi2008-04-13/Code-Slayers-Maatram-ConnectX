@@ -14,18 +14,20 @@ export default function ProfilePage() {
       <Card>
         <div className="h-32 md:h-48 bg-muted rounded-t-lg" />
         <CardContent className="p-6">
-          <div className="relative -mt-20">
-            <div className="w-32 h-32 rounded-full bg-background p-1.5 inline-block">
-              <Image
-                src={user.avatarUrl}
-                alt={user.name}
-                width={128}
-                height={128}
-                className="rounded-full"
-                data-ai-hint="profile avatar"
-              />
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between relative -mt-20 sm:-mt-16">
+            <div className="flex-shrink-0">
+                <div className="w-32 h-32 rounded-full bg-background p-1.5 inline-block">
+                <Image
+                    src={user.avatarUrl}
+                    alt={user.name}
+                    width={128}
+                    height={128}
+                    className="rounded-full"
+                    data-ai-hint="profile avatar"
+                />
+                </div>
             </div>
-            <div className="flex justify-end gap-2 -mt-12">
+            <div className="flex justify-start sm:justify-end gap-2 mt-4 sm:mt-0">
                 <Button>
                   <Plus className="mr-2 h-4 w-4" /> Connect
                 </Button>
