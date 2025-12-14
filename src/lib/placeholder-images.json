@@ -2,53 +2,53 @@
   "placeholderImages": [
     {
       "id": "avatar-1",
-      "imageUrl": "https://images.unsplash.com/photo-1621784564114-6eea05b89863?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzb3V0aCUyMGluZGlhbiUyMHdvbWFuJTIwaGVhZHNob3R8ZW58MHx8fHwxNzY3Mzk0NDMwfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "South Indian woman"
-    },
-    {
-      "id": "avatar-2",
-      "imageUrl": "https://images.unsplash.com/photo-1618151313441-37400a452174?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzb3V0aCUyMGluZGlhbiUyMG1hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NzM5NDQ2N3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "South Indian man"
-    },
-    {
-      "id": "avatar-3",
-      "imageUrl": "https://images.unsplash.com/photo-1620023838423-f5421d097973?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzb3V0aCUyMGluZGlhbiUyMHByb2Zlc3Npb25hbCUyMHdvbWFufGVufDB8fHx8MTc2NzM5NDQ5Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1542596594-649ed6e6b342?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
       "imageHint": "professional Indian woman"
     },
     {
+      "id": "avatar-2",
+      "imageUrl": "https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "imageHint": "professional Indian man"
+    },
+    {
+      "id": "avatar-3",
+      "imageUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "imageHint": "professional woman headshot"
+    },
+    {
       "id": "avatar-4",
-      "imageUrl": "https://images.unsplash.com/photo-1599493356611-45d58450f157?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBtYW4lMjBoZWFkc2hvdHxlbnwwfHx8fDE3NjczOTQ1MjB8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "Indian man headshot"
+      "imageUrl": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "imageHint": "professional man headshot"
     },
     {
       "id": "avatar-5",
-      "imageUrl": "https://images.unsplash.com/photo-1544717297-fa95b6fbad48?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjB3b21hbiUyMGhlYWRzaG90fGVufDB8fHx8MTc2NzM5NDU0MXww&ixlibrb-4.1.0&q=80&w=1080",
-      "imageHint": "Indian woman headshot"
-    },
-    {
-      "id": "avatar-6",
-      "imageUrl": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBwcm9mZXNzaW9uYWwlMjBtYW58ZW58MHx8fHwxNzY3Mzk0NTY2fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "Indian professional man"
-    },
-    {
-      "id": "avatar-7",
-      "imageUrl": "https://images.unsplash.com/photo-1615109398623-88346a601842?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzb3V0aCUyMGluZGlhbiUyMHByb2Zlc3Npb25hbCUyMHdvbWFuJTIwc21pbGluZ3xlbnwwfHx8fDE3NjczOTQ1OTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
       "imageHint": "professional woman smiling"
     },
     {
+      "id": "avatar-6",
+      "imageUrl": "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "imageHint": "professional man in suit"
+    },
+    {
+      "id": "avatar-7",
+      "imageUrl": "https://images.unsplash.com/photo-1557862921-37829c790f19?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "imageHint": "two professional men"
+    },
+    {
       "id": "avatar-8",
-      "imageUrl": "https://images.unsplash.com/photo-1632765854612-9b0c28b63642?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBlbmdpbmVlcnxlbnwwfHx8fDE3NjczOTQ2MTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "Indian engineer"
+      "imageUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "imageHint": "professional woman in office"
     },
     {
       "id": "avatar-9",
-      "imageUrl": "https://images.unsplash.com/photo-1598136497223-345fe6d4c5f4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxrZXJhbGElMjB3b21hbnxlbnwwfHx8fDE3NjczOTQ2NDJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "Kerala woman"
+      "imageUrl": "https://images.unsplash.com/photo-1521119989659-a83eee488004?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "imageHint": "woman headshot"
     },
     {
       "id": "avatar-10",
-      "imageUrl": "https://images.unsplash.com/photo-1613181013426-3465b9354e86?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBwcm9mZXNzb3J8ZW58MHx8fHwxNzY3Mzk0NjY1fDA&ixlib-rb-4.1.0&q=80&w=1080",
-      "imageHint": "Indian professor"
+      "imageUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG9otby1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+      "imageHint": "man smiling headshot"
     },
     {
       "id": "company-logo-1",
@@ -57,7 +57,7 @@
     },
     {
       "id": "company-logo-2",
-      "imageUrl": "https://images.unsplash.com/photo-1549924231-f97928115795?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0JTIwYWJzdHJhY3QlMjBsb2dvfGVufDB8fHx8MTc2NzM5NDg1Nnww&ixlibrb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1549924231-f97928115795?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0JTIwYWJzdHJhY3QlMjBsb2dvfGVufDB8fHx8MTc2NzM5NDg1Nnww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "T abstract logo"
     },
     {
@@ -72,12 +72,12 @@
     },
     {
       "id": "company-logo-5",
-      "imageUrl": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoJTIwYWJzdHJhY3QlMjBsb2dvfGVufDB8fHx8MTc2NzM5NDkyMnww&ixlibrb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoJTIwYWJzdHJhY3QlMjBsb2dvfGVufDB8fHx8MTc2NzM5NDkyMnww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "H abstract logo"
     },
     {
       "id": "post-image-1",
-      "imageUrl": "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxidXNpbmVzcyUyMHRlYW0lMjBpbmRpYW58ZW58MHx8fHwxNzY3Mzk0OTUwfDA&ixlibrb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxidXNpbmVzcyUyMHRlYW0lMjBpbmRpYW58ZW58MHx8fHwxNzY3Mzk0OTUwfDA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "business team Indian"
     },
     {
