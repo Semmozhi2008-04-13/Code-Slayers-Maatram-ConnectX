@@ -13,9 +13,9 @@ export default function ProfilePage() {
     <div className="space-y-8">
       <Card>
         <div className="h-32 md:h-48 bg-muted rounded-t-lg" />
-        <CardContent className="relative p-6">
-          <div className="absolute -top-16 left-6">
-            <div className="w-32 h-32 rounded-full bg-background p-1.5">
+        <CardContent className="p-6">
+          <div className="relative -mt-20">
+            <div className="w-32 h-32 rounded-full bg-background p-1.5 inline-block">
               <Image
                 src={user.avatarUrl}
                 alt={user.name}
@@ -25,12 +25,12 @@ export default function ProfilePage() {
                 data-ai-hint="profile avatar"
               />
             </div>
-          </div>
-          <div className="flex justify-end gap-2 pt-16 sm:pt-0">
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Connect
-            </Button>
-            <Button variant="outline">Message</Button>
+            <div className="flex justify-end gap-2 -mt-12">
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" /> Connect
+                </Button>
+                <Button variant="outline">Message</Button>
+            </div>
           </div>
           <div className="pt-4">
             <h1 className="text-2xl font-bold font-headline">{user.name}</h1>
