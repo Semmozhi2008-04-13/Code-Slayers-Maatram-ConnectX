@@ -206,7 +206,32 @@ export const MOCK_USERS: User[] = [
     experience: [],
     profileUrl: '/profile',
     role: 'Alumni'
-  }
+  },
+  ...Array.from({ length: 101 }, (_, i) => {
+    const studentId = i + 11;
+    const colleges = ['Chennai Institute of Technology', 'Rajalakshmi Engineering College', 'Sathyabama Institute of Science and Technology', 'SRM Institute of Science and Technology', 'Vellore Institute of Technology'];
+    const locations = ['Chennai, Tamil Nadu', 'Coimbatore, Tamil Nadu', 'Madurai, Tamil Nadu', 'Tiruchirappalli, Tamil Nadu'];
+    const skills = [['Python', 'Machine Learning'], ['JavaScript', 'React'], ['Java', 'Spring Boot'], ['C#', '.NET'], ['Go', 'Microservices'], ['Swift', 'iOS Development'], ['Kotlin', 'Android Development'], ['TypeScript', 'Node.js'], ['Ruby', 'Rails'], ['PHP', 'Laravel']];
+    const graduationYear = 2025 + (i % 4);
+    
+    return {
+      id: `${studentId}`,
+      name: `Student ${i + 1}`,
+      avatarUrl: getPlaceholderImageUrl(`avatar-${studentId}`),
+      headline: `Student at ${colleges[i % colleges.length]}`,
+      location: locations[i % locations.length],
+      industry: 'Education',
+      skills: skills[i % skills.length],
+      isMentor: false,
+      connections: Math.floor(Math.random() * 200),
+      about: `Eager to learn and grow in the tech industry. Passionate about ${skills[i % skills.length].join(' and ')}.`,
+      experience: [],
+      profileUrl: '/profile',
+      role: 'Student' as const,
+      college: colleges[i % colleges.length],
+      graduationYear: `${graduationYear}`,
+    };
+  })
 ];
 
 export const CURRENT_USER = MOCK_USERS[0];
@@ -292,7 +317,7 @@ export const MOCK_EVENTS: Event[] = [
   {
     id: 'e2',
     title: 'Workshop: Building a Career in SaaS',
-    bannerUrl: getPlaceholderImageUrl('event-banner-2'),
+    bannerUrl: 'https://storage.googleapis.com/aif-studiogpt-sc-images/2024-08-01/clx68czn000073b6k9jfj0k4g/8a2e58c0-c3d0-40e9-a35b-873096b797de.png',
     date: 'Nov 15, 2024',
     location: 'University Campus, Main Hall',
     attendees: 85,
