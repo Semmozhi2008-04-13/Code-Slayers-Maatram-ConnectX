@@ -4,24 +4,24 @@
 
 @layer base {
   :root {
-    --background: 40 11% 95%; /* #F3F2EF */
+    --background: 240 10% 99%; /* Almost white */
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 210 89% 40%; /* #0A66C2 */
+    --primary: 210 89% 40%; /* #0A66C2 - LinkedIn Blue */
     --primary-foreground: 0 0% 100%;
     --secondary: 210 40% 96.1%;
-    --secondary-foreground: 210 89% 40%;
+    --secondary-foreground: 222 47% 11%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215 16% 47%;
     --accent: 210 40% 94%;
     --accent-foreground: 210 89% 40%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 4% 90%; /* #E7E6E6 */
-    --input: 0 4% 90%; /* #E7E6E6 */
+    --border: 210 20% 90%;
+    --input: 210 30% 95%;
     --ring: 210 89% 40%;
     --radius: 0.5rem;
   }

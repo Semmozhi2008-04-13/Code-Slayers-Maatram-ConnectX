@@ -17,7 +17,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['Arial', 'Helvetica', 'sans-serif'],
+        body: ['Inter', 'sans-serif'],
         headline: ['Roboto', 'sans-serif'],
         code: ['monospace'],
       },
