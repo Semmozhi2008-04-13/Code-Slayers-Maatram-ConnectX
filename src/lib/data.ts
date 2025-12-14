@@ -36,7 +36,7 @@ export const MOCK_USERS: User[] = [
         description: 'Worked on enterprise software solutions for international clients.'
       }
     ],
-    profileUrl: '/profile',
+    profileUrl: '/profile/1',
     role: 'Alumni'
   },
   {
@@ -60,7 +60,7 @@ export const MOCK_USERS: User[] = [
         description: 'Defining the roadmap and strategy for new AWS services.'
       }
     ],
-    profileUrl: '/profile',
+    profileUrl: '/profile/2',
     role: 'Alumni'
   },
   {
@@ -84,7 +84,7 @@ export const MOCK_USERS: User[] = [
         description: 'Leading the design for the core shopping experience across mobile and web.'
       }
     ],
-    profileUrl: '/profile',
+    profileUrl: '/profile/3',
     role: 'Alumni'
   },
     {
@@ -108,7 +108,7 @@ export const MOCK_USERS: User[] = [
         description: 'Building and leading a team of analysts to uncover insights from large-scale data.'
       }
     ],
-    profileUrl: '/profile',
+    profileUrl: '/profile/4',
     role: 'Alumni'
   },
   {
@@ -123,7 +123,7 @@ export const MOCK_USERS: User[] = [
     connections: 150,
     about: 'Aspiring software developer with a passion for building innovative web applications. Seeking internship opportunities in the tech industry.',
     experience: [],
-    profileUrl: '/profile',
+    profileUrl: '/profile/5',
     role: 'Student',
     college: 'Chennai Institute of Technology',
     graduationYear: '2025'
@@ -140,7 +140,7 @@ export const MOCK_USERS: User[] = [
     connections: 95,
     about: 'Enthusiastic electronics and communication engineering student interested in the field of IoT and embedded systems.',
     experience: [],
-    profileUrl: '/profile',
+    profileUrl: '/profile/6',
     role: 'Student',
     college: 'Rajalakshmi Engineering College',
     graduationYear: '2026'
@@ -157,7 +157,7 @@ export const MOCK_USERS: User[] = [
     connections: 410,
     about: 'Strategic HR partner dedicated to fostering a positive and inclusive work environment and driving organizational success.',
     experience: [],
-    profileUrl: '/profile',
+    profileUrl: '/profile/7',
     role: 'Alumni'
   },
    {
@@ -172,7 +172,7 @@ export const MOCK_USERS: User[] = [
     connections: 110,
     about: 'A second-year IT student focused on cybersecurity. Eager to connect with professionals in the security domain.',
     experience: [],
-    profileUrl: '/profile',
+    profileUrl: '/profile/8',
     role: 'Student',
     college: 'Sathyabama Institute of Science and Technology',
     graduationYear: '2027'
@@ -189,7 +189,7 @@ export const MOCK_USERS: User[] = [
     connections: 680,
     about: 'Building the future of urban mobility. Working on automation and robotics for intelligent electric vehicles.',
     experience: [],
-    profileUrl: '/profile',
+    profileUrl: '/profile/9',
     role: 'Alumni'
   },
    {
@@ -204,7 +204,7 @@ export const MOCK_USERS: User[] = [
     connections: 250,
     about: 'Educator and researcher in the field of theoretical computer science. Committed to mentoring the next generation of engineers and scientists.',
     experience: [],
-    profileUrl: '/profile',
+    profileUrl: '/profile/10',
     role: 'Alumni'
   },
   ...Array.from({ length: 101 }, (_, i) => {
@@ -226,7 +226,7 @@ export const MOCK_USERS: User[] = [
       connections: Math.floor(Math.random() * 200),
       about: `Eager to learn and grow in the tech industry. Passionate about ${skills[i % skills.length].join(' and ')}.`,
       experience: [],
-      profileUrl: '/profile',
+      profileUrl: `/profile/${studentId}`,
       role: 'Student' as const,
       college: colleges[i % colleges.length],
       graduationYear: `${graduationYear}`,
@@ -331,3 +331,5 @@ export const MOCK_EVENTS: Event[] = [
     attendees: 350,
   }
 ];
+
+    

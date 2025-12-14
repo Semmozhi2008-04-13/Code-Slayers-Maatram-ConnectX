@@ -1,9 +1,10 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { CURRENT_USER, MOCK_POSTS } from "@/lib/data";
-import { Bookmark, Dot, Link, Users } from "lucide-react";
+import { Bookmark, Dot, Link as LinkIcon, Users } from "lucide-react";
 import CreatePost from "@/components/feed/create-post";
 import PostCard from "@/components/feed/post-card";
 import AiRecommendations from "@/components/ai/recommendations";
@@ -16,20 +17,24 @@ export default function Home() {
         <Card>
           <CardHeader className="p-0 relative h-20 bg-muted-foreground/20">
             <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
-              <div className="w-20 h-20 rounded-full bg-background p-1">
-                <Image
-                  src={CURRENT_USER.avatarUrl}
-                  alt={CURRENT_USER.name}
-                  width={80}
-                  height={80}
-                  className="rounded-full"
-                  data-ai-hint="profile avatar"
-                />
-              </div>
+              <Link href={CURRENT_USER.profileUrl}>
+                <div className="w-20 h-20 rounded-full bg-background p-1">
+                  <Image
+                    src={CURRENT_USER.avatarUrl}
+                    alt={CURRENT_USER.name}
+                    width={80}
+                    height={80}
+                    className="rounded-full"
+                    data-ai-hint="profile avatar"
+                  />
+                </div>
+              </Link>
             </div>
           </CardHeader>
           <CardContent className="pt-12 text-center">
-            <h2 className="text-xl font-headline font-semibold">{CURRENT_USER.name}</h2>
+            <Link href={CURRENT_USER.profileUrl}>
+              <h2 className="text-xl font-headline font-semibold hover:underline">{CURRENT_USER.name}</h2>
+            </Link>
             <p className="text-sm text-muted-foreground">{CURRENT_USER.headline}</p>
           </CardContent>
           <Separator />
@@ -42,10 +47,10 @@ export default function Home() {
           </CardContent>
            <Separator />
             <CardContent className="p-4">
-                 <a href="/profile" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary">
+                 <Link href={CURRENT_USER.profileUrl} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary">
                     <Bookmark className="h-4 w-4" />
                     <span>My Items</span>
-                </a>
+                </Link>
             </CardContent>
         </Card>
       </div>
@@ -78,3 +83,5 @@ export default function Home() {
     </div>
   );
 }
+
+    

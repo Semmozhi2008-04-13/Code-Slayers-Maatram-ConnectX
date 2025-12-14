@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { CURRENT_USER } from "@/lib/data";
+import { MOCK_USERS, CURRENT_USER } from "@/lib/data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,16 +11,23 @@ import { Building, Check, Link, Mail, Plus } from "lucide-react";
 import AiProfileCompletion from "@/components/ai/profile-completion";
 import placeholderData from '@/lib/placeholder-images.json';
 import { useToast } from "@/hooks/use-toast";
+import { notFound } from "next/navigation";
 
 const getPlaceholderImageUrl = (id: string) => {
     const image = placeholderData.placeholderImages.find(img => img.id === id);
     return image ? image.imageUrl : `https://picsum.photos/seed/default/600/400`;
 }
 
-export default function ProfilePage() {
-  const user = CURRENT_USER;
+export default function ProfilePage({ params }: { params: { id: string } }) {
+  const user = MOCK_USERS.find(u => u.id === params.id);
   const [requested, setRequested] = useState(false);
   const { toast } = useToast();
+
+  if (!user) {
+    notFound();
+  }
+
+  const isCurrentUser = user.id === CURRENT_USER.id;
 
   const handleConnect = () => {
     setRequested(true);
@@ -56,22 +63,24 @@ export default function ProfilePage() {
                 />
                 </div>
             </div>
-            <div className="flex justify-start sm:justify-end gap-2 mt-4 sm:mt-0">
-                <Button onClick={handleConnect} disabled={requested}>
-                  {requested ? (
-                    <>
-                      <Check className="mr-2 h-4 w-4" />
-                      Pending
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="mr-2 h-4 w-4" />
-                      Connect
-                    </>
-                  )}
-                </Button>
-                <Button variant="outline">Message</Button>
-            </div>
+            {!isCurrentUser && (
+              <div className="flex justify-start sm:justify-end gap-2 mt-4 sm:mt-0">
+                  <Button onClick={handleConnect} disabled={requested}>
+                    {requested ? (
+                      <>
+                        <Check className="mr-2 h-4 w-4" />
+                        Pending
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Connect
+                      </>
+                    )}
+                  </Button>
+                  <Button variant="outline">Message</Button>
+              </div>
+            )}
           </div>
           <div className="pt-4">
             <h1 className="text-2xl font-bold font-headline">{user.name}</h1>
@@ -82,7 +91,7 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
       
-      <AiProfileCompletion />
+      {isCurrentUser && <AiProfileCompletion />}
 
       <Card>
         <CardHeader>
@@ -93,31 +102,33 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline">Experience</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {user.experience.map((exp, index) => (
-            <div key={index} className="flex gap-4">
-              <Image
-                src={exp.companyLogoUrl}
-                alt={`${exp.company} logo`}
-                width={48}
-                height={48}
-                className="rounded-lg border p-1 h-12 w-12"
-                data-ai-hint="company logo"
-              />
-              <div>
-                <h3 className="font-semibold">{exp.title}</h3>
-                <p className="text-sm">{exp.company}</p>
-                <p className="text-xs text-muted-foreground">{exp.startDate} - {exp.endDate}</p>
-                <p className="text-sm mt-2">{exp.description}</p>
+      {user.experience.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline">Experience</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {user.experience.map((exp, index) => (
+              <div key={index} className="flex gap-4">
+                <Image
+                  src={exp.companyLogoUrl}
+                  alt={`${exp.company} logo`}
+                  width={48}
+                  height={48}
+                  className="rounded-lg border p-1 h-12 w-12"
+                  data-ai-hint="company logo"
+                />
+                <div>
+                  <h3 className="font-semibold">{exp.title}</h3>
+                  <p className="text-sm">{exp.company}</p>
+                  <p className="text-xs text-muted-foreground">{exp.startDate} - {exp.endDate}</p>
+                  <p className="text-sm mt-2">{exp.description}</p>
+                </div>
               </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>
@@ -132,3 +143,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+    

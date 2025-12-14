@@ -129,7 +129,7 @@ export function SiteHeader() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <Link href="/profile">
+                <Link href={CURRENT_USER.profileUrl}>
                   <DropdownMenuItem>
                     Profile
                   </DropdownMenuItem>
@@ -147,3 +147,5 @@ export function SiteHeader() {
     </header>
   );
 }
+
+    
