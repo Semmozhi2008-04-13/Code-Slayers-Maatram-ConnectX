@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { Post } from "@/lib/types";
-import { ThumbsUp, MessageCircle, Share2, Dot } from "lucide-react";
+import { ThumbsUp, MessageCircle, Share2 } from "lucide-react";
 
 type PostCardProps = {
   post: Post;
