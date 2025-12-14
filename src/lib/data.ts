@@ -11,46 +11,57 @@ export const MOCK_USERS: User[] = [
     id: '1',
     name: 'Aditi Rao',
     avatarUrl: getPlaceholderImageUrl('avatar-1'),
-    headline: 'Senior AI Scientist at Zoho Corp',
-    location: 'Chennai, Tamil Nadu',
+    headline: 'Senior AI Scientist at Google',
+    location: 'Bengaluru, Karnataka',
     industry: 'Technology',
     skills: ['Machine Learning', 'Python', 'TensorFlow', 'Cloud Computing'],
     isMentor: true,
     connections: 890,
-    about: 'Passionate AI Scientist with 7 years of experience in building cutting-edge machine learning models. Currently leading a team to develop generative AI solutions at Zoho.',
+    about: 'Passionate AI Scientist with 7 years of experience in building cutting-edge machine learning models. Currently leading a team to develop generative AI solutions at Google.',
     experience: [
       {
         title: 'Senior AI Scientist',
-        company: 'Zoho Corp',
-        companyLogoUrl: getPlaceholderImageUrl('company-logo-1'),
+        company: 'Google',
+        companyLogoUrl: getPlaceholderImageUrl('company-logo-google'),
         startDate: 'Jan 2020',
         endDate: 'Present',
-        description: 'Leading research and development of new AI-powered features for Zoho\'s product suite.'
+        description: 'Leading research and development of new AI-powered features for Google\'s product suite.'
       },
       {
         title: 'Software Engineer',
-        company: 'Tata Consultancy Services',
-        companyLogoUrl: getPlaceholderImageUrl('company-logo-2'),
+        company: 'Infosys',
+        companyLogoUrl: getPlaceholderImageUrl('company-logo-infosys'),
         startDate: 'Jun 2017',
         endDate: 'Dec 2019',
         description: 'Worked on enterprise software solutions for international clients.'
       }
     ],
-    profileUrl: '/profile'
+    profileUrl: '/profile',
+    role: 'Alumni'
   },
   {
     id: '2',
     name: 'Vikram Kumar',
     avatarUrl: getPlaceholderImageUrl('avatar-2'),
-    headline: 'Product Lead at Freshworks',
-    location: 'Bengaluru, Karnataka',
-    industry: 'SaaS',
-    skills: ['Product Strategy', 'Agile Methodologies', 'User Experience', 'Market Analysis'],
-    isMentor: false,
+    headline: 'Product Lead at Amazon Web Services (AWS)',
+    location: 'Hyderabad, Telangana',
+    industry: 'Cloud Computing',
+    skills: ['Product Strategy', 'Agile Methodologies', 'User Experience', 'SaaS'],
+    isMentor: true,
     connections: 621,
-    about: 'Customer-obsessed Product Leader with a track record of launching successful SaaS products. I thrive on solving complex problems and building high-performing teams.',
-    experience: [],
-    profileUrl: '/profile'
+    about: 'Customer-obsessed Product Leader with a track record of launching successful cloud products. I thrive on solving complex problems and building high-performing teams.',
+    experience: [
+      {
+        title: 'Product Lead',
+        company: 'Amazon Web Services (AWS)',
+        companyLogoUrl: getPlaceholderImageUrl('company-logo-amazon'),
+        startDate: 'Mar 2019',
+        endDate: 'Present',
+        description: 'Defining the roadmap and strategy for new AWS services.'
+      }
+    ],
+    profileUrl: '/profile',
+    role: 'Alumni'
   },
   {
     id: '3',
@@ -63,52 +74,78 @@ export const MOCK_USERS: User[] = [
     isMentor: true,
     connections: 550,
     about: 'Designing seamless and delightful experiences for millions of users at India\'s leading e-commerce platform.',
-    experience: [],
-    profileUrl: '/profile'
+    experience: [
+       {
+        title: 'Principal UX Designer',
+        company: 'Flipkart',
+        companyLogoUrl: getPlaceholderImageUrl('company-logo-flipkart'),
+        startDate: 'Aug 2018',
+        endDate: 'Present',
+        description: 'Leading the design for the core shopping experience across mobile and web.'
+      }
+    ],
+    profileUrl: '/profile',
+    role: 'Alumni'
   },
     {
     id: '4',
     name: 'Arjun Reddy',
     avatarUrl: getPlaceholderImageUrl('avatar-4'),
     headline: 'Data Analytics Head at Swiggy',
-    location: 'Hyderabad, Telangana',
+    location: 'Bengaluru, Karnataka',
     industry: 'Food Technology',
     skills: ['Data Analytics', 'Python', 'SQL', 'Tableau', 'Big Data'],
     isMentor: true,
     connections: 710,
     about: 'Leveraging data to drive business growth and enhance customer experiences in the fast-paced food tech industry.',
-    experience: [],
-    profileUrl: '/profile'
+    experience: [
+       {
+        title: 'Data Analytics Head',
+        company: 'Swiggy',
+        companyLogoUrl: getPlaceholderImageUrl('company-logo-swiggy'),
+        startDate: 'Feb 2021',
+        endDate: 'Present',
+        description: 'Building and leading a team of analysts to uncover insights from large-scale data.'
+      }
+    ],
+    profileUrl: '/profile',
+    role: 'Alumni'
   },
   {
     id: '5',
-    name: 'Lakshmi Menon',
+    name: 'Priya Sharma',
     avatarUrl: getPlaceholderImageUrl('avatar-5'),
-    headline: 'Brand Manager at Hindustan Unilever',
-    location: 'Mumbai, Maharashtra',
-    industry: 'FMCG',
-    skills: ['Brand Management', 'Digital Marketing', 'Campaign Strategy'],
+    headline: 'Final Year CSE Student at Chennai Institute of Technology',
+    location: 'Chennai, Tamil Nadu',
+    industry: 'Education',
+    skills: ['Java', 'Data Structures', 'Web Development', 'React'],
     isMentor: false,
-    connections: 480,
-    about: 'Building and nurturing iconic brands. Experienced in creating impactful marketing campaigns that resonate with consumers.',
+    connections: 150,
+    about: 'Aspiring software developer with a passion for building innovative web applications. Seeking internship opportunities in the tech industry.',
     experience: [],
-    profileUrl: '/profile'
+    profileUrl: '/profile',
+    role: 'Student',
+    college: 'Chennai Institute of Technology',
+    graduationYear: '2025'
   },
-  {
+   {
     id: '6',
-    name: 'Rohan Prasad',
+    name: 'Rahul Varma',
     avatarUrl: getPlaceholderImageUrl('avatar-6'),
-    headline: 'Investment Banker at ICICI Securities',
-    location: 'Mumbai, Maharashtra',
-    industry: 'Finance',
-    skills: ['Investment Banking', 'Financial Modeling', 'Mergers & Acquisitions'],
-    isMentor: true,
-    connections: 920,
-    about: 'Advising corporations on capital raising and strategic M&A transactions. Passionate about financial markets and corporate strategy.',
+    headline: 'ECE Student at Rajalakshmi Engineering College',
+    location: 'Chennai, Tamil Nadu',
+    industry: 'Education',
+    skills: ['C++', 'Embedded Systems', 'VLSI', 'IoT'],
+    isMentor: false,
+    connections: 95,
+    about: 'Enthusiastic electronics and communication engineering student interested in the field of IoT and embedded systems.',
     experience: [],
-    profileUrl: '/profile'
+    profileUrl: '/profile',
+    role: 'Student',
+    college: 'Rajalakshmi Engineering College',
+    graduationYear: '2026'
   },
-  {
+   {
     id: '7',
     name: 'Ananya Sharma',
     avatarUrl: getPlaceholderImageUrl('avatar-7'),
@@ -120,12 +157,30 @@ export const MOCK_USERS: User[] = [
     connections: 410,
     about: 'Strategic HR partner dedicated to fostering a positive and inclusive work environment and driving organizational success.',
     experience: [],
-    profileUrl: '/profile'
+    profileUrl: '/profile',
+    role: 'Alumni'
+  },
+   {
+    id: '8',
+    name: 'Suresh Menon',
+    avatarUrl: getPlaceholderImageUrl('avatar-8'),
+    headline: 'IT Student at Sathyabama Institute of Science and Technology',
+    location: 'Chennai, Tamil Nadu',
+    industry: 'Education',
+    skills: ['Cybersecurity', 'Networking', 'Python', 'Ethical Hacking'],
+    isMentor: false,
+    connections: 110,
+    about: 'A second-year IT student focused on cybersecurity. Eager to connect with professionals in the security domain.',
+    experience: [],
+    profileUrl: '/profile',
+    role: 'Student',
+    college: 'Sathyabama Institute of Science and Technology',
+    graduationYear: '2027'
   },
   {
-    id: '8',
+    id: '9',
     name: 'Karthik Iyer',
-    avatarUrl: getPlaceholderImageUrl('avatar-8'),
+    avatarUrl: getPlaceholderImageUrl('avatar-9'),
     headline: 'Robotics Engineer at Ather Energy',
     location: 'Bengaluru, Karnataka',
     industry: 'Automotive',
@@ -134,23 +189,10 @@ export const MOCK_USERS: User[] = [
     connections: 680,
     about: 'Building the future of urban mobility. Working on automation and robotics for intelligent electric vehicles.',
     experience: [],
-    profileUrl: '/profile'
+    profileUrl: '/profile',
+    role: 'Alumni'
   },
-  {
-    id: '9',
-    name: 'Divya Nair',
-    avatarUrl: getPlaceholderImageUrl('avatar-9'),
-    headline: 'Film Director & Screenwriter',
-    location: 'Kochi, Kerala',
-    industry: 'Entertainment',
-    skills: ['Filmmaking', 'Screenwriting', 'Directing', 'Storytelling'],
-    isMentor: false,
-    connections: 325,
-    about: 'Telling compelling stories that reflect the richness of our culture. Director of the award-winning short film "Oru Kadhai".',
-    experience: [],
-    profileUrl: '/profile'
-  },
-  {
+   {
     id: '10',
     name: 'Dr. Surya Pillai',
     avatarUrl: getPlaceholderImageUrl('avatar-10'),
@@ -162,7 +204,8 @@ export const MOCK_USERS: User[] = [
     connections: 250,
     about: 'Educator and researcher in the field of theoretical computer science. Committed to mentoring the next generation of engineers and scientists.',
     experience: [],
-    profileUrl: '/profile'
+    profileUrl: '/profile',
+    role: 'Alumni'
   }
 ];
 
@@ -172,7 +215,7 @@ export const MOCK_POSTS: Post[] = [
   {
     id: 'p1',
     author: MOCK_USERS[1],
-    content: 'Thrilled to announce the launch of our new CRM module at Freshworks! A massive shout-out to the entire team for their relentless effort. #SaaS #ProductLaunch #Freshworks',
+    content: 'Thrilled to announce the launch of our new cloud-native observability platform at AWS! A massive shout-out to the entire team for their relentless effort. #Cloud #ProductLaunch #AWS',
     imageUrl: getPlaceholderImageUrl('post-image-1'),
     likes: 180,
     comments: 25,
@@ -190,7 +233,7 @@ export const MOCK_POSTS: Post[] = [
   {
     id: 'p3',
     author: MOCK_USERS[0],
-    content: 'Heading to the NASSCOM Technology & Leadership Forum next month. Who else will be there? Would love to connect and discuss the future of AI in India. #NASSCOM #AI #Networking',
+    content: 'Heading to the Google Cloud Summit in Bengaluru next month. Who else will be there? Would love to connect and discuss the future of AI in India. #GoogleCloud #AI #Networking',
     imageUrl: getPlaceholderImageUrl('post-image-2'),
     likes: 250,
     comments: 50,
@@ -202,37 +245,37 @@ export const MOCK_JOBS: Job[] = [
   {
     id: 'j1',
     title: 'Senior ML Engineer',
-    company: 'Zoho Corp',
-    companyLogoUrl: getPlaceholderImageUrl('company-logo-1'),
-    location: 'Chennai, Tamil Nadu',
+    company: 'Google',
+    companyLogoUrl: getPlaceholderImageUrl('company-logo-google'),
+    location: 'Bengaluru, Karnataka',
     type: 'Full-time',
     postedAt: '2d ago'
   },
   {
     id: 'j2',
-    title: 'Lead Data Analyst',
-    company: 'Swiggy',
-    companyLogoUrl: getPlaceholderImageUrl('company-logo-4'),
-    location: 'Bengaluru, Karnataka (Hybrid)',
+    title: 'Cloud Support Engineer',
+    company: 'Amazon Web Services (AWS)',
+    companyLogoUrl: getPlaceholderImageUrl('company-logo-amazon'),
+    location: 'Hyderabad, Telangana (Hybrid)',
     type: 'Full-time',
     postedAt: '4d ago'
   },
   {
     id: 'j3',
-    title: 'UX Design Intern',
-    company: 'Flipkart',
-    companyLogoUrl: getPlaceholderImageUrl('company-logo-3'),
-    location: 'Bengaluru, Karnataka',
+    title: 'Software Development Intern',
+    company: 'Infosys',
+    companyLogoUrl: getPlaceholderImageUrl('company-logo-infosys'),
+    location: 'Pune, Maharashtra',
     type: 'Internship',
     postedAt: '1w ago'
   },
    {
     id: 'j4',
-    title: 'Digital Marketing Specialist',
-    company: 'Hindustan Unilever',
-    companyLogoUrl: getPlaceholderImageUrl('company-logo-5'),
-    location: 'Mumbai, Maharashtra',
-    type: 'Full-time',
+    title: 'Data Science Intern',
+    company: 'Swiggy',
+    companyLogoUrl: getPlaceholderImageUrl('company-logo-swiggy'),
+    location: 'Bengaluru, Karnataka',
+    type: 'Internship',
     postedAt: '2w ago'
   }
 ];

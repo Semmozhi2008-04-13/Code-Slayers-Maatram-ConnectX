@@ -11,6 +11,9 @@ export type User = {
   about: string;
   experience: Experience[];
   profileUrl: string;
+  role: 'Alumni' | 'Student';
+  college?: string;
+  graduationYear?: string;
 };
 
 export type Experience = {

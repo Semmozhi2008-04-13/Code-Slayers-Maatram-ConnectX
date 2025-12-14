@@ -11,6 +11,7 @@ import {
   MessageSquare,
   Search,
   Users,
+  GraduationCap
 } from "lucide-react";
 
 import { Logo } from "@/components/logo";
@@ -32,6 +33,7 @@ import { CURRENT_USER } from "@/lib/data";
 const navLinks = [
   { href: "/", label: "Feed", icon: Home },
   { href: "/alumni", label: "Alumni", icon: Users },
+  { href: "/students", label: "Students", icon: GraduationCap },
   { href: "/jobs", label: "Jobs", icon: Briefcase },
   { href: "/events", label: "Events", icon: Calendar },
   { href: "/mentors", label: "Mentors", icon: MessageSquare },
