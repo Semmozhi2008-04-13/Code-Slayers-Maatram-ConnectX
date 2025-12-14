@@ -14,21 +14,21 @@ export default function Home() {
       {/* Left Column */}
       <div className="md:col-span-1 lg:col-span-2 space-y-6">
         <Card>
-          <CardHeader className="p-0 relative h-20 bg-muted-foreground/20">
-            <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
-              <div className="w-20 h-20 rounded-full bg-background p-1">
+          <CardHeader className="p-0 relative h-24 bg-muted-foreground/20">
+            <div className="absolute -bottom-12 left-1/2 -translate-x-1/2">
+              <div className="w-24 h-24 rounded-full bg-background p-1">
                 <Image
                   src={CURRENT_USER.avatarUrl}
                   alt={CURRENT_USER.name}
-                  width={80}
-                  height={80}
+                  width={96}
+                  height={96}
                   className="rounded-full"
                   data-ai-hint="profile avatar"
                 />
               </div>
             </div>
           </CardHeader>
-          <CardContent className="pt-12 text-center">
+          <CardContent className="pt-14 text-center">
             <h2 className="text-xl font-headline font-semibold">{CURRENT_USER.name}</h2>
             <p className="text-sm text-muted-foreground">{CURRENT_USER.headline}</p>
           </CardContent>
