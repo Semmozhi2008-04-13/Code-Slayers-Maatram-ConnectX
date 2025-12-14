@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -10,12 +13,21 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { Post } from "@/lib/types";
 import { ThumbsUp, MessageCircle, Share2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type PostCardProps = {
   post: Post;
 };
 
 export default function PostCard({ post }: PostCardProps) {
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(post.likes);
+
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+    setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -40,7 +52,7 @@ export default function PostCard({ post }: PostCardProps) {
       <CardContent>
         <p className="text-sm mb-4">{post.content}</p>
         {post.imageUrl && (
-          <div className="relative aspect-video w-full overflow-hidden rounded-lg max-h-[250px]">
+          <div className="relative aspect-video w-full overflow-hidden rounded-lg max-h-[300px]">
             <Image
               src={post.imageUrl}
               alt="Post image"
@@ -53,13 +65,17 @@ export default function PostCard({ post }: PostCardProps) {
       </CardContent>
       <CardFooter className="flex flex-col items-start px-6 pb-4">
         <div className="flex justify-between w-full text-xs text-muted-foreground mb-2">
-            <span>{post.likes} Likes</span>
+            <span>{likeCount} Likes</span>
             <span>{post.comments} Comments</span>
         </div>
         <Separator />
         <div className="w-full grid grid-cols-3 gap-1 pt-2">
-          <Button variant="ghost" className="text-muted-foreground hover:text-primary">
-            <ThumbsUp className="mr-2 h-4 w-4" /> Like
+          <Button 
+            variant="ghost" 
+            className={cn("text-muted-foreground hover:text-primary", isLiked && "text-primary")}
+            onClick={handleLike}
+          >
+            <ThumbsUp className={cn("mr-2 h-4 w-4", isLiked && "fill-current")} /> Like
           </Button>
           <Button variant="ghost" className="text-muted-foreground hover:text-primary">
             <MessageCircle className="mr-2 h-4 w-4" /> Comment
