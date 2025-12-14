@@ -220,7 +220,6 @@ export const MOCK_USERS: User[] = [
         'Rajalakshmi Engineering College', 
         'Sathyabama Institute of Science and Technology', 
         'Vellore Institute of Technology',
-        'Anna University',
         'PSG College of Technology',
         'Coimbatore Institute of Technology'
     ];
