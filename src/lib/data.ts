@@ -115,7 +115,7 @@ export const MOCK_USERS: User[] = [
     id: '5',
     name: 'Priya Sharma',
     avatarUrl: getPlaceholderImageUrl('avatar-5'),
-    headline: 'Final Year CSE Student at Chennai Institute of Technology',
+    headline: 'CSE Student at Chennai Institute of Technology',
     location: 'Chennai, Tamil Nadu',
     industry: 'Education',
     skills: ['Java', 'Data Structures', 'Web Development', 'React'],
@@ -126,7 +126,8 @@ export const MOCK_USERS: User[] = [
     profileUrl: '/profile/5',
     role: 'Student',
     college: 'Chennai Institute of Technology',
-    graduationYear: '2025'
+    graduationYear: '2025',
+    department: 'CSE'
   },
    {
     id: '6',
@@ -143,7 +144,8 @@ export const MOCK_USERS: User[] = [
     profileUrl: '/profile/6',
     role: 'Student',
     college: 'Rajalakshmi Engineering College',
-    graduationYear: '2026'
+    graduationYear: '2026',
+    department: 'ECE'
   },
    {
     id: '7',
@@ -175,7 +177,8 @@ export const MOCK_USERS: User[] = [
     profileUrl: '/profile/8',
     role: 'Student',
     college: 'Sathyabama Institute of Science and Technology',
-    graduationYear: '2027'
+    graduationYear: '2027',
+    department: 'IT'
   },
   {
     id: '9',
@@ -211,7 +214,7 @@ export const MOCK_USERS: User[] = [
     const studentId = i + 11;
     const colleges = [
         'SRM Institute of Science and Technology', 
-        'Easwari Engineering College', 
+        'SRM Easwari Engineering College', 
         'Sri Venkateswara College of Engineering', 
         'Chennai Institute of Technology', 
         'Rajalakshmi Engineering College', 
@@ -221,15 +224,17 @@ export const MOCK_USERS: User[] = [
         'PSG College of Technology',
         'Coimbatore Institute of Technology'
     ];
+    const departments = ['ECE', 'EEE', 'CSE', 'Aeronautical Engineering', 'IT', 'Mechanical Engineering', 'Civil Engineering', 'Chemical Engineering', 'Biotechnology'];
     const locations = ['Chennai, Tamil Nadu', 'Coimbatore, Tamil Nadu', 'Madurai, Tamil Nadu', 'Tiruchirappalli, Tamil Nadu'];
     const skills = [['Python', 'Machine Learning'], ['JavaScript', 'React'], ['Java', 'Spring Boot'], ['C#', '.NET'], ['Go', 'Microservices'], ['Swift', 'iOS Development'], ['Kotlin', 'Android Development'], ['TypeScript', 'Node.js'], ['Ruby', 'Rails'], ['PHP', 'Laravel']];
     const graduationYear = 2025 + (i % 4);
+    const department = departments[i % departments.length];
     
     return {
       id: `${studentId}`,
       name: `Student ${i + 1}`,
       avatarUrl: getPlaceholderImageUrl(`avatar-${studentId}`),
-      headline: `Student at ${colleges[i % colleges.length]}`,
+      headline: `${department} Student at ${colleges[i % colleges.length]}`,
       location: locations[i % locations.length],
       industry: 'Education',
       skills: skills[i % skills.length],
@@ -241,6 +246,7 @@ export const MOCK_USERS: User[] = [
       role: 'Student' as const,
       college: colleges[i % colleges.length],
       graduationYear: `${graduationYear}`,
+      department: department,
     };
   })
 ];
@@ -336,11 +342,9 @@ export const MOCK_EVENTS: Event[] = [
   {
     id: 'e3',
     title: 'Annual Alumni Reunion',
-    bannerUrl: getPlaceholderImageUrl('event-banner-3'),
+    bannerUrl: 'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1080&q=80',
     date: 'Dec 10, 2024',
     location: 'The Leela Palace, Chennai',
     attendees: 350,
   }
 ];
-
-    

@@ -14,6 +14,7 @@ export type User = {
   role: 'Alumni' | 'Student';
   college?: string;
   graduationYear?: string;
+  department?: string;
 };
 
 export type Experience = {
