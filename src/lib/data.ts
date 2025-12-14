@@ -299,7 +299,7 @@ export const MOCK_EVENTS: Event[] = [
   },
   {
     id: 'e3',
-    title: 'Annual Alumni Reunion Dinner',
+    title: 'Annual Alumni Reunion',
     bannerUrl: getPlaceholderImageUrl('event-banner-3'),
     date: 'Dec 10, 2024',
     location: 'The Leela Palace, Chennai',
