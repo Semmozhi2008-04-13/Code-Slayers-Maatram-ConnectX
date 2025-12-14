@@ -1,3 +1,4 @@
+
 import type { User, Post, Job, Event } from './types';
 import placeholderData from './placeholder-images.json';
 
@@ -5,6 +6,19 @@ const getPlaceholderImageUrl = (id: string) => {
     const image = placeholderData.placeholderImages.find(img => img.id === id);
     return image ? image.imageUrl : `https://picsum.photos/seed/default/600/400`;
 }
+
+const southIndianNames = [
+  "Aadhya", "Aarav", "Advik", "Akshay", "Amrita", "Anand", "Ananya", "Anirudh", "Anjali", "Arjun", 
+  "Arya", "Ashwin", "Bhavana", "Charan", "Deepak", "Deepika", "Dev", "Dhanush", "Divya", "Ganesh", 
+  "Gautam", "Gayathri", "Girish", "Gokul", "Harish", "Indra", "Ishaan", "Janani", "Jayant", "Jothi",
+  "Kamalesh", "Karthik", "Kavya", "Kiran", "Krishna", "Lakshmi", "Lalitha", "Madhav", "Magesh", "Mahesh",
+  "Mani", "Manoj", "Maya", "Meenakshi", "Mohan", "Nandhini", "Naveen", "Nikhil", "Nisha", "Nithya",
+  "Pooja", "Pradeep", "Prakash", "Pranav", "Priya", "Rahul", "Rajesh", "Ram", "Ramesh", "Ranjini", 
+  "Ravi", "Reshma", "Revathi", "Rohit", "Sachin", "Sanjay", "Sanjana", "Suresh", "Saranya", "Sathish", 
+  "Savitha", "Semmozhi", "Shankar", "Shanti", "Sharmila", "Shreya", "Siddharth", "Sindhu", "Sonia", 
+  "Sridhar", "Subha", "Sudha", "Sumathi", "Sundar", "Surya", "Swathi", "Tharun", "Uma", "Vani", 
+  "Varun", "Venkatesh", "Vidya", "Vijay", "Vikram", "Vinay", "Vinod", "Vishnu", "Vivek", "Yamuna", "Yash"
+];
 
 export const MOCK_USERS: User[] = [
   {
@@ -231,7 +245,7 @@ export const MOCK_USERS: User[] = [
     
     return {
       id: `${studentId}`,
-      name: `Student ${i + 1}`,
+      name: `${southIndianNames[i % southIndianNames.length]} ${i % 2 === 0 ? 'Rao' : 'Menon'}`,
       avatarUrl: getPlaceholderImageUrl(`avatar-${studentId}`),
       headline: `${department} Student at ${colleges[i % colleges.length]}`,
       location: locations[i % locations.length],
@@ -333,7 +347,7 @@ export const MOCK_EVENTS: Event[] = [
   {
     id: 'e2',
     title: 'Workshop: Building a Career in SaaS',
-    bannerUrl: 'https://storage.googleapis.com/aif-studiogpt-sc-images/2024-08-01/clx68czn000073b6k9jfj0k4g/8a2e58c0-c3d0-40e9-a35b-873096b797de.png',
+    bannerUrl: getPlaceholderImageUrl('event-banner-2'),
     date: 'Nov 15, 2024',
     location: 'University Campus, Main Hall',
     attendees: 85,
@@ -341,7 +355,7 @@ export const MOCK_EVENTS: Event[] = [
   {
     id: 'e3',
     title: 'Annual Alumni Reunion',
-    bannerUrl: 'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1080&q=80',
+    bannerUrl: getPlaceholderImageUrl('event-banner-3'),
     date: 'Dec 10, 2024',
     location: 'The Leela Palace, Chennai',
     attendees: 350,
