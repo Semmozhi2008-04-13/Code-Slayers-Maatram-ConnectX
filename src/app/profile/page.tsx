@@ -5,6 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Building, Link, Mail, Plus } from "lucide-react";
 import AiProfileCompletion from "@/components/ai/profile-completion";
+import placeholderData from '@/lib/placeholder-images.json';
+
+const getPlaceholderImageUrl = (id: string) => {
+    const image = placeholderData.placeholderImages.find(img => img.id === id);
+    return image ? image.imageUrl : `https://picsum.photos/seed/default/600/400`;
+}
 
 export default function ProfilePage() {
   const user = CURRENT_USER;
@@ -12,7 +18,15 @@ export default function ProfilePage() {
   return (
     <div className="space-y-8">
       <Card>
-        <div className="h-32 md:h-48 bg-muted rounded-t-lg" />
+        <div className="relative h-32 md:h-48 rounded-t-lg overflow-hidden">
+          <Image 
+            src={getPlaceholderImageUrl('profile-cover-1')}
+            alt="Profile cover image"
+            fill
+            className="object-cover"
+            data-ai-hint="professional background abstract"
+          />
+        </div>
         <CardContent className="p-6">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between relative -mt-20 sm:-mt-16">
             <div className="flex-shrink-0">
