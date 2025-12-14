@@ -209,7 +209,18 @@ export const MOCK_USERS: User[] = [
   },
   ...Array.from({ length: 101 }, (_, i) => {
     const studentId = i + 11;
-    const colleges = ['Chennai Institute of Technology', 'Rajalakshmi Engineering College', 'Sathyabama Institute of Science and Technology', 'SRM Institute of Science and Technology', 'Vellore Institute of Technology'];
+    const colleges = [
+        'SRM Institute of Science and Technology', 
+        'Easwari Engineering College', 
+        'Sri Venkateswara College of Engineering', 
+        'Chennai Institute of Technology', 
+        'Rajalakshmi Engineering College', 
+        'Sathyabama Institute of Science and Technology', 
+        'Vellore Institute of Technology',
+        'Anna University',
+        'PSG College of Technology',
+        'Coimbatore Institute of Technology'
+    ];
     const locations = ['Chennai, Tamil Nadu', 'Coimbatore, Tamil Nadu', 'Madurai, Tamil Nadu', 'Tiruchirappalli, Tamil Nadu'];
     const skills = [['Python', 'Machine Learning'], ['JavaScript', 'React'], ['Java', 'Spring Boot'], ['C#', '.NET'], ['Go', 'Microservices'], ['Swift', 'iOS Development'], ['Kotlin', 'Android Development'], ['TypeScript', 'Node.js'], ['Ruby', 'Rails'], ['PHP', 'Laravel']];
     const graduationYear = 2025 + (i % 4);
