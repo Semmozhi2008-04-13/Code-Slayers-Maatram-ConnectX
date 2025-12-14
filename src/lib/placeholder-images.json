@@ -2,8 +2,8 @@
   "placeholderImages": [
     {
       "id": "avatar-1",
-      "imageUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwcm9mZXNzaW9uYWwlMjBoZWFkc2hvdHxlbnwwfHx8fDE3NjU2NjM1Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "professional headshot"
+      "imageUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21hbiUyMGhlYWRzaG90fGVufDB8fHx8MTc2NzM5MjI1N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman headshot"
     },
     {
       "id": "avatar-2",
@@ -12,58 +12,58 @@
     },
     {
       "id": "avatar-3",
-      "imageUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwZXJzb24lMjBzbWlsaW5nfGVufDB8fHx8MTc2NTY4NTQ4Mnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "person smiling"
-    },
-    {
-      "id": "avatar-4",
-      "imageUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwcm9mZXNzaW9uYWwlMjBoZWFkc2hvdHxlbnwwfHx8fDE3NjU2NjM1Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "professional headshot"
-    },
-    {
-      "id": "avatar-5",
-      "imageUrl": "https://images.unsplash.com/photo-1542206395-9feb3edaa68d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwZXJzb24lMjBnbGFzc2VzfGVufDB8fHx8MTc2NTY0MDY4NXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "person glasses"
-    },
-    {
-      "id": "avatar-6",
-      "imageUrl": "https://images.unsplash.com/photo-1557053910-d9eadeed1c58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NTY2NjY2Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1554151228-14d9def656e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NTY2NjY2Nnww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "woman portrait"
     },
     {
+      "id": "avatar-4",
+      "imageUrl": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYW4lMjBoZWFkc2hvdHxlbnwwfHx8fDE3NjczOTIyODZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man headshot"
+    },
+    {
+      "id": "avatar-5",
+      "imageUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwcm9mZXNzaW9uYWwlMjBoZWFkc2hvdHxlbnwwfHx8fDE3NjU2NjM1Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "professional headshot"
+    },
+    {
+      "id": "avatar-6",
+      "imageUrl": "https://images.unsplash.com/photo-1521119989659-a83eee488004?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYW4lMjBzbWlsaW5nfGVufDB8fHx8MTc2NzM5MjMzMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man smiling"
+    },
+    {
       "id": "avatar-7",
-      "imageUrl": "https://images.unsplash.com/photo-1566753323558-f4e0952af115?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtYW4lMjBiZWFyZHxlbnwwfHx8fDE3NjU2MjU3NzB8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "man portrait"
+      "imageUrl": "https://images.unsplash.com/photo-1610216705422-caa3fcb6d158?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHx3b21hbiUyMGhlYWRzaG90fGVufDB8fHx8MTc2NzM5MjI1N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman headshot"
     },
     {
       "id": "avatar-8",
-      "imageUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwZXJzb24lMjBvdXRkb29yc3xlbnwwfHx8fDE3NjU3MDExMDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "person outdoors"
+      "imageUrl": "https://images.unsplash.com/photo-1548142813-c348350df52b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYW4lMjBoZWFkc2hvdCUyMGphcGFuZXNlfGVufDB8fHx8MTc2NzM5MjM3MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man headshot"
     },
     {
       "id": "avatar-9",
-      "imageUrl": "https://images.unsplash.com/photo-1525134479668-1bee5c7c6845?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx3b21hbiUyMHNtaWxpbmd8ZW58MHx8fHwxNzY1NzAzNDU5fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman smiling"
+      "imageUrl": "https://images.unsplash.com/photo-1605369572399-4b6d3937126f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpdGFsaWFuJTIwd29tYW58ZW58MHx8fHwxNzY3MzkyNDMyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "italian woman"
     },
     {
       "id": "avatar-10",
-      "imageUrl": "https://images.unsplash.com/photo-1520479225244-b0e94f2a425a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtYW4lMjBzdWl0fGVufDB8fHx8MTc2NTU5ODEwM3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "man suit"
+      "imageUrl": "https://images.unsplash.com/photo-1566492031773-4f4e44671857?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYW4lMjBzbWlsaW5nJTIwc3VpdHxlbnwwfHx8fDE3NjczOTI0NjR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man smiling"
     },
     {
       "id": "company-logo-1",
-      "imageUrl": "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx0ZWNoJTIwY29tcGFueXxlbnwwfHx8fDE3NjU3MTEwOTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "tech company"
+      "imageUrl": "https://images.unsplash.com/photo-1614088444616-4191a67396a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0JTIwbG9nb3xlbnwwfHx8fDE3NjczOTI4NzB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "T logo"
     },
     {
       "id": "company-logo-2",
-      "imageUrl": "https://images.unsplash.com/photo-1581093450021-4a7360b9a6b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmaW5hbmNlJTIwY29tcGFueXxlbnwwfHx8fDE3NjU3MTExNDB8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "finance company"
+      "imageUrl": "https://images.unsplash.com/photo-1614088444616-4191a67396a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpJTIwbG9nb3xlbnwwfHx8fDE3NjczOTI5MDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "I logo"
     },
     {
       "id": "company-logo-3",
-      "imageUrl": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxkZXNpZ24lMjBzdHVkaW98ZW58MHx8fHwxNzY1NzExMTY0fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "design studio"
+      "imageUrl": "https://images.unsplash.com/photo-1549924231-f97928115795?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjJTIwbG9nb3xlbnwwfHx8fDE3NjczOTI5MjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "C logo"
     },
     {
       "id": "company-logo-4",
@@ -72,8 +72,8 @@
     },
     {
       "id": "company-logo-5",
-      "imageUrl": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtYXJrZXRpbmclMjBhZ2VuY3l8ZW58MHx8fHwxNzY1NzExMjMxfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "marketing agency"
+      "imageUrl": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxnJTIwbG9nb3xlbnwwfHx8fDE3NjczOTI5NzB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "G logo"
     },
     {
       "id": "post-image-1",
@@ -82,13 +82,13 @@
     },
     {
       "id": "post-image-2",
-      "imageUrl": "https://images.unsplash.com/photo-1543269865-cbf427effbad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxjb25mZXJlbmNlJTIwcHJlc2VudGF0aW9ufGVufDB8fHx8MTc2NTYzMDgyOXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "conference presentation"
+      "imageUrl": "https://images.unsplash.com/photo-1523580494863-6f3031224c94?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxuZXR3b3JraW5nJTIwY29uZmVyZW5jZXxlbnwwfHx8fDE3NjczOTMxMjN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "networking conference"
     },
     {
       "id": "post-image-3",
-      "imageUrl": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxsYXB0b3AlMjBjb2ZmZWV8ZW58MHx8fHwxNzY1NzAxODM4fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "laptop coffee"
+      "imageUrl": "https://images.unsplash.com/photo-1522204523234-8729aa6e3d5f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx1c2VyJTIwcmVzZWFyY2h8ZW58MHx8fHwxNzY3MzkzMTczfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "user research"
     },
     {
       "id": "event-banner-1",
@@ -97,13 +97,13 @@
     },
     {
       "id": "event-banner-2",
-      "imageUrl": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx3b3Jrc2hvcCUyMGNsYXNzcm9vbXxlbnwwfHx8fDE3NjU3MTA1ODF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "workshop classroom"
+      "imageUrl": "https://images.unsplash.com/photo-1517048676732-d65bc937f952?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b3Jrc2hvcHxlbnwwfHx8fDE3NjczOTMyNDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "workshop"
     },
     {
       "id": "event-banner-3",
-      "imageUrl": "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhbHVtbmklMjByZXVuaW9ufGVufDB8fHx8MTc2NTcxMDU4MXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "alumni reunion"
+      "imageUrl": "https://images.unsplash.com/photo-1511578314322-379afb476865?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxnYWxhJTIwZXZlbnR8ZW58MHx8fHwxNzY3MzkzMjcxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "gala event"
     }
   ]
 }
