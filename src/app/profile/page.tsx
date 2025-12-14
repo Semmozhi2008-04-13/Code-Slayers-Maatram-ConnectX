@@ -1,11 +1,16 @@
+
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import { CURRENT_USER } from "@/lib/data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Building, Link, Mail, Plus } from "lucide-react";
+import { Building, Check, Link, Mail, Plus } from "lucide-react";
 import AiProfileCompletion from "@/components/ai/profile-completion";
 import placeholderData from '@/lib/placeholder-images.json';
+import { useToast } from "@/hooks/use-toast";
 
 const getPlaceholderImageUrl = (id: string) => {
     const image = placeholderData.placeholderImages.find(img => img.id === id);
@@ -14,6 +19,16 @@ const getPlaceholderImageUrl = (id: string) => {
 
 export default function ProfilePage() {
   const user = CURRENT_USER;
+  const [requested, setRequested] = useState(false);
+  const { toast } = useToast();
+
+  const handleConnect = () => {
+    setRequested(true);
+    toast({
+      title: "Connection Request Sent",
+      description: `Your request to connect with ${user.name} has been sent.`,
+    });
+  };
 
   return (
     <div className="space-y-8">
@@ -42,8 +57,18 @@ export default function ProfilePage() {
                 </div>
             </div>
             <div className="flex justify-start sm:justify-end gap-2 mt-4 sm:mt-0">
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" /> Connect
+                <Button onClick={handleConnect} disabled={requested}>
+                  {requested ? (
+                    <>
+                      <Check className="mr-2 h-4 w-4" />
+                      Pending
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Connect
+                    </>
+                  )}
                 </Button>
                 <Button variant="outline">Message</Button>
             </div>

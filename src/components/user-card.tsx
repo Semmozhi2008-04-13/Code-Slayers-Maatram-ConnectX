@@ -1,15 +1,32 @@
+
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { User } from "@/lib/types";
-import { Plus } from "lucide-react";
+import { Check, Plus } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 type UserCardProps = {
   user: User;
 };
 
 export function UserCard({ user }: UserCardProps) {
+  const [requested, setRequested] = useState(false);
+  const { toast } = useToast();
+
+  const handleConnect = () => {
+    setRequested(true);
+    toast({
+      title: "Connection Request Sent",
+      description: `Your request to connect with ${user.name} has been sent.`,
+    });
+  };
+
   return (
     <Card className="text-center transition-shadow hover:shadow-lg">
       <CardContent className="p-6">
@@ -25,9 +42,23 @@ export function UserCard({ user }: UserCardProps) {
           <h3 className="font-semibold font-headline text-lg hover:underline">{user.name}</h3>
         </Link>
         <p className="text-sm text-muted-foreground h-10">{user.headline}</p>
-        <Button variant="outline" className="mt-4 w-full">
-          <Plus className="mr-2 h-4 w-4" />
-          Connect
+        <Button 
+          variant="outline" 
+          className="mt-4 w-full"
+          onClick={handleConnect}
+          disabled={requested}
+        >
+          {requested ? (
+            <>
+              <Check className="mr-2 h-4 w-4" />
+              Pending
+            </>
+          ) : (
+            <>
+              <Plus className="mr-2 h-4 w-4" />
+              Connect
+            </>
+          )}
         </Button>
       </CardContent>
     </Card>
