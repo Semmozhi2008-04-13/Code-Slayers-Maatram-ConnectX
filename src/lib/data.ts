@@ -270,7 +270,7 @@ export const MOCK_POSTS: Post[] = [
   {
     id: 'p1',
     author: MOCK_USERS[1],
-    content: 'Thrilled to announce the launch of our new cloud-native observability platform at AWS! A massive shout-out to the entire team for their relentless effort. #Cloud #ProductLaunch #AWS',
+    content: 'Thrilled to announce the launch of our new cloud-native observability platform at AWS! A massive shout-out to the entire team for their relentless effort. This new platform will empower developers to monitor their applications with unprecedented detail and efficiency. \n\n#Cloud #ProductLaunch #AWS #Observability',
     imageUrl: getPlaceholderImageUrl('post-image-1'),
     likes: 180,
     comments: 25,
@@ -279,7 +279,7 @@ export const MOCK_POSTS: Post[] = [
   {
     id: 'p2',
     author: MOCK_USERS[2],
-    content: 'Deep diving into the nuances of building scalable design systems. Wrote a blog post on my findings. Link in bio! #UXDesign #DesignSystems #Flipkart',
+    content: 'Deep diving into the nuances of building scalable design systems. It’s not just about components; it’s about creating a shared language for designers and developers. Wrote a blog post on my findings. Link in bio!\n\n#UXDesign #DesignSystems #Flipkart #ProductDesign',
     imageUrl: getPlaceholderImageUrl('post-image-3'),
     likes: 95,
     comments: 15,
@@ -288,25 +288,25 @@ export const MOCK_POSTS: Post[] = [
   {
     id: 'p3',
     author: MOCK_USERS[0],
-    content: 'Heading to the Google Cloud Summit in Bengaluru next month. Who else will be there? Would love to connect and discuss the future of AI in India. #GoogleCloud #AI #Networking',
+    content: 'Heading to the Google Cloud Summit in Bengaluru next month. Who else will be there? Would love to connect and discuss the future of AI in India and the amazing possibilities of GenAI.\n\n#GoogleCloud #AI #Networking #GenAI',
     imageUrl: getPlaceholderImageUrl('post-image-2'),
     likes: 250,
     comments: 50,
-    createdAt: '4d ago'
+    createdAt: '2d ago'
   },
   {
     id: 'p4',
     author: MOCK_USERS[3],
-    content: 'Just analyzed our latest delivery data and found some fascinating trends! Data is the new oil, and we are drilling! #DataAnalytics #Swiggy #BigData',
+    content: 'Just analyzed our latest delivery data and found some fascinating trends in order patterns during peak hours! Data is the new oil, and we are drilling! The insights will help us optimize our fleet and reduce delivery times significantly.\n\n#DataAnalytics #Swiggy #BigData #Logistics',
     imageUrl: 'https://picsum.photos/seed/p4/600/400',
     likes: 120,
     comments: 18,
-    createdAt: '2d ago'
+    createdAt: '3d ago'
   },
   {
     id: 'p5',
     author: MOCK_USERS[4],
-    content: 'Excited to start my summer internship journey. Grateful for the opportunity to learn and contribute. #Internship #StudentLife #Tech',
+    content: 'Excited to start my summer internship journey as a Software Engineer Intern! Grateful for the opportunity to learn from the best and contribute to real-world projects. Let the learning begin!\n\n#Internship #StudentLife #Tech #SoftwareDevelopment',
     imageUrl: 'https://picsum.photos/seed/p5/600/400',
     likes: 75,
     comments: 12,
@@ -315,11 +315,29 @@ export const MOCK_POSTS: Post[] = [
   {
     id: 'p6',
     author: MOCK_USERS[8],
-    content: 'Just published my first robotics project on GitHub! It\'s an autonomous line-following robot. Check it out! #Robotics #AtherEnergy #Engineering',
+    content: 'Just published my first robotics project on GitHub! It\'s an autonomous line-following robot built with an Arduino and a few sensors. Check out the repository and let me know your thoughts!\n\n#Robotics #AtherEnergy #Engineering #OpenSource',
     imageUrl: 'https://picsum.photos/seed/p6/600/400',
     likes: 210,
     comments: 32,
     createdAt: '6d ago'
+  },
+    {
+    id: 'p7',
+    author: MOCK_USERS[9],
+    content: 'Great discussion today on "The Ethics of AI" with my students. It\'s crucial to consider the societal impact of the technology we build. The future is in their hands.\n\n#AI #Ethics #Education #IITMadras',
+    imageUrl: 'https://picsum.photos/seed/p7/800/600',
+    likes: 155,
+    comments: 28,
+    createdAt: '1w ago'
+  },
+  {
+    id: 'p8',
+    author: MOCK_USERS[6],
+    content: 'Proud to be part of a company that prioritizes employee well-being. Our latest "Wellness Week" initiative was a huge success! A healthy team is a happy and productive team.\n\n#HumanResources #EmployeeEngagement #Infosys #WorkLifeBalance',
+    imageUrl: 'https://picsum.photos/seed/p8/800/600',
+    likes: 98,
+    comments: 14,
+    createdAt: '1w ago'
   }
 ];
 

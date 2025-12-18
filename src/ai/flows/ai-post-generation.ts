@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -18,7 +19,7 @@ const GeneratePostInputSchema = z.object({
 export type GeneratePostInput = z.infer<typeof GeneratePostInputSchema>;
 
 const GeneratePostOutputSchema = z.object({
-  postContent: z.string().describe('The generated post content.'),
+  postContent: z.string().describe('The generated post content in markdown format.'),
 });
 export type GeneratePostOutput = z.infer<typeof GeneratePostOutputSchema>;
 
@@ -30,13 +31,19 @@ const prompt = ai.definePrompt({
   name: 'generatePostPrompt',
   input: {schema: GeneratePostInputSchema},
   output: {schema: GeneratePostOutputSchema},
-  prompt: `You are an AI assistant for a professional networking platform called Maatram ConnectX. Your task is to help a user named {{{userName}}} write a professional post based on their prompt.
+  prompt: `You are an expert social media manager for a professional networking platform called Maatram ConnectX. Your task is to help a user named {{{userName}}} write a professional and engaging post based on their prompt.
 
-The post should be engaging, well-structured, and appropriate for a professional audience. Include relevant hashtags.
+The tone should be professional, insightful, and slightly formal but approachable. The post must be well-structured, easy to read, and provide value to the reader.
+
+- Start with a strong opening hook.
+- Elaborate on the user's prompt with additional details, insights, or a call to action.
+- Use 2-3 paragraphs.
+- End with 3-4 relevant and popular hashtags to increase visibility. Use a mix of general and specific hashtags.
 
 User's Prompt: {{{prompt}}}
 
-Generate the post content now.`,
+Generate the post content now.
+`,
 });
 
 const generatePostFlow = ai.defineFlow(
