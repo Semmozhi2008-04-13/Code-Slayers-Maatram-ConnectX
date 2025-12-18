@@ -37,7 +37,7 @@ The tone should be professional, insightful, and slightly formal but approachabl
 
 - Start with a strong opening hook.
 - Elaborate on the user's prompt with additional details, insights, or a call to action.
-- Use 2-3 paragraphs.
+- Use 1-2 concise paragraphs.
 - End with 3-4 relevant and popular hashtags to increase visibility. Use a mix of general and specific hashtags.
 
 User's Prompt: {{{prompt}}}
