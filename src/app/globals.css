@@ -20,9 +20,9 @@
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 255 39% 48%;
+    --border: 258 50% 60%;
     --input: 240 3.7% 15.9%;
-    --ring: 255 39% 48%;
+    --ring: 258 50% 60%;
     --radius: 0.5rem;
   }
  
@@ -43,9 +43,9 @@
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 255 39% 48%;
+    --border: 258 50% 60%;
     --input: 240 3.7% 15.9%;
-    --ring: 255 39% 48%;
+    --ring: 258 50% 60%;
   }
 }
 
@@ -56,13 +56,21 @@
   body {
     @apply bg-background text-foreground;
   }
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 2px 0px hsl(var(--border)); }
+    50% { box-shadow: 0 0 6px 1px hsl(var(--border)); }
+  }
 }
 
 @layer components {
   .card {
     @apply transition-all;
+    animation: glow 3s ease-in-out infinite;
   }
   .card:hover {
-    @apply border-[hsl(30,100%,50%)];
+    @apply border-red-500;
+     border-color: #FF4500;
+     box-shadow: 0 0 10px #FF4500, 0 0 5px #FFD700;
+     animation: none;
   }
 }
