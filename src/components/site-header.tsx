@@ -14,7 +14,6 @@ import {
   GraduationCap
 } from "lucide-react";
 
-import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -65,7 +64,7 @@ export function SiteHeader() {
       <div className="container flex h-16 items-center">
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Logo className="h-6 w-6 text-primary" />
+            <Image src="/logo.png" alt="Maatram ConnectX Logo" width={24} height={24} className="h-6 w-6 text-primary" />
             <span className="hidden font-bold sm:inline-block font-headline">Maatram ConnectX</span>
           </Link>
         </div>
@@ -81,7 +80,7 @@ export function SiteHeader() {
             </SheetTrigger>
             <SheetContent side="left" className="w-72">
               <div className="flex items-center">
-                 <Logo className="h-6 w-6 text-primary" />
+                 <Image src="/logo.png" alt="Maatram ConnectX Logo" width={24} height={24} className="h-6 w-6 text-primary" />
                  <span className="ml-2 font-bold font-headline">Maatram ConnectX</span>
               </div>
               <div className="mt-6 flex flex-col gap-2">{renderNavLinks(true)}</div>
