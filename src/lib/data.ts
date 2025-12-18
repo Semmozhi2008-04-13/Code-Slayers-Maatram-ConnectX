@@ -20,6 +20,57 @@ const southIndianNames = [
   "Varun", "Venkatesh", "Vidya", "Vijay", "Vikram", "Vinay", "Vinod", "Vishnu", "Vivek", "Yamuna", "Yash"
 ];
 
+const companies = [
+  { name: 'Tata Consultancy Services', logoId: 'company-logo-tcs' },
+  { name: 'Microsoft', logoId: 'company-logo-microsoft' },
+  { name: 'Amazon Web Services (AWS)', logoId: 'company-logo-amazon' },
+  { name: 'Zoho Corporation', logoId: 'company-logo-zoho' },
+  { name: 'Infosys', logoId: 'company-logo-infosys' },
+  { name: 'Caterpillar Inc.', logoId: 'company-logo-caterpillar' },
+  { name: 'Freshworks', logoId: 'company-logo-freshworks' },
+  { name: 'Wipro', logoId: 'company-logo-wipro' },
+  { name: 'HCL Technologies', logoId: 'company-logo-hcl' },
+  { name: 'Tech Mahindra', logoId: 'company-logo-techmahindra' },
+  { name: 'LTI Mindtree', logoId: 'company-logo-ltimindtree' },
+  { name: 'Chargebee', logoId: 'company-logo-chargebee' },
+  { name: 'Kissflow', logoId: 'company-logo-kissflow' },
+  { name: 'Gupshup', logoId: 'company-logo-gupshup' },
+  { name: 'Postman', logoId: 'company-logo-postman' },
+  { name: 'Zeta', logoId: 'company-logo-zeta' },
+  { name: 'BrowserStack', logoId: 'company-logo-browserstack' },
+];
+
+const jobTitles = [
+    'Software Engineer', 'Senior Software Engineer', 'Product Manager', 'Data Scientist', 'Engineering Manager', 'UX Designer',
+    'DevOps Engineer', 'Cloud Architect', 'Machine Learning Engineer', 'Cybersecurity Analyst', 'Professor', 'Research Scientist', 'IT Consultant'
+];
+
+const usLocations = ['San Francisco, CA', 'New York, NY', 'Seattle, WA', 'Austin, TX', 'Boston, MA'];
+const canadaLocations = ['Toronto, ON', 'Vancouver, BC', 'Montreal, QC'];
+const otherIntLocations = ['London, UK', 'Berlin, Germany', 'Singapore', 'Dubai, UAE'];
+const indiaLocations = ['Bengaluru, Karnataka', 'Hyderabad, Telangana', 'Pune, Maharashtra', 'Chennai, Tamil Nadu', 'Gurgaon, Haryana'];
+
+const allLocations = [...usLocations, ...canadaLocations, ...otherIntLocations, ...indiaLocations];
+
+const skills = [
+  ['Java', 'Spring Boot', 'Microservices'],
+  ['Python', 'Django', 'Flask'],
+  ['JavaScript', 'React', 'Node.js'],
+  ['TypeScript', 'Angular', 'GraphQL'],
+  ['C#', '.NET', 'Azure'],
+  ['Go', 'Kubernetes', 'Docker'],
+  ['Swift', 'iOS', 'Xcode'],
+  ['Kotlin', 'Android', 'Jetpack Compose'],
+  ['Rust', 'Systems Programming', 'WASM'],
+  ['Scala', 'Akka', 'Spark'],
+  ['Ruby', 'Ruby on Rails', 'Heroku'],
+  ['PHP', 'Laravel', 'Symfony'],
+  ['Data Science', 'Pandas', 'Scikit-learn'],
+  ['Machine Learning', 'TensorFlow', 'PyTorch'],
+  ['Cloud Computing', 'AWS', 'GCP'],
+  ['DevOps', 'CI/CD', 'Terraform'],
+];
+
 export const MOCK_USERS: User[] = [
   {
     id: '1',
@@ -238,8 +289,8 @@ export const MOCK_USERS: User[] = [
         'Coimbatore Institute of Technology'
     ];
     const departments = ['ECE', 'EEE', 'CSE', 'Aeronautical Engineering', 'IT', 'Mechanical Engineering', 'Civil Engineering', 'Chemical Engineering', 'Biotechnology'];
-    const locations = ['Chennai, Tamil Nadu', 'Coimbatore, Tamil Nadu', 'Madurai, Tamil Nadu', 'Tiruchirappalli, Tamil Nadu'];
-    const skills = [['Python', 'Machine Learning'], ['JavaScript', 'React'], ['Java', 'Spring Boot'], ['C#', '.NET'], ['Go', 'Microservices'], ['Swift', 'iOS Development'], ['Kotlin', 'Android Development'], ['TypeScript', 'Node.js'], ['Ruby', 'Rails'], ['PHP', 'Laravel']];
+    const studentLocations = ['Chennai, Tamil Nadu', 'Coimbatore, Tamil Nadu', 'Madurai, Tamil Nadu', 'Tiruchirappalli, Tamil Nadu'];
+    const studentSkills = [['Python', 'Machine Learning'], ['JavaScript', 'React'], ['Java', 'Spring Boot'], ['C#', '.NET'], ['Go', 'Microservices'], ['Swift', 'iOS Development'], ['Kotlin', 'Android Development'], ['TypeScript', 'Node.js'], ['Ruby', 'Rails'], ['PHP', 'Laravel']];
     const graduationYear = 2025 + (i % 4);
     const department = departments[i % departments.length];
     
@@ -248,18 +299,51 @@ export const MOCK_USERS: User[] = [
       name: `${southIndianNames[i % southIndianNames.length]} ${i % 2 === 0 ? 'Rao' : 'Menon'}`,
       avatarUrl: getPlaceholderImageUrl(`avatar-${studentId}`),
       headline: `${department} Student at ${colleges[i % colleges.length]}`,
-      location: locations[i % locations.length],
+      location: studentLocations[i % studentLocations.length],
       industry: 'Education',
-      skills: skills[i % skills.length],
+      skills: studentSkills[i % studentSkills.length],
       isMentor: false,
       connections: Math.floor(Math.random() * 200),
-      about: `Eager to learn and grow in the tech industry. Passionate about ${skills[i % skills.length].join(' and ')}.`,
+      about: `Eager to learn and grow in the tech industry. Passionate about ${studentSkills[i % studentSkills.length].join(' and ')}.`,
       experience: [],
       profileUrl: `/profile/${studentId}`,
       role: 'Student' as const,
       college: colleges[i % colleges.length],
       graduationYear: `${graduationYear}`,
       department: department,
+    };
+  }),
+  ...Array.from({ length: 150 }, (_, i) => {
+    const alumniId = i + 112;
+    const company = companies[i % companies.length];
+    const jobTitle = jobTitles[i % jobTitles.length];
+    const location = allLocations[i % allLocations.length];
+    const userSkills = skills[i % skills.length];
+    const isMentor = Math.random() > 0.5;
+
+    return {
+      id: `${alumniId}`,
+      name: `${southIndianNames[(i+10) % southIndianNames.length]} ${i % 2 === 0 ? 'Nair' : 'Gupta'}`,
+      avatarUrl: getPlaceholderImageUrl(`avatar-${alumniId}`),
+      headline: `${jobTitle} at ${company.name}`,
+      location: location,
+      industry: company.name === 'Microsoft' || company.name === 'Amazon Web Services (AWS)' || company.name === 'Google' ? 'Technology' : 'Information Technology and Services',
+      skills: userSkills,
+      isMentor: isMentor,
+      connections: Math.floor(Math.random() * 800) + 200,
+      about: `Experienced ${jobTitle} with a demonstrated history of working in the computer software industry. Skilled in ${userSkills.join(', ')}.`,
+      experience: [
+        {
+          title: jobTitle,
+          company: company.name,
+          companyLogoUrl: getPlaceholderImageUrl(company.logoId),
+          startDate: `${['Jan', 'Mar', 'Jun', 'Sep'][i%4]} 20${15 + (i%8)}`,
+          endDate: 'Present',
+          description: `Working as a ${jobTitle} focusing on ${userSkills[0]}.`
+        }
+      ],
+      profileUrl: `/profile/${alumniId}`,
+      role: 'Alumni' as const,
     };
   })
 ];
@@ -269,7 +353,7 @@ export const CURRENT_USER = MOCK_USERS[0];
 export const MOCK_POSTS: Post[] = [
   {
     id: 'p1',
-    author: MOCK_USERS[1],
+    author: MOCK_USERS.find(u => u.id === '2')!,
     content: 'Thrilled to announce the launch of our new cloud-native observability platform at AWS! A massive shout-out to the entire team for their relentless effort. This new platform will empower developers to monitor their applications with unprecedented detail and efficiency. \n\n#Cloud #ProductLaunch #AWS #Observability',
     imageUrl: getPlaceholderImageUrl('post-image-1'),
     likes: 180,
@@ -278,7 +362,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     id: 'p2',
-    author: MOCK_USERS[2],
+    author: MOCK_USERS.find(u => u.id === '3')!,
     content: 'Deep diving into the nuances of building scalable design systems. It’s not just about components; it’s about creating a shared language for designers and developers. Wrote a blog post on my findings. Link in bio!\n\n#UXDesign #DesignSystems #Flipkart #ProductDesign',
     imageUrl: getPlaceholderImageUrl('post-image-2'),
     likes: 95,
@@ -287,7 +371,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     id: 'p3',
-    author: MOCK_USERS[0],
+    author: MOCK_USERS.find(u => u.id === '1')!,
     content: 'Heading to the Google Cloud Summit in Bengaluru next month. Who else will be there? Would love to connect and discuss the future of AI in India and the amazing possibilities of GenAI.\n\n#GoogleCloud #AI #Networking #GenAI',
     imageUrl: getPlaceholderImageUrl('post-image-3'),
     likes: 250,
@@ -296,7 +380,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     id: 'p4',
-    author: MOCK_USERS[3],
+    author: MOCK_USERS.find(u => u.id === '4')!,
     content: 'Just analyzed our latest delivery data and found some fascinating trends in order patterns during peak hours! Data is the new oil, and we are drilling! The insights will help us optimize our fleet and reduce delivery times significantly.\n\n#DataAnalytics #Swiggy #BigData #Logistics',
     imageUrl: getPlaceholderImageUrl('post-image-4'),
     likes: 120,
@@ -305,7 +389,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     id: 'p5',
-    author: MOCK_USERS[4],
+    author: MOCK_USERS.find(u => u.id === '5')!,
     content: 'Excited to start my summer internship journey as a Software Engineer Intern! Grateful for the opportunity to learn from the best and contribute to real-world projects. Let the learning begin!\n\n#Internship #StudentLife #Tech #SoftwareDevelopment',
     imageUrl: getPlaceholderImageUrl('post-image-5'),
     likes: 75,
@@ -314,7 +398,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     id: 'p6',
-    author: MOCK_USERS[8],
+    author: MOCK_USERS.find(u => u.id === '9')!,
     content: 'Just published my first robotics project on GitHub! It\'s an autonomous line-following robot built with an Arduino and a few sensors. Check out the repository and let me know your thoughts!\n\n#Robotics #AtherEnergy #Engineering #OpenSource',
     imageUrl: getPlaceholderImageUrl('post-image-6'),
     likes: 210,
@@ -323,7 +407,7 @@ export const MOCK_POSTS: Post[] = [
   },
     {
     id: 'p7',
-    author: MOCK_USERS[9],
+    author: MOCK_USERS.find(u => u.id === '10')!,
     content: 'Great discussion today on "The Ethics of AI" with my students. It\'s crucial to consider the societal impact of the technology we build. The future is in their hands.\n\n#AI #Ethics #Education #IITMadras',
     imageUrl: getPlaceholderImageUrl('post-image-7'),
     likes: 155,
@@ -332,7 +416,7 @@ export const MOCK_POSTS: Post[] = [
   },
   {
     id: 'p8',
-    author: MOCK_USERS[6],
+    author: MOCK_USERS.find(u => u.id === '7')!,
     content: 'Proud to be part of a company that prioritizes employee well-being. Our latest "Wellness Week" initiative was a huge success! A healthy team is a happy and productive team.\n\n#HumanResources #EmployeeEngagement #Infosys #WorkLifeBalance',
     imageUrl: getPlaceholderImageUrl('post-image-8'),
     likes: 98,
