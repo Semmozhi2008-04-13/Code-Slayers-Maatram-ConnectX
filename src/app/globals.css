@@ -4,46 +4,48 @@
 
 @layer base {
   :root {
-    --background: 240 5% 96%; /* Lighter Gray */
-    --foreground: 224 71% 4%; /* Almost Black */
-    --card: 0 0% 100%;
-    --card-foreground: 224 71% 4%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 71% 4%;
-    --primary: 217 91% 60%; /* Vibrant Blue */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 15% 96%;
-    --secondary-foreground: 224 71% 4%;
-    --muted: 220 15% 96%;
-    --muted-foreground: 220 9% 46%;
-    --accent: 220 15% 91%;
-    --accent-foreground: 217 91% 60%;
-    --destructive: 0 72% 51%; /* Strong Red */
-    --destructive-foreground: 0 0% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 94%;
-    --ring: 217 91% 70%;
-    --radius: 0.5rem;
-  }
- 
-  .dark {
-    --background: 0 0% 0%;
+    --background: 222 83% 4%; /* Deep, dark blue */
     --foreground: 210 40% 98%;
     --card: 222 47% 11%;
     --card-foreground: 210 40% 98%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
+    --popover: 222 83% 4%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 190 95% 55%; /* Fluorescent Cyan */
+    --primary-foreground: 190 100% 10%;
     --secondary: 217 33% 17%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217 33% 17%;
     --muted-foreground: 215 20% 65%;
-    --accent: 217 33% 17%;
+    --accent: 320 90% 60%; /* Fluorescent Pink */
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%; /* Strong Red */
+    --destructive-foreground: 0 0% 98%;
     --border: 217 33% 17%;
     --input: 217 33% 17%;
-    --ring: 217 91% 70%;
+    --ring: 190 95% 65%;
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    --background: 222 83% 4%; /* Deep, dark blue */
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 83% 4%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 190 95% 55%; /* Fluorescent Cyan */
+    --primary-foreground: 190 100% 10%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 320 90% 60%; /* Fluorescent Pink */
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%; /* Strong Red */
+    --destructive-foreground: 0 0% 98%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 190 95% 65%;
   }
 }
 
