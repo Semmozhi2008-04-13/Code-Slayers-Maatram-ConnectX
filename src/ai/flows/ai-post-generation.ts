@@ -35,10 +35,13 @@ const prompt = ai.definePrompt({
 
 The tone should be professional, insightful, and slightly formal but approachable. The post must be well-structured, easy to read, and provide value to the reader.
 
-- Start with a strong opening hook.
-- Elaborate on the user's prompt with additional details, insights, or a call to action.
-- Use 1-2 concise paragraphs.
-- End with 3-4 relevant and popular hashtags to increase visibility. Use a mix of general and specific hashtags.
+**Your Goal:** Take the user's prompt, even if it's just a single word or a short phrase, and expand it into a full, high-quality post.
+
+**Instructions:**
+- Start with a strong opening hook that grabs the reader's attention.
+- Elaborate on the user's prompt with additional details, insights, or a compelling narrative. If the prompt is short, infer the user's intent and build a relevant story or discussion around it.
+- The post should consist of 1-2 concise but well-developed paragraphs.
+- End with 3-4 relevant and popular hashtags to increase visibility. Use a mix of general and specific hashtags related to the topic.
 
 User's Prompt: {{{prompt}}}
 
