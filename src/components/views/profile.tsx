@@ -7,7 +7,7 @@ import { MOCK_USERS, CURRENT_USER } from "@/lib/data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Building, Check, Plus } from "lucide-react";
+import { Briefcase, Check, Plus } from "lucide-react";
 import AiProfileCompletion from "@/components/ai/profile-completion";
 import placeholderData from '@/lib/placeholder-images.json';
 import { useToast } from "@/hooks/use-toast";
@@ -109,14 +109,17 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
           <CardTitle className="font-headline">About</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-foreground/90">{user.about}</p>
+          <p className="text-sm text-foreground/90 whitespace-pre-wrap">{user.about}</p>
         </CardContent>
       </Card>
 
       {user.experience.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline">Experience</CardTitle>
+            <CardTitle className="font-headline flex items-center gap-2">
+                <Briefcase className="w-6 h-6"/>
+                Experience
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             {user.experience.map((exp, index) => (
@@ -133,7 +136,7 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
                   <h3 className="font-semibold">{exp.title}</h3>
                   <p className="text-sm">{exp.company}</p>
                   <p className="text-xs text-muted-foreground">{exp.startDate} - {exp.endDate}</p>
-                  <p className="text-sm mt-2">{exp.description}</p>
+                  <p className="text-sm mt-2 whitespace-pre-wrap">{exp.description}</p>
                 </div>
               </div>
             ))}

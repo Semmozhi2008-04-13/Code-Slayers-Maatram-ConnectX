@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -47,11 +48,11 @@ Based on the user's profile and recent activity, you MUST provide a list of 3-5 
 {{{recentActivity}}}
 
 **Instructions:**
-- **Connection Recommendations:** Suggest specific people or roles (e.g., "Software Engineers at Google", "Alumni from your college").
+- **Connection Recommendations:** Suggest specific people or roles (e.g., "Software Engineers at Google", "Alumni from your college working in Product Management").
 - **Job Recommendations:** Suggest specific job titles or companies (e.g., "Product Manager roles in Bangalore", "Data Scientist at a startup").
 - **Content Recommendations:** Suggest interesting topics, articles, or hashtags to follow (e.g., "#AIinHealthcare", "Recent trends in cloud computing").
 
-**IMPORTANT:** Always provide 3-5 realistic and varied recommendations for each category. Do not return empty lists.`,
+**IMPORTANT:** Always provide 3-5 realistic and varied recommendations for each category. Do not return empty lists. The suggestions should be specific and directly useful to the user.`,
 });
 
 const aiRecommendationsFlow = ai.defineFlow(

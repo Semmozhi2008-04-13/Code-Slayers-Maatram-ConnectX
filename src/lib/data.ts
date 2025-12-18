@@ -79,10 +79,10 @@ export const MOCK_USERS: User[] = [
     headline: 'Senior AI Scientist at Google',
     location: 'Bengaluru, Karnataka',
     industry: 'Technology',
-    skills: ['Machine Learning', 'Python', 'TensorFlow', 'Cloud Computing'],
+    skills: ['Machine Learning', 'Python', 'TensorFlow', 'Cloud Computing', 'Generative AI', 'Natural Language Processing'],
     isMentor: true,
     connections: 890,
-    about: 'Passionate AI Scientist with 7 years of experience in building cutting-edge machine learning models. Currently leading a team to develop generative AI solutions at Google.',
+    about: 'Passionate AI Scientist with over 7 years of experience in building cutting-edge machine learning models. Currently leading a team to develop and scale generative AI solutions at Google. My expertise lies in natural language processing, deep learning, and building large-scale AI systems. I am always excited to connect with fellow tech enthusiasts and mentor aspiring data scientists.',
     experience: [
       {
         title: 'Senior AI Scientist',
@@ -90,18 +90,25 @@ export const MOCK_USERS: User[] = [
         companyLogoUrl: getPlaceholderImageUrl('company-logo-google'),
         startDate: 'Jan 2020',
         endDate: 'Present',
-        description: 'Leading research and development of new AI-powered features for Google\'s product suite.'
+        description: 'Leading research and development of new generative AI-powered features for Google\'s product suite. Responsible for the end-to-end model lifecycle, from data processing and training to deployment and monitoring in production.'
+      },
+      {
+        title: 'Machine Learning Engineer',
+        company: 'Microsoft',
+        companyLogoUrl: getPlaceholderImageUrl('company-logo-microsoft'),
+        startDate: 'Jul 2018',
+        endDate: 'Dec 2019',
+        description: 'Developed and deployed machine learning models for the Azure AI platform. Worked on projects related to text analytics and predictive maintenance, improving model accuracy by 15%.'
       },
       {
         title: 'Software Engineer',
         company: 'Infosys',
         companyLogoUrl: getPlaceholderImageUrl('company-logo-infosys'),
         startDate: 'Jun 2017',
-        endDate: 'Dec 2019',
-        description: 'Worked on enterprise software solutions for international clients.'
+        endDate: 'Jun 2018',
+        description: 'Worked on enterprise software solutions for international clients in the banking sector. Gained foundational experience in software development lifecycle and agile methodologies.'
       }
     ],
-    profileUrl: '/profile/1',
     role: 'Alumni'
   },
   {
@@ -125,7 +132,6 @@ export const MOCK_USERS: User[] = [
         description: 'Defining the roadmap and strategy for new AWS services.'
       }
     ],
-    profileUrl: '/profile/2',
     role: 'Alumni'
   },
   {
@@ -149,7 +155,6 @@ export const MOCK_USERS: User[] = [
         description: 'Leading the design for the core shopping experience across mobile and web.'
       }
     ],
-    profileUrl: '/profile/3',
     role: 'Alumni'
   },
     {
@@ -173,7 +178,6 @@ export const MOCK_USERS: User[] = [
         description: 'Building and leading a team of analysts to uncover insights from large-scale data.'
       }
     ],
-    profileUrl: '/profile/4',
     role: 'Alumni'
   },
   {
@@ -188,7 +192,6 @@ export const MOCK_USERS: User[] = [
     connections: 150,
     about: 'Aspiring software developer with a passion for building innovative web applications. Seeking internship opportunities in the tech industry.',
     experience: [],
-    profileUrl: '/profile/5',
     role: 'Student',
     college: 'Chennai Institute of Technology',
     graduationYear: '2025',
@@ -206,7 +209,6 @@ export const MOCK_USERS: User[] = [
     connections: 95,
     about: 'Enthusiastic electronics and communication engineering student interested in the field of IoT and embedded systems.',
     experience: [],
-    profileUrl: '/profile/6',
     role: 'Student',
     college: 'Rajalakshmi Engineering College',
     graduationYear: '2026',
@@ -224,7 +226,6 @@ export const MOCK_USERS: User[] = [
     connections: 410,
     about: 'Strategic HR partner dedicated to fostering a positive and inclusive work environment and driving organizational success.',
     experience: [],
-    profileUrl: '/profile/7',
     role: 'Alumni'
   },
    {
@@ -239,7 +240,6 @@ export const MOCK_USERS: User[] = [
     connections: 110,
     about: 'A second-year IT student focused on cybersecurity. Eager to connect with professionals in the security domain.',
     experience: [],
-    profileUrl: '/profile/8',
     role: 'Student',
     college: 'Sathyabama Institute of Science and Technology',
     graduationYear: '2027',
@@ -257,7 +257,6 @@ export const MOCK_USERS: User[] = [
     connections: 680,
     about: 'Building the future of urban mobility. Working on automation and robotics for intelligent electric vehicles.',
     experience: [],
-    profileUrl: '/profile/9',
     role: 'Alumni'
   },
    {
@@ -272,7 +271,6 @@ export const MOCK_USERS: User[] = [
     connections: 250,
     about: 'Educator and researcher in the field of theoretical computer science. Committed to mentoring the next generation of engineers and scientists.',
     experience: [],
-    profileUrl: '/profile/10',
     role: 'Alumni'
   },
   ...Array.from({ length: 101 }, (_, i) => {
@@ -306,7 +304,6 @@ export const MOCK_USERS: User[] = [
       connections: Math.floor(Math.random() * 200),
       about: `Eager to learn and grow in the tech industry. Passionate about ${studentSkills[i % studentSkills.length].join(' and ')}.`,
       experience: [],
-      profileUrl: `/profile/${studentId}`,
       role: 'Student' as const,
       college: colleges[i % colleges.length],
       graduationYear: `${graduationYear}`,
@@ -342,7 +339,6 @@ export const MOCK_USERS: User[] = [
           description: `Working as a ${jobTitle} focusing on ${userSkills[0]}.`
         }
       ],
-      profileUrl: `/profile/${alumniId}`,
       role: 'Alumni' as const,
     };
   })
