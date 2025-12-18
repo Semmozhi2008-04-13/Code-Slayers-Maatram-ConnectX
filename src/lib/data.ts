@@ -280,7 +280,7 @@ export const MOCK_POSTS: Post[] = [
     id: 'p2',
     author: MOCK_USERS[2],
     content: 'Deep diving into the nuances of building scalable design systems. It’s not just about components; it’s about creating a shared language for designers and developers. Wrote a blog post on my findings. Link in bio!\n\n#UXDesign #DesignSystems #Flipkart #ProductDesign',
-    imageUrl: getPlaceholderImageUrl('post-image-3'),
+    imageUrl: getPlaceholderImageUrl('post-image-2'),
     likes: 95,
     comments: 15,
     createdAt: '1d ago'
@@ -289,7 +289,7 @@ export const MOCK_POSTS: Post[] = [
     id: 'p3',
     author: MOCK_USERS[0],
     content: 'Heading to the Google Cloud Summit in Bengaluru next month. Who else will be there? Would love to connect and discuss the future of AI in India and the amazing possibilities of GenAI.\n\n#GoogleCloud #AI #Networking #GenAI',
-    imageUrl: getPlaceholderImageUrl('post-image-2'),
+    imageUrl: getPlaceholderImageUrl('post-image-3'),
     likes: 250,
     comments: 50,
     createdAt: '2d ago'
@@ -298,7 +298,7 @@ export const MOCK_POSTS: Post[] = [
     id: 'p4',
     author: MOCK_USERS[3],
     content: 'Just analyzed our latest delivery data and found some fascinating trends in order patterns during peak hours! Data is the new oil, and we are drilling! The insights will help us optimize our fleet and reduce delivery times significantly.\n\n#DataAnalytics #Swiggy #BigData #Logistics',
-    imageUrl: 'https://picsum.photos/seed/p4/600/400',
+    imageUrl: getPlaceholderImageUrl('post-image-4'),
     likes: 120,
     comments: 18,
     createdAt: '3d ago'
@@ -307,7 +307,7 @@ export const MOCK_POSTS: Post[] = [
     id: 'p5',
     author: MOCK_USERS[4],
     content: 'Excited to start my summer internship journey as a Software Engineer Intern! Grateful for the opportunity to learn from the best and contribute to real-world projects. Let the learning begin!\n\n#Internship #StudentLife #Tech #SoftwareDevelopment',
-    imageUrl: 'https://picsum.photos/seed/p5/600/400',
+    imageUrl: getPlaceholderImageUrl('post-image-5'),
     likes: 75,
     comments: 12,
     createdAt: '5d ago'
@@ -316,7 +316,7 @@ export const MOCK_POSTS: Post[] = [
     id: 'p6',
     author: MOCK_USERS[8],
     content: 'Just published my first robotics project on GitHub! It\'s an autonomous line-following robot built with an Arduino and a few sensors. Check out the repository and let me know your thoughts!\n\n#Robotics #AtherEnergy #Engineering #OpenSource',
-    imageUrl: 'https://picsum.photos/seed/p6/600/400',
+    imageUrl: getPlaceholderImageUrl('post-image-6'),
     likes: 210,
     comments: 32,
     createdAt: '6d ago'
@@ -325,7 +325,7 @@ export const MOCK_POSTS: Post[] = [
     id: 'p7',
     author: MOCK_USERS[9],
     content: 'Great discussion today on "The Ethics of AI" with my students. It\'s crucial to consider the societal impact of the technology we build. The future is in their hands.\n\n#AI #Ethics #Education #IITMadras',
-    imageUrl: 'https://picsum.photos/seed/p7/800/600',
+    imageUrl: getPlaceholderImageUrl('post-image-7'),
     likes: 155,
     comments: 28,
     createdAt: '1w ago'
@@ -334,7 +334,7 @@ export const MOCK_POSTS: Post[] = [
     id: 'p8',
     author: MOCK_USERS[6],
     content: 'Proud to be part of a company that prioritizes employee well-being. Our latest "Wellness Week" initiative was a huge success! A healthy team is a happy and productive team.\n\n#HumanResources #EmployeeEngagement #Infosys #WorkLifeBalance',
-    imageUrl: 'https://picsum.photos/seed/p8/800/600',
+    imageUrl: getPlaceholderImageUrl('post-image-8'),
     likes: 98,
     comments: 14,
     createdAt: '1w ago'

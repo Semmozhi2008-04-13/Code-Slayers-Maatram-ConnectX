@@ -73,7 +73,7 @@ export default function PostCard({ post }: PostCardProps) {
   };
 
   return (
-    <Card className="group transition-shadow hover:shadow-lg">
+    <Card className="group">
       <CardHeader>
         <div className="flex items-center gap-3">
           <Link href={post.author.profileUrl}>
