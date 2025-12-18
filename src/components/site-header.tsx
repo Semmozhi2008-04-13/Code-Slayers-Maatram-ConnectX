@@ -101,7 +101,7 @@ export function SiteHeader({ activeView, navigate }: SiteHeaderProps) {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search..."
+                placeholder="Search people, jobs, content..."
                 className="w-full pl-9 md:w-64 lg:w-96"
               />
             </div>

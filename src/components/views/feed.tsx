@@ -49,7 +49,7 @@ export default function FeedPage({ navigate }: FeedPageProps) {
               <span className="text-muted-foreground">Connections</span>
               <span className="font-semibold text-primary">{CURRENT_USER.connections}</span>
             </div>
-             <a href="#" className="font-semibold hover:underline">Grow your network</a>
+             <button onClick={() => navigate('alumni')} className="font-semibold hover:underline text-primary text-left w-full">Grow your network</button>
           </CardContent>
            <Separator />
             <CardContent className="p-4">

@@ -22,9 +22,9 @@ const AIRecommendationsInputSchema = z.object({
 export type AIRecommendationsInput = z.infer<typeof AIRecommendationsInputSchema>;
 
 const AIRecommendationsOutputSchema = z.object({
-  connectionRecommendations: z.array(z.string()).describe('A list of recommended connections based on the user profile and activity.'),
-  jobRecommendations: z.array(z.string()).describe('A list of recommended jobs based on the user profile and activity.'),
-  contentRecommendations: z.array(z.string()).describe('A list of recommended content based on the user profile and activity.'),
+  connectionRecommendations: z.array(z.string()).describe('A list of 3-5 recommended connections based on the user profile and activity.'),
+  jobRecommendations: z.array(z.string()).describe('A list of 3-5 recommended jobs based on the user profile and activity.'),
+  contentRecommendations: z.array(z.string()).describe('A list of 3-5 recommended content topics or articles based on the user profile and activity.'),
 });
 export type AIRecommendationsOutput = z.infer<typeof AIRecommendationsOutputSchema>;
 
@@ -36,20 +36,22 @@ const prompt = ai.definePrompt({
   name: 'aiRecommendationsPrompt',
   input: {schema: AIRecommendationsInputSchema},
   output: {schema: AIRecommendationsOutputSchema},
-  prompt: `You are an AI assistant that provides personalized recommendations for users on a professional networking platform.
+  prompt: `You are an AI assistant for a professional networking platform. Your goal is to provide highly relevant and personalized recommendations to keep users engaged.
 
-  Based on the user's profile and recent activity, provide recommendations for connections, jobs, and content.
+Based on the user's profile and recent activity, you MUST provide a list of 3-5 recommendations for each of the following categories: connections, jobs, and content. The recommendations should be concise and actionable.
 
-  User Profile: {{{userProfile}}}
-  Recent Activity: {{{recentActivity}}}
+**User Profile:**
+{{{userProfile}}}
 
-  Consider the user's skills, experience, interests, and recent activity when generating recommendations.
-  Prioritize recommendations that are relevant to the user's goals and interests.
+**Recent Activity:**
+{{{recentActivity}}}
 
-  Format the output as a JSON object with the following keys:
-  - connectionRecommendations: A list of recommended connections.
-  - jobRecommendations: A list of recommended jobs.
-  - contentRecommendations: A list of recommended content.`,
+**Instructions:**
+- **Connection Recommendations:** Suggest specific people or roles (e.g., "Software Engineers at Google", "Alumni from your college").
+- **Job Recommendations:** Suggest specific job titles or companies (e.g., "Product Manager roles in Bangalore", "Data Scientist at a startup").
+- **Content Recommendations:** Suggest interesting topics, articles, or hashtags to follow (e.g., "#AIinHealthcare", "Recent trends in cloud computing").
+
+**IMPORTANT:** Always provide 3-5 realistic and varied recommendations for each category. Do not return empty lists.`,
 });
 
 const aiRecommendationsFlow = ai.defineFlow(
