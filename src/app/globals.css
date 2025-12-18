@@ -56,40 +56,16 @@
   body {
     @apply bg-background text-foreground;
   }
-  @keyframes glow {
-    0%, 100% { box-shadow: 0 0 5px 0px hsl(var(--border)); }
-    50% { box-shadow: 0 0 15px 3px hsl(var(--border)); }
-  }
-
-  @keyframes title-letter {
-    0% {
-      opacity: 0;
-      transform: translateY(-0.5em) scale(0.8);
-      filter: blur(4px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      filter: blur(0);
-    }
-  }
 }
 
 @layer components {
   .card {
     @apply transition-all;
-    animation: glow 3s ease-in-out infinite;
   }
   .card:hover {
     @apply border-red-500;
      border-color: #FF4500;
      box-shadow: 0 0 10px #FF4500, 0 0 5px #FFD700;
      animation: none;
-  }
-
-  .animate-title-letter {
-    display: inline-block;
-    opacity: 0;
-    animation: title-letter 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   }
 }
