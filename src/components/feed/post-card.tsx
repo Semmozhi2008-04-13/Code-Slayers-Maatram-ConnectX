@@ -52,12 +52,12 @@ export default function PostCard({ post }: PostCardProps) {
       <CardContent>
         <p className="text-sm mb-4">{post.content}</p>
         {post.imageUrl && (
-          <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+          <div className="relative aspect-video w-full overflow-hidden rounded-lg border">
             <Image
               src={post.imageUrl}
               alt="Post image"
               fill
-              className="object-cover"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
               data-ai-hint="office teamwork"
             />
           </div>
