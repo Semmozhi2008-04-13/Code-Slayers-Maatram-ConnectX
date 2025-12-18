@@ -7,24 +7,35 @@ import { MOCK_USERS, CURRENT_USER } from "@/lib/data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Building, Check, Link, Mail, Plus } from "lucide-react";
+import { Building, Check, Plus } from "lucide-react";
 import AiProfileCompletion from "@/components/ai/profile-completion";
 import placeholderData from '@/lib/placeholder-images.json';
 import { useToast } from "@/hooks/use-toast";
-import { notFound } from "next/navigation";
+import type { View } from '@/app/page';
 
 const getPlaceholderImageUrl = (id: string) => {
     const image = placeholderData.placeholderImages.find(img => img.id === id);
     return image ? image.imageUrl : `https://picsum.photos/seed/default/600/400`;
 }
 
-export default function ProfilePage({ params }: { params: { id: string } }) {
-  const user = MOCK_USERS.find(u => u.id === params.id);
+type ProfilePageProps = {
+  id: string;
+  navigate: (view: View, id?: string | null) => void;
+};
+
+export default function ProfilePage({ id, navigate }: ProfilePageProps) {
+  const user = MOCK_USERS.find(u => u.id === id);
   const [requested, setRequested] = useState(false);
   const { toast } = useToast();
 
   if (!user) {
-    notFound();
+    return (
+        <div className="text-center py-16">
+            <p className="text-2xl font-bold">User not found</p>
+            <p className="text-muted-foreground">The profile you are looking for does not exist.</p>
+            <Button onClick={() => navigate('feed')} className="mt-4">Go to Feed</Button>
+        </div>
+    );
   }
 
   const isCurrentUser = user.id === CURRENT_USER.id;
@@ -143,5 +154,3 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     </div>
   );
 }
-
-    

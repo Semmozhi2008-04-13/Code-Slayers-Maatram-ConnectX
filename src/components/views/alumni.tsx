@@ -12,17 +12,23 @@ import {
 } from "@/components/ui/select";
 import { UserCard } from "@/components/user-card";
 import { MOCK_USERS } from "@/lib/data";
+import type { View } from '@/app/page';
 
-const studentUsers = MOCK_USERS.filter(user => user.role === 'Student');
-const colleges = [...new Set(studentUsers.map((user) => user.college).filter(Boolean))];
-const locations = [...new Set(studentUsers.map((user) => user.location))];
+const alumniUsers = MOCK_USERS.filter(user => user.role === 'Alumni');
+const industries = [...new Set(alumniUsers.map((user) => user.industry))];
+const locations = [...new Set(alumniUsers.map((user) => user.location))];
 
-export default function StudentsPage() {
+type AlumniPageProps = {
+  navigate: (view: View, id?: string | null) => void;
+};
+
+
+export default function AlumniPage({ navigate }: AlumniPageProps) {
   const [search, setSearch] = useState("");
-  const [college, setCollege] = useState("all");
+  const [industry, setIndustry] = useState("all");
   const [location, setLocation] = useState("all");
 
-  const filteredStudents = studentUsers.filter((user) => {
+  const filteredUsers = alumniUsers.filter((user) => {
     const searchLower = search.toLowerCase();
     const nameMatch = user.name.toLowerCase().includes(searchLower);
     const headlineMatch = user.headline.toLowerCase().includes(searchLower);
@@ -30,18 +36,18 @@ export default function StudentsPage() {
       skill.toLowerCase().includes(searchLower)
     );
 
-    const collegeMatch = college === "all" || user.college === college;
+    const industryMatch = industry === "all" || user.industry === industry;
     const locationMatch = location === "all" || user.location === location;
 
-    return (nameMatch || headlineMatch || skillsMatch) && collegeMatch && locationMatch;
+    return (nameMatch || headlineMatch || skillsMatch) && industryMatch && locationMatch;
   });
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold font-headline">Student Directory</h1>
+        <h1 className="text-3xl font-bold font-headline">Alumni Directory</h1>
         <p className="text-muted-foreground">
-          Find and connect with the next generation of talent.
+          Connect with alumni, students, and faculty.
         </p>
       </div>
 
@@ -53,15 +59,15 @@ export default function StudentsPage() {
           onChange={(e) => setSearch(e.target.value)}
         />
         <div className="grid grid-cols-2 md:flex gap-4">
-          <Select value={college} onValueChange={setCollege}>
-            <SelectTrigger className="w-full md:w-[200px]">
-              <SelectValue placeholder="College" />
+          <Select value={industry} onValueChange={setIndustry}>
+            <SelectTrigger className="w-full md:w-[180px]">
+              <SelectValue placeholder="Industry" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Colleges</SelectItem>
-              {colleges.map((col) => (
-                <SelectItem key={col} value={col}>
-                  {col}
+              <SelectItem value="all">All Industries</SelectItem>
+              {industries.map((ind) => (
+                <SelectItem key={ind} value={ind}>
+                  {ind}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -83,13 +89,13 @@ export default function StudentsPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredStudents.map((user) => (
-          <UserCard key={user.id} user={user} />
+        {filteredUsers.map((user) => (
+          <UserCard key={user.id} user={user} navigate={navigate} />
         ))}
       </div>
-       {filteredStudents.length === 0 && (
+       {filteredUsers.length === 0 && (
           <div className="col-span-full text-center py-16">
-            <p className="text-muted-foreground">No students found matching your criteria.</p>
+            <p className="text-muted-foreground">No alumni found matching your criteria.</p>
           </div>
         )}
     </div>

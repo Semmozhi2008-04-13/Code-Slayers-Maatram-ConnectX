@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -11,12 +12,17 @@ import {
 } from "@/components/ui/select";
 import { UserCard } from "@/components/user-card";
 import { MOCK_USERS } from "@/lib/data";
+import type { View } from '@/app/page';
 
 const mentorUsers = MOCK_USERS.filter(user => user.isMentor);
 const industries = [...new Set(mentorUsers.map((user) => user.industry))];
 const skills = [...new Set(mentorUsers.flatMap((user) => user.skills))];
 
-export default function MentorsPage() {
+type MentorsPageProps = {
+  navigate: (view: View, id?: string | null) => void;
+};
+
+export default function MentorsPage({ navigate }: MentorsPageProps) {
   const [search, setSearch] = useState("");
   const [industry, setIndustry] = useState("all");
   const [skill, setSkill] = useState("all");
@@ -80,7 +86,7 @@ export default function MentorsPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filteredMentors.map((user) => (
-          <UserCard key={user.id} user={user} />
+          <UserCard key={user.id} user={user} navigate={navigate} />
         ))}
       </div>
        {filteredMentors.length === 0 && (

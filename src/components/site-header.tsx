@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
@@ -28,45 +27,53 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { CURRENT_USER } from "@/lib/data";
+import type { View } from '@/app/page';
+
+type SiteHeaderProps = {
+  activeView: View;
+  navigate: (view: View, id?: string | null) => void;
+};
+
 
 const navLinks = [
-  { href: "/", label: "Feed", icon: Home },
-  { href: "/alumni", label: "Alumni", icon: Users },
-  { href: "/students", label: "Students", icon: GraduationCap },
-  { href: "/jobs", label: "Jobs", icon: Briefcase },
-  { href: "/events", label: "Events", icon: Calendar },
-  { href: "/mentors", label: "Mentors", icon: MessageSquare },
+  { view: "feed" as View, label: "Feed", icon: Home },
+  { view: "alumni" as View, label: "Alumni", icon: Users },
+  { view: "students" as View, label: "Students", icon: GraduationCap },
+  { view: "jobs" as View, label: "Jobs", icon: Briefcase },
+  { view: "events" as View, label: "Events", icon: Calendar },
+  { view: "mentors" as View, label: "Mentors", icon: MessageSquare },
 ];
 
-export function SiteHeader() {
+export function SiteHeader({ activeView, navigate }: SiteHeaderProps) {
   const pathname = usePathname();
 
   const renderNavLinks = (isMobile = false) =>
     navLinks.map((link) => (
-      <Link
-        key={link.href}
-        href={link.href}
+      <Button
+        key={link.view}
+        variant="ghost"
+        onClick={() => navigate(link.view)}
         className={cn(
-          "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-          pathname === link.href
+          "flex items-center justify-start gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+          activeView === link.view
             ? "text-primary bg-accent"
             : "text-muted-foreground hover:bg-accent hover:text-primary",
-          isMobile ? "text-base" : ""
+          isMobile ? "text-base w-full" : ""
         )}
       >
         <link.icon className="h-5 w-5" />
         <span>{link.label}</span>
-      </Link>
+      </Button>
     ));
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <div className="mr-4 hidden md:flex">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
+          <button onClick={() => navigate('feed')} className="mr-6 flex items-center space-x-2">
             <Image src="/logo.png" alt="Maatram ConnectX Logo" width={24} height={24} className="h-6 w-6 text-primary" />
             <span className="hidden font-bold sm:inline-block font-headline">Maatram ConnectX</span>
-          </Link>
+          </button>
         </div>
 
         {/* Mobile Menu */}
@@ -126,11 +133,9 @@ export function SiteHeader() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <Link href={CURRENT_USER.profileUrl}>
-                  <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('profile', CURRENT_USER.id)}>
                     Profile
-                  </DropdownMenuItem>
-                </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />

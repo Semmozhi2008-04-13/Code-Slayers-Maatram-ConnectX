@@ -10,7 +10,6 @@ export type User = {
   connections: number;
   about: string;
   experience: Experience[];
-  profileUrl: string;
   role: 'Alumni' | 'Student';
   college?: string;
   graduationYear?: string;
@@ -28,7 +27,7 @@ export type Experience = {
 
 export type Post = {
   id: string;
-  author: Pick<User, 'id' | 'name' | 'avatarUrl' | 'headline' | 'profileUrl'>;
+  author: Pick<User, 'id' | 'name' | 'avatarUrl' | 'headline'>;
   content: string;
   imageUrl?: string;
   likes: number;

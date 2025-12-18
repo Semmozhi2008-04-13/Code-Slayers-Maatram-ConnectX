@@ -2,7 +2,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 import {
   Card,
@@ -17,12 +16,14 @@ import { ThumbsUp, MessageCircle, Share2, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "../ui/textarea";
+import type { View } from '@/app/page';
 
 type PostCardProps = {
   post: Post;
+  navigate: (view: View, id?: string | null) => void;
 };
 
-export default function PostCard({ post }: PostCardProps) {
+export default function PostCard({ post, navigate }: PostCardProps) {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes);
   const [commentCount, setCommentCount] = useState(post.comments);
@@ -76,7 +77,7 @@ export default function PostCard({ post }: PostCardProps) {
     <Card className="group">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <Link href={post.author.profileUrl}>
+          <button onClick={() => navigate('profile', post.author.id)}>
             <Image
               src={post.author.avatarUrl}
               alt={post.author.name}
@@ -85,14 +86,14 @@ export default function PostCard({ post }: PostCardProps) {
               className="rounded-full"
               data-ai-hint="profile avatar"
             />
-          </Link>
+          </button>
           <div>
-            <Link
-              href={post.author.profileUrl}
-              className="font-headline font-semibold hover:underline"
+            <button
+              onClick={() => navigate('profile', post.author.id)}
+              className="font-headline font-semibold hover:underline text-left"
             >
               {post.author.name}
-            </Link>
+            </button>
             <p className="text-xs text-muted-foreground">
               {post.author.headline}
             </p>

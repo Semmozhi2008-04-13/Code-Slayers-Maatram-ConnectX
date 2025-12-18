@@ -1,3 +1,6 @@
+
+'use client';
+
 import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/event-card";
 import { MOCK_EVENTS } from "@/lib/data";
