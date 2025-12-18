@@ -29,6 +29,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { CURRENT_USER } from "@/lib/data";
+import { AnimatedTitle } from "./animated-title";
 
 const navLinks = [
   { href: "/", label: "Feed", icon: Home },
@@ -66,9 +67,7 @@ export function SiteHeader() {
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <Logo className="h-6 w-6 text-primary" />
-            <span className="hidden font-bold sm:inline-block font-headline">
-              Maatram ConnectX
-            </span>
+            <AnimatedTitle text="Maatram ConnectX" className="hidden font-bold sm:inline-block font-headline" />
           </Link>
         </div>
 
@@ -147,5 +146,3 @@ export function SiteHeader() {
     </header>
   );
 }
-
-    
