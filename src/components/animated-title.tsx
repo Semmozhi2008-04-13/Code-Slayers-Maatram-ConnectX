@@ -5,23 +5,18 @@ import { cn } from "@/lib/utils";
 type AnimatedTitleProps = {
   text: string;
   className?: string;
-  stagger?: number;
 };
 
-export function AnimatedTitle({ text, className, stagger = 0.05 }: AnimatedTitleProps) {
-  const letters = text.split("");
-
+export function AnimatedTitle({ text, className }: AnimatedTitleProps) {
   return (
-    <h1 className={cn("flex", className)}>
-      {letters.map((letter, i) => (
-        <span
-          key={`${letter}-${i}`}
-          className="animate-title-letter"
-          style={{ animationDelay: `${i * stagger}s` }}
-        >
-          {letter === " " ? "\u00A0" : letter}
-        </span>
-      ))}
+    <h1
+      className={cn(
+        "font-headline text-5xl md:text-7xl font-bold text-primary animate-typing overflow-hidden whitespace-nowrap border-r-4 border-r-primary pr-2",
+        className
+      )}
+      style={{ width: `${text.length}ch` }}
+    >
+      {text}
     </h1>
   );
 }
