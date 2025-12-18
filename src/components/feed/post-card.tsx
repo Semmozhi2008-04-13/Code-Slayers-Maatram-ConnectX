@@ -52,7 +52,7 @@ export default function PostCard({ post }: PostCardProps) {
       <CardContent>
         <p className="text-sm mb-4">{post.content}</p>
         {post.imageUrl && (
-          <div className="relative aspect-video w-full overflow-hidden rounded-lg max-h-[300px]">
+          <div className="relative aspect-video w-full overflow-hidden rounded-lg">
             <Image
               src={post.imageUrl}
               alt="Post image"

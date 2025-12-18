@@ -293,6 +293,33 @@ export const MOCK_POSTS: Post[] = [
     likes: 250,
     comments: 50,
     createdAt: '4d ago'
+  },
+  {
+    id: 'p4',
+    author: MOCK_USERS[3],
+    content: 'Just analyzed our latest delivery data and found some fascinating trends! Data is the new oil, and we are drilling! #DataAnalytics #Swiggy #BigData',
+    imageUrl: 'https://picsum.photos/seed/p4/600/400',
+    likes: 120,
+    comments: 18,
+    createdAt: '2d ago'
+  },
+  {
+    id: 'p5',
+    author: MOCK_USERS[4],
+    content: 'Excited to start my summer internship journey. Grateful for the opportunity to learn and contribute. #Internship #StudentLife #Tech',
+    imageUrl: 'https://picsum.photos/seed/p5/600/400',
+    likes: 75,
+    comments: 12,
+    createdAt: '5d ago'
+  },
+  {
+    id: 'p6',
+    author: MOCK_USERS[8],
+    content: 'Just published my first robotics project on GitHub! It\'s an autonomous line-following robot. Check it out! #Robotics #AtherEnergy #Engineering',
+    imageUrl: 'https://picsum.photos/seed/p6/600/400',
+    likes: 210,
+    comments: 32,
+    createdAt: '6d ago'
   }
 ];
 
