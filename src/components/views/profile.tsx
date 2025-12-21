@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { MOCK_USERS, CURRENT_USER } from "@/lib/data";
+import { MOCK_USERS, CURRENT_USER, REGISTERED_USERS } from "@/lib/data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,14 +34,17 @@ type Certification = {
 }
 
 export default function ProfilePage({ id, navigate }: ProfilePageProps) {
-  const user = MOCK_USERS.find(u => u.id === id);
+  const allUsers = [...MOCK_USERS, ...REGISTERED_USERS];
+  const user = allUsers.find(u => u.id === id);
   const [requested, setRequested] = useState(false);
   const { toast } = useToast();
   
-  // State for editable profile fields
-  const [headline, setHeadline] = useState(user?.headline || '');
-  const [location, setLocation] = useState(user?.location || '');
-  const [about, setAbout] = useState(user?.about || '');
+  const isCurrentUser = user?.id === CURRENT_USER.id;
+
+  // State for editable profile fields - only used if it's the current user
+  const [headline, setHeadline] = useState(isCurrentUser ? CURRENT_USER.headline : user?.headline || '');
+  const [location, setLocation] = useState(isCurrentUser ? CURRENT_USER.location : user?.location || '');
+  const [about, setAbout] = useState(isCurrentUser ? CURRENT_USER.about : user?.about || '');
   const [certifications, setCertifications] = useState<Certification[]>([]);
 
   // State for certification dialog
@@ -60,8 +63,6 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
         </div>
     );
   }
-
-  const isCurrentUser = user.id === CURRENT_USER.id;
 
   const handleConnect = () => {
     setRequested(true);
@@ -131,8 +132,8 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
                 </div>
                 <div className="pb-4">
                     <h1 className="text-xl sm:text-2xl font-bold font-headline">{user.name}</h1>
-                    <p className="text-base sm:text-lg text-foreground">{headline}</p>
-                    <p className="text-sm text-muted-foreground mt-1">{location}</p>
+                    <p className="text-base sm:text-lg text-foreground">{isCurrentUser ? headline : user.headline}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{isCurrentUser ? location : user.location}</p>
                 </div>
             </div>
              <div className="flex justify-start gap-2 mt-4 sm:mt-0 sm:pb-4">
@@ -199,7 +200,7 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
           <CardTitle className="font-headline text-xl">About</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm sm:text-base text-foreground/90 whitespace-pre-wrap">{about}</p>
+          <p className="text-sm sm:text-base text-foreground/90 whitespace-pre-wrap">{isCurrentUser ? about : user.about}</p>
         </CardContent>
       </Card>
 
@@ -338,3 +339,5 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
     </div>
   );
 }
+
+    
