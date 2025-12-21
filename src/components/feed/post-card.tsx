@@ -32,8 +32,8 @@ export default function PostCard({ post, navigate }: PostCardProps) {
   const { toast } = useToast();
 
   const handleLike = () => {
-    setIsLiked(!isLiked);
     setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
+    setIsLiked(!isLiked);
   };
 
   const handleShare = async () => {

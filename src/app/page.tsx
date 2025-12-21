@@ -6,11 +6,12 @@ import MainView from '@/components/main-view';
 import { AnimatedTitle } from '@/components/animated-title';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export type View = 'feed' | 'alumni' | 'students' | 'jobs' | 'events' | 'mentors' | 'profile';
+export type View = 'feed' | 'alumni' | 'students' | 'jobs' | 'events' | 'mentors' | 'profile' | 'search';
 
 export default function Home() {
   const [view, setView] = useState<View>('feed');
   const [profileId, setProfileId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,6 +19,7 @@ export default function Home() {
     if (window.location.pathname === '/') {
         setView('feed');
         setProfileId(null);
+        setSearchQuery(null);
     }
     const timer = setTimeout(() => {
       setLoading(false);
@@ -28,9 +30,10 @@ export default function Home() {
 
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
-        const { view, profileId } = event.state || { view: 'feed', profileId: null };
+        const { view, profileId, searchQuery } = event.state || { view: 'feed', profileId: null, searchQuery: null };
         setView(view);
         setProfileId(profileId);
+        setSearchQuery(searchQuery);
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -39,17 +42,24 @@ export default function Home() {
     };
   }, []);
 
-  const navigate = (newView: View, id: string | null = null) => {
-    const newUrl = newView === 'profile' && id ? `/profile/${id}` : `/${newView}`;
-    const newState = { view: newView, profileId: id };
+  const navigate = (newView: View, id: string | null = null, query: string | null = null) => {
+    let newUrl = `/${newView}`;
+    if (newView === 'profile' && id) {
+      newUrl = `/profile/${id}`;
+    } else if (newView === 'search' && query) {
+      newUrl = `/search?q=${encodeURIComponent(query)}`;
+    }
+    
+    const newState = { view: newView, profileId: id, searchQuery: query };
     
     // Only push state if it's different from the current state to avoid duplicates
-    if (window.location.pathname !== newUrl) {
+    if (window.location.pathname + window.location.search !== newUrl) {
       window.history.pushState(newState, '', newUrl);
     }
 
     setView(newView);
     setProfileId(id);
+    setSearchQuery(query);
     window.scrollTo(0, 0); // Scroll to top on view change
   };
 
@@ -67,5 +77,5 @@ export default function Home() {
     );
   }
 
-  return <MainView view={view} profileId={profileId} navigate={navigate} />;
+  return <MainView view={view} profileId={profileId} searchQuery={searchQuery} navigate={navigate} />;
 }

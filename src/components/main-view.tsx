@@ -9,18 +9,23 @@ import JobsPage from '@/components/views/jobs';
 import EventsPage from '@/components/views/events';
 import MentorsPage from '@/components/views/mentors';
 import ProfilePage from '@/components/views/profile';
+import SearchView from '@/components/views/search';
 import type { View } from '@/app/page';
 
 type MainViewProps = {
   view: View;
   profileId: string | null;
-  navigate: (view: View, id?: string | null) => void;
+  searchQuery: string | null;
+  navigate: (view: View, id?: string | null, query?: string | null) => void;
 };
 
-export default function MainView({ view, profileId, navigate }: MainViewProps) {
+export default function MainView({ view, profileId, searchQuery, navigate }: MainViewProps) {
   const renderView = () => {
     if (view === 'profile' && profileId) {
       return <ProfilePage id={profileId} navigate={navigate} />;
+    }
+    if (view === 'search' && searchQuery) {
+      return <SearchView query={searchQuery} navigate={navigate} />;
     }
 
     switch (view) {
@@ -37,12 +42,9 @@ export default function MainView({ view, profileId, navigate }: MainViewProps) {
       case 'mentors':
         return <MentorsPage navigate={navigate} />;
       default:
-        // When a direct URL is loaded (e.g., /alumni), `view` might come from the URL path.
-        // We handle known paths and default to the feed.
         const path = typeof window !== 'undefined' ? window.location.pathname.substring(1) : '';
         if (['alumni', 'students', 'jobs', 'events', 'mentors'].includes(path)) {
             navigate(path as View);
-            // Render a loader or null while navigation happens
             return null;
         }
         return <FeedPage navigate={navigate} />;

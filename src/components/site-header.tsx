@@ -2,6 +2,7 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import {
   Briefcase,
   Calendar,
@@ -31,7 +32,7 @@ import type { View } from '@/app/page';
 
 type SiteHeaderProps = {
   activeView: View;
-  navigate: (view: View, id?: string | null) => void;
+  navigate: (view: View, id?: string | null, query?: string | null) => void;
 };
 
 
@@ -45,6 +46,13 @@ const navLinks = [
 ];
 
 export function SiteHeader({ activeView, navigate }: SiteHeaderProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchQuery.trim() !== '') {
+      navigate('search', null, searchQuery);
+    }
+  };
 
   const renderNavLinks = (isMobile = false) =>
     navLinks.map((link) => (
@@ -102,6 +110,9 @@ export function SiteHeader({ activeView, navigate }: SiteHeaderProps) {
                 type="search"
                 placeholder="Search people, jobs, content..."
                 className="w-full pl-9 md:w-56 lg:w-80"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearch}
               />
             </div>
           </div>
