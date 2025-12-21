@@ -370,7 +370,11 @@ export const MOCK_USERS: User[] = [
 
 export const REGISTERED_USERS: User[] = [];
 
-export let CURRENT_USER = MOCK_USERS[0];
+export let CURRENT_USER: User = MOCK_USERS[0];
+
+export function setCurrentUser(user: User) {
+  CURRENT_USER = user;
+}
 
 export const MOCK_POSTS: Post[] = [
   {

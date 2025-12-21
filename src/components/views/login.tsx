@@ -22,7 +22,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { MOCK_USERS, REGISTERED_USERS } from "@/lib/data";
+import { MOCK_USERS, REGISTERED_USERS, setCurrentUser } from "@/lib/data";
 import { User } from "@/lib/types";
 
 const loginSchema = z.object({
@@ -97,6 +97,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
 
         if (user && user.password === values.password) {
             setIsLoading(false);
+            setCurrentUser(user);
             toast({ title: "Login Successful", description: "Welcome back!" });
             onLoginSuccess();
         } else {
@@ -134,7 +135,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
             email: values.email,
             password: values.password, // In a real app, this would be hashed
             avatarUrl: `https://picsum.photos/seed/${values.name}/80/80`,
-            headline: `Student at Maatram Network`,
+            headline: `${values.department} Student at Maatram Network`,
             location: "Unknown",
             industry: "Education",
             skills: [],
@@ -149,11 +150,10 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
         };
 
         REGISTERED_USERS.push(newUser);
+        setCurrentUser(newUser);
         setIsLoading(false);
-        toast({ title: "Sign Up Successful!", description: "Please sign in to continue." });
-        setFormType('login');
-        setSignupStep(1);
-        signupForm.reset();
+        toast({ title: "Sign Up Successful!", description: "Welcome to Maatram ConnectX!" });
+        onLoginSuccess();
     }, 1500);
   }
 
@@ -172,6 +172,9 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
     });
     setTimeout(() => {
         setIsLoading(false);
+        // On successful social login, we'd typically get user info back
+        // For this demo, we'll log in as the first mock user
+        setCurrentUser(MOCK_USERS[0]);
         toast({
             title: "Login Successful",
             description: `Successfully signed in with ${provider}.`,
