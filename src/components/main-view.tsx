@@ -21,13 +21,6 @@ type MainViewProps = {
 
 export default function MainView({ view, profileId, searchQuery, navigate }: MainViewProps) {
   const renderView = () => {
-    if (view === 'profile' && profileId) {
-      return <ProfilePage id={profileId} navigate={navigate} />;
-    }
-    if (view === 'search' && searchQuery) {
-      return <SearchView query={searchQuery} navigate={navigate} />;
-    }
-
     switch (view) {
       case 'feed':
         return <FeedPage navigate={navigate} />;
@@ -41,12 +34,17 @@ export default function MainView({ view, profileId, searchQuery, navigate }: Mai
         return <EventsPage />;
       case 'mentors':
         return <MentorsPage navigate={navigate} />;
-      default:
-        const path = typeof window !== 'undefined' ? window.location.pathname.substring(1) : '';
-        if (['alumni', 'students', 'jobs', 'events', 'mentors'].includes(path)) {
-            navigate(path as View);
-            return null;
+      case 'profile':
+        if (profileId) {
+          return <ProfilePage id={profileId} navigate={navigate} />;
         }
+        return <FeedPage navigate={navigate} />; // Fallback to feed
+      case 'search':
+        if (searchQuery !== null) {
+          return <SearchView query={searchQuery} navigate={navigate} />;
+        }
+        return <FeedPage navigate={navigate} />; // Fallback to feed
+      default:
         return <FeedPage navigate={navigate} />;
     }
   };
