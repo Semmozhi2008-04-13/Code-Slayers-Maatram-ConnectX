@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { CURRENT_USER } from "@/lib/data";
-import { Image as ImageIcon, Video, Calendar, Sparkles, Wand, Send } from "lucide-react";
+import { Image as ImageIcon, Video, Sparkles, Wand, Send } from "lucide-react";
 import { generatePost } from "@/ai/flows/ai-post-generation";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -17,12 +17,12 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useToast } from "@/hooks/use-toast";
 import type { Post } from "@/lib/types";
+import FileUploader from "../file-uploader";
 
 type CreatePostProps = {
   onPostCreated: (newPost: Post) => void;
@@ -34,7 +34,6 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
   const [imageUrl, setImageUrl] = useState("");
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
-  const [mediaUrl, setMediaUrl] = useState('');
   const [aiPrompt, setAiPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
@@ -95,12 +94,10 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
   }
 
   const handleAddMedia = () => {
-    setImageUrl(mediaUrl);
     setIsMediaModalOpen(false);
-    setMediaUrl('');
     toast({
-        title: "Image Added",
-        description: "The image will be included in your post.",
+        title: "Media Added",
+        description: "Your media has been attached to the post.",
     });
   }
   
@@ -144,7 +141,7 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
                      <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setIsMediaModalOpen(true)}>
                         <ImageIcon className="text-blue-500" />
                      </Button>
-                     <Button variant="ghost" size="icon" className="h-9 w-9" onClick={handleFeatureNotAvailable}>
+                     <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setIsMediaModalOpen(true)}>
                          <Video className="text-green-500" />
                      </Button>
                      <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setIsAiModalOpen(true)}>
@@ -202,37 +199,19 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
       </Dialog>
       
        <Dialog open={isMediaModalOpen} onOpenChange={setIsMediaModalOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="max-w-4xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <ImageIcon className="h-5 w-5 text-primary"/>
-              Add an Image to your Post
+              Add Photos or Videos to your Post
             </DialogTitle>
             <DialogDescription>
-              Paste an image URL below. The image will be displayed with your post.
+              Upload media to make your post more engaging.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="media-url" className="text-right">
-                Image URL
-              </Label>
-              <Input
-                id="media-url"
-                value={mediaUrl}
-                onChange={(e) => setMediaUrl(e.target.value)}
-                className="col-span-3"
-                placeholder="https://example.com/image.png"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button onClick={handleAddMedia} disabled={!mediaUrl}>Add Image</Button>
-          </DialogFooter>
+            <FileUploader />
         </DialogContent>
       </Dialog>
     </>
   );
 }
-
-    

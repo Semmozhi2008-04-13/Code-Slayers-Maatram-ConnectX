@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { JobCard } from "@/components/job-card";
 import { MOCK_JOBS } from "@/lib/data";
 import { useToast } from "@/hooks/use-toast";
+import { Checkbox } from "../ui/checkbox";
+import { Label } from "../ui/label";
 
 const jobTypes = [...new Set(MOCK_JOBS.map((job) => job.type))];
 const locations = [...new Set(MOCK_JOBS.map((job) => job.location))];
@@ -22,6 +24,7 @@ export default function JobsPage() {
   const [search, setSearch] = useState("");
   const [jobType, setJobType] = useState("all");
   const [location, setLocation] = useState("all");
+  const [isRemote, setIsRemote] = useState(false);
   const { toast } = useToast();
 
   const handlePostJob = () => {
@@ -38,8 +41,10 @@ export default function JobsPage() {
 
     const typeMatch = jobType === "all" || job.type === jobType;
     const locationMatch = location === "all" || job.location === location;
+    
+    const remoteMatch = !isRemote || job.location.toLowerCase().includes('remote');
 
-    return (titleMatch || companyMatch) && typeMatch && locationMatch;
+    return (titleMatch || companyMatch) && typeMatch && locationMatch && remoteMatch;
   });
 
   return (
@@ -61,7 +66,7 @@ export default function JobsPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <div className="grid grid-cols-2 md:flex gap-4">
+        <div className="grid grid-cols-2 md:flex gap-4 items-center">
           <Select value={jobType} onValueChange={setJobType}>
             <SelectTrigger className="w-full md:w-[180px]">
               <SelectValue placeholder="Job Type" />
@@ -88,6 +93,10 @@ export default function JobsPage() {
               ))}
             </SelectContent>
           </Select>
+           <div className="flex items-center space-x-2">
+                <Checkbox id="remote-only" checked={isRemote} onCheckedChange={(checked) => setIsRemote(checked as boolean)} />
+                <Label htmlFor="remote-only" className="text-sm font-medium">Remote only</Label>
+            </div>
         </div>
       </div>
 

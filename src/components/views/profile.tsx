@@ -3,11 +3,11 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { MOCK_USERS, CURRENT_USER, REGISTERED_USERS } from "@/lib/data";
+import { MOCK_USERS, CURRENT_USER, REGISTERED_USERS, MOCK_POSTS } from "@/lib/data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, Check, Plus, Edit, MessageSquare, Award, GraduationCap } from "lucide-react";
+import { Briefcase, Check, Plus, Edit, MessageSquare, Award, GraduationCap, Link as LinkIcon, Star } from "lucide-react";
 import AiProfileCompletion from "@/components/ai/profile-completion";
 import placeholderData from '@/lib/placeholder-images.json';
 import { useToast } from "@/hooks/use-toast";
@@ -16,6 +16,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import type { Post } from "@/lib/types";
 
 const getPlaceholderImageUrl = (id: string) => {
     const image = placeholderData.placeholderImages.find(img => img.id === id);
@@ -31,6 +33,48 @@ type Certification = {
   name: string;
   issuingOrganization: string;
   credentialId: string;
+}
+
+const FeaturedItemCard = ({item}: {item: Post | {type: 'link', url: string, title: string, imageUrl: string}}) => {
+    if (item.hasOwnProperty('author')) {
+        const post = item as Post;
+        return (
+            <Card className="w-full h-full flex flex-col">
+                <CardHeader>
+                    <div className="flex items-center gap-2">
+                         <Image src={post.author.avatarUrl} alt={post.author.name} width={32} height={32} className="rounded-full" />
+                         <div>
+                            <p className="font-semibold text-sm">{post.author.name}</p>
+                            <p className="text-xs text-muted-foreground">{post.author.headline}</p>
+                         </div>
+                    </div>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                     <p className="text-sm line-clamp-4">{post.content}</p>
+                </CardContent>
+                <CardFooter>
+                    <Button variant="outline" size="sm" className="w-full">View Post</Button>
+                </CardFooter>
+            </Card>
+        )
+    }
+
+    const link = item as {type: 'link', url: string, title: string, imageUrl: string};
+    return (
+        <Card className="w-full h-full flex flex-col">
+            <div className="aspect-video relative w-full">
+                <Image src={link.imageUrl} alt={link.title} fill className="object-cover rounded-t-lg"/>
+            </div>
+            <CardContent className="p-4 flex-grow">
+                 <h3 className="font-semibold line-clamp-2">{link.title}</h3>
+            </CardContent>
+            <CardFooter>
+                <Button variant="outline" size="sm" asChild className="w-full">
+                    <a href={link.url} target="_blank" rel="noopener noreferrer"><LinkIcon className="mr-2 h-4 w-4"/>View Link</a>
+                </Button>
+            </CardFooter>
+        </Card>
+    )
 }
 
 export default function ProfilePage({ id, navigate }: ProfilePageProps) {
@@ -67,6 +111,12 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
         </div>
     );
   }
+
+  const featuredItems = [
+    MOCK_POSTS[0],
+    { type: 'link', url: 'https://github.com', title: 'My Open Source Project', imageUrl: getPlaceholderImageUrl('post-image-2') },
+    MOCK_POSTS[2],
+  ];
 
   const handleConnect = () => {
     setRequested(true);
@@ -212,6 +262,30 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
       </Card>
       
       {isCurrentUser && <AiProfileCompletion />}
+      
+       <Card>
+        <CardHeader>
+            <CardTitle className="font-headline text-xl flex items-center gap-2">
+                <Star className="w-6 h-6"/>
+                Featured
+            </CardTitle>
+        </CardHeader>
+        <CardContent>
+            <Carousel opts={{ align: "start" }} className="w-full">
+                 <CarouselContent>
+                    {featuredItems.map((item, index) => (
+                    <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                        <div className="p-1 h-full">
+                            <FeaturedItemCard item={item} />
+                        </div>
+                    </CarouselItem>
+                    ))}
+                </CarouselContent>
+                <CarouselPrevious className="ml-12"/>
+                <CarouselNext className="mr-12"/>
+            </Carousel>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
@@ -390,5 +464,3 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
     </div>
   );
 }
-
-    
