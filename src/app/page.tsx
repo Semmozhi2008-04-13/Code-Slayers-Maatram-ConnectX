@@ -14,6 +14,11 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Navigate to feed view if the path is empty
+    if (window.location.pathname === '/') {
+        setView('feed');
+        setProfileId(null);
+    }
     const timer = setTimeout(() => {
       setLoading(false);
     }, 2500); // Show loading animation for 2.5 seconds
@@ -21,11 +26,33 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+        const { view, profileId } = event.state || { view: 'feed', profileId: null };
+        setView(view);
+        setProfileId(profileId);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+        window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
   const navigate = (newView: View, id: string | null = null) => {
+    const newUrl = newView === 'profile' && id ? `/profile/${id}` : `/${newView}`;
+    const newState = { view: newView, profileId: id };
+    
+    // Only push state if it's different from the current state to avoid duplicates
+    if (window.location.pathname !== newUrl) {
+      window.history.pushState(newState, '', newUrl);
+    }
+
     setView(newView);
     setProfileId(id);
     window.scrollTo(0, 0); // Scroll to top on view change
   };
+
 
   if (loading) {
     return (

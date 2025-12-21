@@ -1,6 +1,8 @@
+
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Maatram ConnectX",
@@ -13,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark bg-background">
+    <html lang="en" className={cn("dark bg-background", "font-sans")}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

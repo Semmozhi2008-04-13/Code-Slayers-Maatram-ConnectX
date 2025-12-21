@@ -17,9 +17,9 @@ type FeedPageProps = {
 
 export default function FeedPage({ navigate }: FeedPageProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-10 gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-10 gap-6 lg:gap-8">
       {/* Left Column */}
-      <div className="md:col-span-1 lg:col-span-2 space-y-6">
+      <div className="md:col-span-3 lg:col-span-2 space-y-6 hidden md:block">
         <Card>
           <CardHeader className="p-0 relative h-20 bg-muted-foreground/20">
             <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
@@ -62,7 +62,7 @@ export default function FeedPage({ navigate }: FeedPageProps) {
       </div>
 
       {/* Middle Column */}
-      <div className="md:col-span-3 lg:col-span-5 space-y-6">
+      <div className="md:col-span-7 lg:col-span-5 space-y-6">
         <CreatePost />
         <div className="space-y-4">
           {MOCK_POSTS.map((post) => (

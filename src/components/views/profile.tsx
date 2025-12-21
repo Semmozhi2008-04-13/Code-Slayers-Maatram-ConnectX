@@ -7,7 +7,7 @@ import { MOCK_USERS, CURRENT_USER } from "@/lib/data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, Check, Plus } from "lucide-react";
+import { Briefcase, Check, Plus, Edit } from "lucide-react";
 import AiProfileCompletion from "@/components/ai/profile-completion";
 import placeholderData from '@/lib/placeholder-images.json';
 import { useToast } from "@/hooks/use-toast";
@@ -49,7 +49,7 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8">
       <Card>
         <div className="relative h-32 md:h-48 rounded-t-lg overflow-hidden">
           <Image 
@@ -60,45 +60,49 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
             data-ai-hint="professional background abstract"
           />
         </div>
-        <CardContent className="p-6">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between relative -mt-20 sm:-mt-16">
-            <div className="flex-shrink-0">
-                <div className="w-32 h-32 rounded-full bg-background p-1.5 inline-block">
-                <Image
-                    src={user.avatarUrl}
-                    alt={user.name}
-                    width={128}
-                    height={128}
-                    className="rounded-full"
-                    data-ai-hint="profile avatar"
-                />
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between relative -mt-20 sm:-mt-24">
+            <div className="flex items-end gap-4">
+                <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-background p-1.5 inline-block shrink-0">
+                  <Image
+                      src={user.avatarUrl}
+                      alt={user.name}
+                      width={128}
+                      height={128}
+                      className="rounded-full"
+                      data-ai-hint="profile avatar"
+                  />
+                </div>
+                <div className="pb-4">
+                    <h1 className="text-xl sm:text-2xl font-bold font-headline">{user.name}</h1>
+                    <p className="text-base sm:text-lg text-foreground">{user.headline}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{user.location}</p>
                 </div>
             </div>
-            {!isCurrentUser && (
-              <div className="flex justify-start sm:justify-end gap-2 mt-4 sm:mt-0">
-                  <Button onClick={handleConnect} disabled={requested}>
-                    {requested ? (
-                      <>
-                        <Check className="mr-2 h-4 w-4" />
-                        Pending
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Connect
-                      </>
-                    )}
-                  </Button>
-                  <Button variant="outline">Message</Button>
+             <div className="flex justify-start gap-2 mt-4 sm:mt-0 sm:pb-4">
+                {isCurrentUser ? (
+                    <Button variant="outline"><Edit className="mr-2 h-4 w-4"/>Edit Profile</Button>
+                ) : (
+                    <>
+                        <Button onClick={handleConnect} disabled={requested}>
+                            {requested ? (
+                            <>
+                                <Check className="mr-2 h-4 w-4" />
+                                Pending
+                            </>
+                            ) : (
+                            <>
+                                <Plus className="mr-2 h-4 w-4" />
+                                Connect
+                            </>
+                            )}
+                        </Button>
+                        <Button variant="outline">Message</Button>
+                    </>
+                )}
               </div>
-            )}
           </div>
-          <div className="pt-4">
-            <h1 className="text-2xl font-bold font-headline">{user.name}</h1>
-            <p className="text-lg text-foreground">{user.headline}</p>
-            <p className="text-sm text-muted-foreground mt-1">{user.location}</p>
-            <p className="text-sm text-primary mt-1 font-semibold">{user.connections} connections</p>
-          </div>
+           <p className="text-sm text-primary mt-4 font-semibold">{user.connections} connections</p>
         </CardContent>
       </Card>
       
@@ -106,17 +110,17 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline">About</CardTitle>
+          <CardTitle className="font-headline text-xl">About</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-foreground/90 whitespace-pre-wrap">{user.about}</p>
+          <p className="text-sm sm:text-base text-foreground/90 whitespace-pre-wrap">{user.about}</p>
         </CardContent>
       </Card>
 
       {user.experience.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline flex items-center gap-2">
+            <CardTitle className="font-headline text-xl flex items-center gap-2">
                 <Briefcase className="w-6 h-6"/>
                 Experience
             </CardTitle>
@@ -129,11 +133,11 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
                   alt={`${exp.company} logo`}
                   width={48}
                   height={48}
-                  className="rounded-lg border p-1 h-12 w-12"
+                  className="rounded-lg border p-1 h-12 w-12 shrink-0"
                   data-ai-hint="company logo"
                 />
                 <div>
-                  <h3 className="font-semibold">{exp.title}</h3>
+                  <h3 className="font-semibold text-base sm:text-lg">{exp.title}</h3>
                   <p className="text-sm">{exp.company}</p>
                   <p className="text-xs text-muted-foreground">{exp.startDate} - {exp.endDate}</p>
                   <p className="text-sm mt-2 whitespace-pre-wrap">{exp.description}</p>
@@ -146,11 +150,11 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline">Skills</CardTitle>
+          <CardTitle className="font-headline text-xl">Skills</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
           {user.skills.map((skill) => (
-            <Badge key={skill} variant="secondary">{skill}</Badge>
+            <Badge key={skill} variant="secondary" className="text-sm">{skill}</Badge>
           ))}
         </CardContent>
       </Card>

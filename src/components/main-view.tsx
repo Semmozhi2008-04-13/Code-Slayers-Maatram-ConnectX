@@ -37,6 +37,14 @@ export default function MainView({ view, profileId, navigate }: MainViewProps) {
       case 'mentors':
         return <MentorsPage navigate={navigate} />;
       default:
+        // When a direct URL is loaded (e.g., /alumni), `view` might come from the URL path.
+        // We handle known paths and default to the feed.
+        const path = typeof window !== 'undefined' ? window.location.pathname.substring(1) : '';
+        if (['alumni', 'students', 'jobs', 'events', 'mentors'].includes(path)) {
+            navigate(path as View);
+            // Render a loader or null while navigation happens
+            return null;
+        }
         return <FeedPage navigate={navigate} />;
     }
   };
@@ -44,7 +52,7 @@ export default function MainView({ view, profileId, navigate }: MainViewProps) {
   return (
     <>
       <SiteHeader activeView={view} navigate={navigate} />
-      <div className="container mx-auto px-4 py-8 pt-24">{renderView()}</div>
+      <div className="container mx-auto px-4 py-8 pt-20 md:pt-24">{renderView()}</div>
     </>
   );
 }
