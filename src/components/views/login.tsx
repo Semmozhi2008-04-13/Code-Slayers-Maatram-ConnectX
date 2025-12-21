@@ -77,11 +77,23 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     mode: "onBlur",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
   const signupForm = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
     mode: "onBlur",
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      graduationYear: "",
+      department: "",
+      maatramId: "",
+    },
   });
 
   const handleLogin = (values: LoginFormValues) => {
