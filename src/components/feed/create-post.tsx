@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { CURRENT_USER } from "@/lib/data";
-import { Image as ImageIcon, Video, Calendar, Sparkles, Wand } from "lucide-react";
+import { Image as ImageIcon, Video, Calendar, Sparkles, Wand, Send } from "lucide-react";
 import { generatePost } from "@/ai/flows/ai-post-generation";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -20,8 +20,14 @@ import {
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useToast } from "@/hooks/use-toast";
+import type { Post } from "@/lib/types";
 
-export default function CreatePost() {
+type CreatePostProps = {
+  onPostCreated: (newPost: Post) => void;
+};
+
+
+export default function CreatePost({ onPostCreated }: CreatePostProps) {
   const [postContent, setPostContent] = useState("");
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [aiPrompt, setAiPrompt] = useState("");
@@ -50,6 +56,36 @@ export default function CreatePost() {
       setIsGenerating(false);
     }
   };
+  
+  const handlePost = () => {
+    if (postContent.trim() === "") {
+        toast({
+            variant: "destructive",
+            title: "Empty Post",
+            description: "You can't create an empty post.",
+        });
+        return;
+    }
+    const newPost: Post = {
+        id: `post-${Date.now()}-${Math.random()}`,
+        author: {
+            id: CURRENT_USER.id,
+            name: CURRENT_USER.name,
+            avatarUrl: CURRENT_USER.avatarUrl,
+            headline: CURRENT_USER.headline,
+        },
+        content: postContent,
+        likes: 0,
+        comments: 0,
+        createdAt: "Just now",
+    };
+    onPostCreated(newPost);
+    setPostContent("");
+     toast({
+        title: "Post Created",
+        description: "Your post has been successfully published.",
+      });
+  }
 
   return (
     <>
@@ -71,21 +107,24 @@ export default function CreatePost() {
                 value={postContent}
                 onChange={(e) => setPostContent(e.target.value)}
               />
-              <div className="mt-2 flex justify-end">
-                <Button>Post</Button>
+              <div className="mt-2 flex justify-between items-center">
+                <div className="flex items-center gap-1">
+                     <Button variant="ghost" size="icon" className="h-9 w-9">
+                        <ImageIcon className="text-blue-500" />
+                     </Button>
+                     <Button variant="ghost" size="icon" className="h-9 w-9">
+                         <Video className="text-green-500" />
+                     </Button>
+                     <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setIsAiModalOpen(true)}>
+                         <Sparkles className="text-purple-500" />
+                     </Button>
+                </div>
+                <Button onClick={handlePost}>
+                    <Send className="mr-2 h-4 w-4"/>
+                    Post
+                </Button>
               </div>
             </div>
-          </div>
-          <div className="mt-4 flex justify-around border-t pt-2">
-            <Button variant="ghost" className="flex-1">
-              <ImageIcon className="mr-2 h-5 w-5 text-blue-500" /> Photo
-            </Button>
-            <Button variant="ghost" className="flex-1">
-              <Video className="mr-2 h-5 w-5 text-green-500" /> Video
-            </Button>
-            <Button variant="ghost" className="flex-1" onClick={() => setIsAiModalOpen(true)}>
-              <Sparkles className="mr-2 h-5 w-5 text-purple-500" /> AI Generate
-            </Button>
           </div>
         </CardContent>
       </Card>
