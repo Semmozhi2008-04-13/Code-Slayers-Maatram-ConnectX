@@ -111,7 +111,11 @@ export const MOCK_USERS: User[] = [
         description: 'Worked on enterprise software solutions for international clients in the banking sector. Gained foundational experience in software development lifecycle and agile methodologies.'
       }
     ],
-    role: 'Alumni'
+    role: 'Alumni',
+    college: 'Vellore Institute of Technology',
+    school: 'PSBB Senior Secondary School',
+    graduationYear: '2017',
+    department: 'Computer Science'
   },
   {
     id: '2',
@@ -136,7 +140,11 @@ export const MOCK_USERS: User[] = [
         description: 'Defining the roadmap and strategy for new AWS services.'
       }
     ],
-    role: 'Alumni'
+    role: 'Alumni',
+    college: 'IIT Bombay',
+    school: 'Delhi Public School',
+    graduationYear: '2015',
+    department: 'Mechanical Engineering'
   },
   {
     id: '3',
@@ -161,7 +169,11 @@ export const MOCK_USERS: User[] = [
         description: 'Leading the design for the core shopping experience across mobile and web.'
       }
     ],
-    role: 'Alumni'
+    role: 'Alumni',
+    college: 'National Institute of Design',
+    school: 'The Mother\'s International School',
+    graduationYear: '2016',
+    department: 'Product Design'
   },
     {
     id: '4',
@@ -186,7 +198,11 @@ export const MOCK_USERS: User[] = [
         description: 'Building and leading a team of analysts to uncover insights from large-scale data.'
       }
     ],
-    role: 'Alumni'
+    role: 'Alumni',
+    college: 'IIM Bangalore',
+    school: 'Hyderabad Public School',
+    graduationYear: '2018',
+    department: 'Business Administration'
   },
   {
     id: '5',
@@ -204,6 +220,7 @@ export const MOCK_USERS: User[] = [
     experience: [],
     role: 'Student',
     college: 'Chennai Institute of Technology',
+    school: 'Chettinad Vidyashram',
     graduationYear: '2025',
     department: 'CSE'
   },
@@ -223,6 +240,7 @@ export const MOCK_USERS: User[] = [
     experience: [],
     role: 'Student',
     college: 'Rajalakshmi Engineering College',
+    school: 'DAV Boys Senior Secondary School',
     graduationYear: '2026',
     department: 'ECE'
   },
@@ -240,7 +258,11 @@ export const MOCK_USERS: User[] = [
     connections: 410,
     about: 'Strategic HR partner dedicated to fostering a positive and inclusive work environment and driving organizational success.',
     experience: [],
-    role: 'Alumni'
+    role: 'Alumni',
+    college: 'Symbiosis Centre for Management & Human Resource Development',
+    school: 'St. Mary\'s School, Pune',
+    graduationYear: '2019',
+    department: 'Human Resources'
   },
    {
     id: '8',
@@ -258,6 +280,7 @@ export const MOCK_USERS: User[] = [
     experience: [],
     role: 'Student',
     college: 'Sathyabama Institute of Science and Technology',
+    school: 'SBOA School & Junior College',
     graduationYear: '2027',
     department: 'IT'
   },
@@ -275,7 +298,11 @@ export const MOCK_USERS: User[] = [
     connections: 680,
     about: 'Building the future of urban mobility. Working on automation and robotics for intelligent electric vehicles.',
     experience: [],
-    role: 'Alumni'
+    role: 'Alumni',
+    college: 'PSG College of Technology',
+    school: 'GRD Public School',
+    graduationYear: '2020',
+    department: 'Robotics and Automation Engineering'
   },
    {
     id: '10',
@@ -291,7 +318,11 @@ export const MOCK_USERS: User[] = [
     connections: 250,
     about: 'Educator and researcher in the field of theoretical computer science. Committed to mentoring the next generation of engineers and scientists.',
     experience: [],
-    role: 'Alumni'
+    role: 'Alumni',
+    college: 'IIT Madras',
+    school: 'Kendriya Vidyalaya, IIT Campus',
+    graduationYear: '2005',
+    department: 'Computer Science'
   },
   ...Array.from({ length: 101 }, (_, i) => {
     const studentId = i + 11;
@@ -328,6 +359,7 @@ export const MOCK_USERS: User[] = [
       experience: [],
       role: 'Student' as const,
       college: colleges[i % colleges.length],
+      school: 'Generic High School',
       graduationYear: `${graduationYear}`,
       department: department,
     };
@@ -364,6 +396,10 @@ export const MOCK_USERS: User[] = [
         }
       ],
       role: 'Alumni' as const,
+      college: 'Maatram Network College',
+      school: 'Generic High School',
+      graduationYear: `20${14 + (i%9)}`,
+      department: 'Various'
     };
   })
 ];

@@ -15,6 +15,7 @@ export type User = {
   experience: Experience[];
   role: 'Alumni' | 'Student';
   college?: string;
+  school?: string;
   graduationYear?: string;
   department?: string;
   dateOfBirth?: string;

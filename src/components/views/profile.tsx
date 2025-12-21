@@ -7,7 +7,7 @@ import { MOCK_USERS, CURRENT_USER } from "@/lib/data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, Check, Plus, Edit, MessageSquare, Award } from "lucide-react";
+import { Briefcase, Check, Plus, Edit, MessageSquare, Award, GraduationCap } from "lucide-react";
 import AiProfileCompletion from "@/components/ai/profile-completion";
 import placeholderData from '@/lib/placeholder-images.json';
 import { useToast } from "@/hooks/use-toast";
@@ -203,6 +203,39 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
         </CardContent>
       </Card>
 
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-headline text-xl flex items-center gap-2">
+            <GraduationCap className="w-6 h-6"/>
+            Education
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {user.college && (
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-muted rounded-lg">
+                  <GraduationCap className="w-6 h-6 text-muted-foreground"/>
+              </div>
+              <div>
+                <h3 className="font-semibold text-base sm:text-lg">{user.college}</h3>
+                {user.department && <p className="text-sm">{user.department}</p>}
+                {user.graduationYear && <p className="text-xs text-muted-foreground">Graduated {user.graduationYear}</p>}
+              </div>
+            </div>
+          )}
+          {user.school && (
+             <div className="flex gap-4">
+              <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-muted rounded-lg">
+                  <GraduationCap className="w-6 h-6 text-muted-foreground"/>
+              </div>
+              <div>
+                <h3 className="font-semibold text-base sm:text-lg">{user.school}</h3>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {user.experience.length > 0 && (
         <Card>
           <CardHeader>
@@ -305,5 +338,3 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
     </div>
   );
 }
-
-    

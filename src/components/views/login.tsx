@@ -36,6 +36,8 @@ const signupSchema = z.object({
     password: z.string().min(8, "Password must be at least 8 characters."),
     dateOfBirth: z.string().min(1, "Date of birth is required.").refine((dob) => new Date(dob).toString() !== 'Invalid Date', { message: 'Invalid date format. Use YYYY-MM-DD.' }),
     location: z.string().min(2, "Location is required."),
+    college: z.string().min(2, "College name is required."),
+    school: z.string().min(2, "School name is required."),
     graduationYear: z.string().length(4, "Must be a 4-digit year.").regex(/^\d{4}$/, "Invalid year format."),
     department: z.string().min(1, "Department is required."),
     maatramId: z.string().min(1, "Maatram ID is required."),
@@ -87,6 +89,8 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
       password: "",
       dateOfBirth: "",
       location: "",
+      college: "",
+      school: "",
       graduationYear: "",
       department: "",
       maatramId: "",
@@ -139,7 +143,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
             email: values.email,
             password: values.password, // In a real app, this would be hashed
             avatarUrl: `https://picsum.photos/seed/${values.name}/80/80`,
-            headline: `${values.department} Student at Maatram Network`,
+            headline: `${values.department} Student at ${values.college}`,
             location: values.location,
             industry: "Education",
             skills: [],
@@ -148,7 +152,8 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
             about: "A new member of the Maatram ConnectX community!",
             experience: [],
             role: 'Student',
-            college: "Maatram Network College",
+            college: values.college,
+            school: values.school,
             graduationYear: values.graduationYear,
             department: values.department,
             dateOfBirth: values.dateOfBirth,
@@ -354,6 +359,12 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                                 )}
                                 {signupStep === 3 && (
                                     <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
+                                        <FormField name="college" control={signupForm.control} render={({ field }) => (
+                                            <FormItem><FormLabel>College Name</FormLabel><FormControl><Input placeholder="e.g., Chennai Institute of Technology" {...field} /></FormControl><FormMessage /></FormItem>
+                                        )} />
+                                        <FormField name="school" control={signupForm.control} render={({ field }) => (
+                                            <FormItem><FormLabel>School Name</FormLabel><FormControl><Input placeholder="e.g., SBOA School & Junior College" {...field} /></FormControl><FormMessage /></FormItem>
+                                        )} />
                                         <FormField name="graduationYear" control={signupForm.control} render={({ field }) => (
                                             <FormItem><FormLabel>Graduation Year</FormLabel><FormControl><Input placeholder="YYYY" {...field} /></FormControl><FormMessage /></FormItem>
                                         )} />
