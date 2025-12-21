@@ -45,13 +45,17 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
   const [headline, setHeadline] = useState(isCurrentUser ? CURRENT_USER.headline : user?.headline || '');
   const [location, setLocation] = useState(isCurrentUser ? CURRENT_USER.location : user?.location || '');
   const [about, setAbout] = useState(isCurrentUser ? CURRENT_USER.about : user?.about || '');
+  const [skills, setSkills] = useState(user?.skills || []);
   const [certifications, setCertifications] = useState<Certification[]>([]);
 
-  // State for certification dialog
+  // State for dialogs
+  const [isCertDialogOpen, setIsCertDialogOpen] = useState(false);
   const [certName, setCertName] = useState('');
   const [certOrg, setCertOrg] = useState('');
   const [certId, setCertId] = useState('');
-  const [isCertDialogOpen, setIsCertDialogOpen] = useState(false);
+
+  const [isSkillDialogOpen, setIsSkillDialogOpen] = useState(false);
+  const [newSkill, setNewSkill] = useState('');
 
 
   if (!user) {
@@ -98,6 +102,20 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
     }
   };
   
+  const handleAddSkill = () => {
+    if (newSkill && isCurrentUser) {
+      const updatedSkills = [...skills, newSkill];
+      setSkills(updatedSkills);
+      CURRENT_USER.skills = updatedSkills;
+      setNewSkill('');
+      setIsSkillDialogOpen(false);
+      toast({
+        title: "Skill Added",
+        description: `"${newSkill}" has been added to your skills.`,
+      });
+    }
+  };
+
   const handleMessage = () => {
      toast({
       title: "Feature Coming Soon!",
@@ -327,17 +345,48 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
 
 
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="font-headline text-xl">Skills</CardTitle>
+          {isCurrentUser && (
+            <Dialog open={isSkillDialogOpen} onOpenChange={setIsSkillDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Skill</DialogTitle>
+                  <DialogDescription>Add a new skill to your profile.</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="skill-name" className="text-right">Skill</Label>
+                    <Input 
+                      id="skill-name" 
+                      value={newSkill} 
+                      onChange={(e) => setNewSkill(e.target.value)} 
+                      className="col-span-3" 
+                      placeholder="e.g., React"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button onClick={handleAddSkill}>Add Skill</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
-          {user.skills.map((skill) => (
+          {skills.map((skill) => (
             <Badge key={skill} variant="secondary" className="text-sm">{skill}</Badge>
           ))}
+          {skills.length === 0 && isCurrentUser && (
+            <p className="text-sm text-muted-foreground text-center w-full py-4">Add your skills to showcase your expertise.</p>
+          )}
         </CardContent>
       </Card>
     </div>
   );
 }
-
-    
