@@ -17,6 +17,7 @@ export type User = {
   college?: string;
   graduationYear?: string;
   department?: string;
+  dateOfBirth?: string;
 };
 
 export type Experience = {

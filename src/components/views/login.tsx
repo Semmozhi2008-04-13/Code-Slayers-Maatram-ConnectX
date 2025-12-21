@@ -34,6 +34,8 @@ const signupSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters."),
     email: z.string().email("Invalid email address.").min(1, "Email is required."),
     password: z.string().min(8, "Password must be at least 8 characters."),
+    dateOfBirth: z.string().min(1, "Date of birth is required.").refine((dob) => new Date(dob).toString() !== 'Invalid Date', { message: 'Invalid date format. Use YYYY-MM-DD.' }),
+    location: z.string().min(2, "Location is required."),
     graduationYear: z.string().length(4, "Must be a 4-digit year.").regex(/^\d{4}$/, "Invalid year format."),
     department: z.string().min(1, "Department is required."),
     maatramId: z.string().min(1, "Maatram ID is required."),
@@ -83,6 +85,8 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
       name: "",
       email: "",
       password: "",
+      dateOfBirth: "",
+      location: "",
       graduationYear: "",
       department: "",
       maatramId: "",
@@ -136,7 +140,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
             password: values.password, // In a real app, this would be hashed
             avatarUrl: `https://picsum.photos/seed/${values.name}/80/80`,
             headline: `${values.department} Student at Maatram Network`,
-            location: "Unknown",
+            location: values.location,
             industry: "Education",
             skills: [],
             isMentor: false,
@@ -147,6 +151,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
             college: "Maatram Network College",
             graduationYear: values.graduationYear,
             department: values.department,
+            dateOfBirth: values.dateOfBirth,
         };
 
         REGISTERED_USERS.push(newUser);
@@ -158,9 +163,15 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
   }
 
   const handleNextStep = async () => {
-    const isValid = await signupForm.trigger(["name", "email", "password"]);
+    let isValid;
+    if (signupStep === 1) {
+        isValid = await signupForm.trigger(["name", "email", "password"]);
+    } else if (signupStep === 2) {
+        isValid = await signupForm.trigger(["dateOfBirth", "location"]);
+    }
+    
     if (isValid) {
-      setSignupStep(2);
+      setSignupStep(prev => prev + 1);
     }
   };
   
@@ -184,7 +195,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
   };
 
   const isLogin = formType === 'login';
-  const progress = isLogin ? 0 : (signupStep - 1) / 2 * 100;
+  const progress = isLogin ? 0 : (signupStep - 1) / 3 * 100;
   
   const formVariants = {
     hidden: { opacity: 0, x: isLogin ? -100 : 100 },
@@ -299,8 +310,9 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                         <FormProvider {...signupForm}>
                         <Form {...signupForm}>
                            <form onSubmit={signupForm.handleSubmit(handleSignup)} className="space-y-4">
+                                <AnimatePresence mode="wait">
                                 {signupStep === 1 && (
-                                     <>
+                                     <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
                                         <FormField name="name" control={signupForm.control} render={({ field }) => (
                                             <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="Your Name" {...field} /></FormControl><FormMessage /></FormItem>
                                         )} />
@@ -324,10 +336,24 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                                         <Button type="button" onClick={handleNextStep} className="w-full">
                                             Continue
                                         </Button>
-                                    </>
+                                    </motion.div>
                                 )}
                                 {signupStep === 2 && (
-                                    <>
+                                    <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
+                                        <FormField name="dateOfBirth" control={signupForm.control} render={({ field }) => (
+                                            <FormItem><FormLabel>Date of Birth</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
+                                        )} />
+                                        <FormField name="location" control={signupForm.control} render={({ field }) => (
+                                            <FormItem><FormLabel>Location</FormLabel><FormControl><Input placeholder="City, Country" {...field} /></FormControl><FormMessage /></FormItem>
+                                        )} />
+                                        <div className="flex gap-2">
+                                            <Button type="button" variant="outline" onClick={() => setSignupStep(1)} className="w-full">Back</Button>
+                                            <Button type="button" onClick={handleNextStep} className="w-full">Continue</Button>
+                                        </div>
+                                    </motion.div>
+                                )}
+                                {signupStep === 3 && (
+                                    <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
                                         <FormField name="graduationYear" control={signupForm.control} render={({ field }) => (
                                             <FormItem><FormLabel>Graduation Year</FormLabel><FormControl><Input placeholder="YYYY" {...field} /></FormControl><FormMessage /></FormItem>
                                         )} />
@@ -338,14 +364,15 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                                             <FormItem><FormLabel>Maatram ID</FormLabel><FormControl><Input placeholder="Your unique Maatram ID" {...field} /></FormControl><FormMessage /></FormItem>
                                         )} />
                                         <div className="flex gap-2">
-                                            <Button type="button" variant="outline" onClick={() => setSignupStep(1)} className="w-full">Back</Button>
+                                            <Button type="button" variant="outline" onClick={() => setSignupStep(2)} className="w-full">Back</Button>
                                             <Button type="submit" className="w-full" disabled={!signupForm.formState.isValid || isLoading}>
                                                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                                Sign Up
+                                                Sign Up & Create Profile
                                             </Button>
                                         </div>
-                                    </>
+                                    </motion.div>
                                 )}
+                                </AnimatePresence>
                             </form>
                         </Form>
                         </FormProvider>
