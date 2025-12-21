@@ -24,8 +24,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address.").min(1, "Email is required."),
-  password: z.string().min(8, "Password must be at least 8 characters."),
+  email: z.string().min(1, "Email is required.").email("Invalid email address."),
+  password: z.string().min(8, "Password must be at least 8 characters long."),
 });
 
 const signupSchema = z.object({
@@ -331,3 +331,5 @@ const progressIndicator = `
   animation: indeterminate-progress 1.5s infinite ease-in-out;
 }
 `;
+
+    
