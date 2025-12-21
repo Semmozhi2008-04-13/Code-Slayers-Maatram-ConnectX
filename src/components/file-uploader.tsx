@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const MAX_IMAGE_SIZE_MB = 5;
 const MAX_VIDEO_SIZE_MB = 50;
@@ -265,13 +266,4 @@ const FileItem = ({ file, onRemove }: { file: UploadableFile, onRemove: (id: str
     )
 }
 
-// Dummy AnimatePresence and motion for structure. In a real app, these would come from framer-motion.
-const AnimatePresence = ({ children }: { children: React.ReactNode }) => <>{children}</>;
-const motion = {
-    div: ({ children, ...props }: { children: React.ReactNode } & React.HTMLAttributes<HTMLDivElement>) => <div {...props}>{children}</div>
-};
-
-
 export default FileUploader;
-
-    
