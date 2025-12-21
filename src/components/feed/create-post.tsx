@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -30,7 +31,10 @@ type CreatePostProps = {
 
 export default function CreatePost({ onPostCreated }: CreatePostProps) {
   const [postContent, setPostContent] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+  const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
+  const [mediaUrl, setMediaUrl] = useState('');
   const [aiPrompt, setAiPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
@@ -76,18 +80,30 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
             headline: CURRENT_USER.headline,
         },
         content: postContent,
+        imageUrl: imageUrl || undefined,
         likes: 0,
         comments: 0,
         createdAt: "Just now",
     };
     onPostCreated(newPost);
     setPostContent("");
+    setImageUrl("");
      toast({
         title: "Post Created",
         description: "Your post has been successfully published.",
       });
   }
 
+  const handleAddMedia = () => {
+    setImageUrl(mediaUrl);
+    setIsMediaModalOpen(false);
+    setMediaUrl('');
+    toast({
+        title: "Image Added",
+        description: "The image will be included in your post.",
+    });
+  }
+  
   const handleFeatureNotAvailable = () => {
     toast({
         title: "Feature Coming Soon",
@@ -115,9 +131,17 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
                 value={postContent}
                 onChange={(e) => setPostContent(e.target.value)}
               />
+              {imageUrl && (
+                  <div className="mt-2 relative">
+                    <Image src={imageUrl} alt="Post preview" width={100} height={100} className="rounded-md object-cover h-24 w-24" />
+                    <Button variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => setImageUrl('')}>
+                        <Send className="h-4 w-4 transform rotate-45"/>
+                    </Button>
+                  </div>
+              )}
               <div className="mt-2 flex justify-between items-center">
                 <div className="flex items-center gap-1">
-                     <Button variant="ghost" size="icon" className="h-9 w-9" onClick={handleFeatureNotAvailable}>
+                     <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setIsMediaModalOpen(true)}>
                         <ImageIcon className="text-blue-500" />
                      </Button>
                      <Button variant="ghost" size="icon" className="h-9 w-9" onClick={handleFeatureNotAvailable}>
@@ -176,6 +200,39 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+       <Dialog open={isMediaModalOpen} onOpenChange={setIsMediaModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ImageIcon className="h-5 w-5 text-primary"/>
+              Add an Image to your Post
+            </DialogTitle>
+            <DialogDescription>
+              Paste an image URL below. The image will be displayed with your post.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="media-url" className="text-right">
+                Image URL
+              </Label>
+              <Input
+                id="media-url"
+                value={mediaUrl}
+                onChange={(e) => setMediaUrl(e.target.value)}
+                className="col-span-3"
+                placeholder="https://example.com/image.png"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleAddMedia} disabled={!mediaUrl}>Add Image</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
+
+    
