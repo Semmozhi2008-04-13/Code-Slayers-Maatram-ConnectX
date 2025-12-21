@@ -1,6 +1,9 @@
+
 export type User = {
   id: string;
   name: string;
+  email: string;
+  password?: string; // Should always be handled securely, never sent to client
   avatarUrl: string;
   headline: string;
   location: string;

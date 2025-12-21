@@ -22,6 +22,8 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { MOCK_USERS, REGISTERED_USERS } from "@/lib/data";
+import { User } from "@/lib/types";
 
 const loginSchema = z.object({
   email: z.string().min(1, "Email is required.").email("Invalid email address."),
@@ -99,18 +101,68 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
   const handleLogin = (values: LoginFormValues) => {
     setIsLoading(true);
     setTimeout(() => {
-      setIsLoading(false);
-      toast({ title: "Login Successful", description: "Welcome back!" });
-      onLoginSuccess();
+        const allUsers = [...MOCK_USERS, ...REGISTERED_USERS];
+        const user = allUsers.find(u => u.email === values.email);
+
+        if (user && user.password === values.password) {
+            setIsLoading(false);
+            toast({ title: "Login Successful", description: "Welcome back!" });
+            onLoginSuccess();
+        } else {
+            setIsLoading(false);
+            toast({
+                variant: "destructive",
+                title: "Login Failed",
+                description: "Invalid email or password. Please try again.",
+            });
+        }
     }, 1500);
   };
   
   const handleSignup = (values: SignupFormValues) => {
     setIsLoading(true);
     setTimeout(() => {
+        const allUsers = [...MOCK_USERS, ...REGISTERED_USERS];
+        const emailExists = allUsers.some(u => u.email === values.email);
+
+        if (emailExists) {
+            setIsLoading(false);
+            toast({
+                variant: "destructive",
+                title: "Sign Up Failed",
+                description: "An account with this email already exists.",
+            });
+            signupForm.setError("email", { type: "manual", message: "This email is already in use." });
+            setSignupStep(1);
+            return;
+        }
+
+        const newUser: User = {
+            id: `user-${Date.now()}`,
+            name: values.name,
+            email: values.email,
+            password: values.password, // In a real app, this would be hashed
+            avatarUrl: `https://picsum.photos/seed/${values.name}/80/80`,
+            headline: `Student at Maatram Network`,
+            location: "Unknown",
+            industry: "Education",
+            skills: [],
+            isMentor: false,
+            connections: 0,
+            about: "A new member of the Maatram ConnectX community!",
+            experience: [],
+            role: 'Student',
+            college: "Maatram Network College",
+            graduationYear: values.graduationYear,
+            department: values.department,
+        };
+
+        REGISTERED_USERS.push(newUser);
         setIsLoading(false);
-        toast({ title: "Sign Up Successful", description: "Welcome to Maatram ConnectX!" });
-        onLoginSuccess();
+        toast({ title: "Sign Up Successful!", description: "Please sign in to continue." });
+        setFormType('login');
+        setSignupStep(1);
+        signupForm.reset();
     }, 1500);
   }
 
@@ -306,7 +358,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
         </CardContent>
 
         <CardFooter className="justify-center text-sm py-6">
-            <button onClick={() => setFormType(isLogin ? "signup" : "login")}>
+            <button onClick={() => { setFormType(isLogin ? "signup" : "login"); setSignupStep(1); }}>
                 <span className="text-muted-foreground">
                     {isLogin ? "Don't have an account?" : "Already have an account?"}
                 </span>

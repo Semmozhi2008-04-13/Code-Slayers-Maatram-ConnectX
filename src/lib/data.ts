@@ -75,6 +75,8 @@ export const MOCK_USERS: User[] = [
   {
     id: '1',
     name: 'Aditi Rao',
+    email: 'aditi.rao@example.com',
+    password: 'password123',
     avatarUrl: getPlaceholderImageUrl('avatar-1'),
     headline: 'Senior AI Scientist at Google',
     location: 'Bengaluru, Karnataka',
@@ -114,6 +116,8 @@ export const MOCK_USERS: User[] = [
   {
     id: '2',
     name: 'Vikram Kumar',
+    email: 'vikram.kumar@example.com',
+    password: 'password123',
     avatarUrl: getPlaceholderImageUrl('avatar-2'),
     headline: 'Product Lead at Amazon Web Services (AWS)',
     location: 'Hyderabad, Telangana',
@@ -137,6 +141,8 @@ export const MOCK_USERS: User[] = [
   {
     id: '3',
     name: 'Meera Krishnan',
+    email: 'meera.krishnan@example.com',
+    password: 'password123',
     avatarUrl: getPlaceholderImageUrl('avatar-3'),
     headline: 'Principal UX Designer at Flipkart',
     location: 'Bengaluru, Karnataka',
@@ -160,6 +166,8 @@ export const MOCK_USERS: User[] = [
     {
     id: '4',
     name: 'Arjun Reddy',
+    email: 'arjun.reddy@example.com',
+    password: 'password123',
     avatarUrl: getPlaceholderImageUrl('avatar-4'),
     headline: 'Data Analytics Head at Swiggy',
     location: 'Bengaluru, Karnataka',
@@ -183,6 +191,8 @@ export const MOCK_USERS: User[] = [
   {
     id: '5',
     name: 'Priya Sharma',
+    email: 'priya.sharma@example.com',
+    password: 'password123',
     avatarUrl: getPlaceholderImageUrl('avatar-5'),
     headline: 'CSE Student at Chennai Institute of Technology',
     location: 'Chennai, Tamil Nadu',
@@ -200,6 +210,8 @@ export const MOCK_USERS: User[] = [
    {
     id: '6',
     name: 'Rahul Varma',
+    email: 'rahul.varma@example.com',
+    password: 'password123',
     avatarUrl: getPlaceholderImageUrl('avatar-6'),
     headline: 'ECE Student at Rajalakshmi Engineering College',
     location: 'Chennai, Tamil Nadu',
@@ -217,6 +229,8 @@ export const MOCK_USERS: User[] = [
    {
     id: '7',
     name: 'Ananya Sharma',
+    email: 'ananya.sharma@example.com',
+    password: 'password123',
     avatarUrl: getPlaceholderImageUrl('avatar-7'),
     headline: 'HR Business Partner at Infosys',
     location: 'Pune, Maharashtra',
@@ -231,6 +245,8 @@ export const MOCK_USERS: User[] = [
    {
     id: '8',
     name: 'Suresh Menon',
+    email: 'suresh.menon@example.com',
+    password: 'password123',
     avatarUrl: getPlaceholderImageUrl('avatar-8'),
     headline: 'IT Student at Sathyabama Institute of Science and Technology',
     location: 'Chennai, Tamil Nadu',
@@ -248,6 +264,8 @@ export const MOCK_USERS: User[] = [
   {
     id: '9',
     name: 'Karthik Iyer',
+    email: 'karthik.iyer@example.com',
+    password: 'password123',
     avatarUrl: getPlaceholderImageUrl('avatar-9'),
     headline: 'Robotics Engineer at Ather Energy',
     location: 'Bengaluru, Karnataka',
@@ -262,6 +280,8 @@ export const MOCK_USERS: User[] = [
    {
     id: '10',
     name: 'Dr. Surya Pillai',
+    email: 'surya.pillai@example.com',
+    password: 'password123',
     avatarUrl: getPlaceholderImageUrl('avatar-10'),
     headline: 'Professor of Computer Science at IIT Madras',
     location: 'Chennai, Tamil Nadu',
@@ -295,6 +315,8 @@ export const MOCK_USERS: User[] = [
     return {
       id: `${studentId}`,
       name: `${southIndianNames[i % southIndianNames.length]} ${i % 2 === 0 ? 'Rao' : 'Menon'}`,
+      email: `${southIndianNames[i % southIndianNames.length].toLowerCase()}${i}@example.com`,
+      password: 'password123',
       avatarUrl: getPlaceholderImageUrl(`avatar-${studentId}`),
       headline: `${department} Student at ${colleges[i % colleges.length]}`,
       location: studentLocations[i % studentLocations.length],
@@ -321,6 +343,8 @@ export const MOCK_USERS: User[] = [
     return {
       id: `${alumniId}`,
       name: `${southIndianNames[(i+10) % southIndianNames.length]} ${i % 2 === 0 ? 'Nair' : 'Gupta'}`,
+      email: `${southIndianNames[(i+10) % southIndianNames.length].toLowerCase()}${i}@example.com`,
+      password: 'password123',
       avatarUrl: getPlaceholderImageUrl(`avatar-${alumniId}`),
       headline: `${jobTitle} at ${company.name}`,
       location: location,
@@ -344,7 +368,9 @@ export const MOCK_USERS: User[] = [
   })
 ];
 
-export const CURRENT_USER = MOCK_USERS[0];
+export const REGISTERED_USERS: User[] = [];
+
+export let CURRENT_USER = MOCK_USERS[0];
 
 export const MOCK_POSTS: Post[] = [
   {
