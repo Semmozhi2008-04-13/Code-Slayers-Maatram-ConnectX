@@ -29,6 +29,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { CURRENT_USER } from "@/lib/data";
 import type { View } from '@/app/page';
+import { useToast } from "@/hooks/use-toast";
 
 type SiteHeaderProps = {
   activeView: View;
@@ -47,12 +48,27 @@ const navLinks = [
 
 export function SiteHeader({ activeView, navigate }: SiteHeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const { toast } = useToast();
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchQuery.trim() !== '') {
       navigate('search', null, searchQuery);
     }
   };
+
+  const handleLogout = () => {
+    toast({
+        title: "You have been logged out.",
+        description: "Thank you for using Maatram ConnectX.",
+    });
+  }
+  
+  const handleSettings = () => {
+     toast({
+        title: "Feature Coming Soon!",
+        description: "We are working on the settings page.",
+    });
+  }
 
   const renderNavLinks = (isMobile = false) =>
     navLinks.map((link) => (
@@ -146,10 +162,10 @@ export function SiteHeader({ activeView, navigate }: SiteHeaderProps) {
                 <DropdownMenuItem onClick={() => navigate('profile', CURRENT_USER.id)}>
                     Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSettings}>Settings</DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>
                 Log out
               </DropdownMenuItem>
             </DropdownMenuContent>

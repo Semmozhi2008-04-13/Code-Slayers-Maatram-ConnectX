@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -87,6 +88,13 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
       });
   }
 
+  const handleFeatureNotAvailable = () => {
+    toast({
+        title: "Feature Coming Soon",
+        description: "We're working on bringing this feature to you.",
+    });
+  }
+
   return (
     <>
       <Card>
@@ -109,10 +117,10 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
               />
               <div className="mt-2 flex justify-between items-center">
                 <div className="flex items-center gap-1">
-                     <Button variant="ghost" size="icon" className="h-9 w-9">
+                     <Button variant="ghost" size="icon" className="h-9 w-9" onClick={handleFeatureNotAvailable}>
                         <ImageIcon className="text-blue-500" />
                      </Button>
-                     <Button variant="ghost" size="icon" className="h-9 w-9">
+                     <Button variant="ghost" size="icon" className="h-9 w-9" onClick={handleFeatureNotAvailable}>
                          <Video className="text-green-500" />
                      </Button>
                      <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setIsAiModalOpen(true)}>

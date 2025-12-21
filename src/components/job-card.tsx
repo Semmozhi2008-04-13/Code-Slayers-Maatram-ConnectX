@@ -1,15 +1,31 @@
+
+"use client";
+
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Job } from "@/lib/types";
-import { MapPin } from "lucide-react";
+import { MapPin, Check } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 type JobCardProps = {
   job: Job;
 };
 
 export function JobCard({ job }: JobCardProps) {
+  const { toast } = useToast();
+  const [isApplied, setIsApplied] = useState(false);
+
+  const handleApply = () => {
+    setIsApplied(true);
+    toast({
+        title: "Application Sent!",
+        description: `Your application for ${job.title} at ${job.company} has been submitted.`,
+    });
+  };
+
   return (
     <Card className="hover:bg-accent transition-colors">
       <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -34,7 +50,16 @@ export function JobCard({ job }: JobCardProps) {
             <Badge variant="secondary">{job.type}</Badge>
             <Badge variant="outline">Posted {job.postedAt}</Badge>
           </div>
-          <Button className="mt-2 w-full sm:w-auto">Apply Now</Button>
+          <Button className="mt-2 w-full sm:w-auto" onClick={handleApply} disabled={isApplied}>
+            {isApplied ? (
+                <>
+                    <Check className="mr-2 h-4 w-4"/>
+                    Applied
+                </>
+            ) : (
+                'Apply Now'
+            )}
+          </Button>
         </div>
       </CardContent>
     </Card>

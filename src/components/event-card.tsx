@@ -1,14 +1,30 @@
+
+"use client";
+
 import Image from "next/image";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { Event } from "@/lib/types";
-import { Calendar, MapPin, Users } from "lucide-react";
+import { Calendar, MapPin, Users, Check } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 type EventCardProps = {
   event: Event;
 };
 
 export function EventCard({ event }: EventCardProps) {
+  const { toast } = useToast();
+  const [isRsvpd, setIsRsvpd] = useState(false);
+
+  const handleRsvp = () => {
+    setIsRsvpd(true);
+    toast({
+      title: "RSVP Successful!",
+      description: `You have successfully RSVP'd for ${event.title}.`,
+    });
+  };
+
   return (
     <Card className="flex flex-col overflow-hidden transition-shadow hover:shadow-lg">
       <div className="relative aspect-video w-full">
@@ -34,11 +50,20 @@ export function EventCard({ event }: EventCardProps) {
         </div>
          <div className="flex items-center gap-2">
           <Users className="h-4 w-4" />
-          <span>{event.attendees} going</span>
+          <span>{event.attendees + (isRsvpd ? 1 : 0)} going</span>
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="w-full">RSVP</Button>
+        <Button className="w-full" onClick={handleRsvp} disabled={isRsvpd}>
+          {isRsvpd ? (
+            <>
+              <Check className="mr-2 h-4 w-4" />
+              RSVP'd
+            </>
+          ) : (
+            'RSVP'
+          )}
+        </Button>
       </CardFooter>
     </Card>
   );

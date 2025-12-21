@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { JobCard } from "@/components/job-card";
 import { MOCK_JOBS } from "@/lib/data";
+import { useToast } from "@/hooks/use-toast";
 
 const jobTypes = [...new Set(MOCK_JOBS.map((job) => job.type))];
 const locations = [...new Set(MOCK_JOBS.map((job) => job.location))];
@@ -21,6 +22,14 @@ export default function JobsPage() {
   const [search, setSearch] = useState("");
   const [jobType, setJobType] = useState("all");
   const [location, setLocation] = useState("all");
+  const { toast } = useToast();
+
+  const handlePostJob = () => {
+    toast({
+      title: "Feature Coming Soon!",
+      description: "You'll be able to post job openings soon.",
+    });
+  };
 
   const filteredJobs = MOCK_JOBS.filter((job) => {
     const searchLower = search.toLowerCase();
@@ -42,7 +51,7 @@ export default function JobsPage() {
             Find your next opportunity within the network.
           </p>
         </div>
-        <Button>Post a Job</Button>
+        <Button onClick={handlePostJob}>Post a Job</Button>
       </div>
 
       <div className="flex flex-col md:flex-row gap-4">

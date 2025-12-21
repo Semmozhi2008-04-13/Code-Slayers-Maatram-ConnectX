@@ -7,7 +7,7 @@ import { MOCK_USERS, CURRENT_USER } from "@/lib/data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, Check, Plus, Edit } from "lucide-react";
+import { Briefcase, Check, Plus, Edit, MessageSquare } from "lucide-react";
 import AiProfileCompletion from "@/components/ai/profile-completion";
 import placeholderData from '@/lib/placeholder-images.json';
 import { useToast } from "@/hooks/use-toast";
@@ -48,6 +48,13 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
     });
   };
 
+  const handleAction = (action: string) => {
+    toast({
+      title: "Feature Coming Soon!",
+      description: `The "${action}" feature is currently under development.`,
+    });
+  };
+
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <Card>
@@ -81,7 +88,7 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
             </div>
              <div className="flex justify-start gap-2 mt-4 sm:mt-0 sm:pb-4">
                 {isCurrentUser ? (
-                    <Button variant="outline"><Edit className="mr-2 h-4 w-4"/>Edit Profile</Button>
+                    <Button variant="outline" onClick={() => handleAction('Edit Profile')}><Edit className="mr-2 h-4 w-4"/>Edit Profile</Button>
                 ) : (
                     <>
                         <Button onClick={handleConnect} disabled={requested}>
@@ -97,7 +104,10 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
                             </>
                             )}
                         </Button>
-                        <Button variant="outline">Message</Button>
+                        <Button variant="outline" onClick={() => handleAction('Message')}>
+                            <MessageSquare className="mr-2 h-4 w-4"/>
+                            Message
+                        </Button>
                     </>
                 )}
               </div>
