@@ -11,6 +11,7 @@ import MentorsPage from '@/components/views/mentors';
 import ProfilePage from '@/components/views/profile';
 import SearchView from '@/components/views/search';
 import type { View } from '@/app/page';
+import LoginPage from '@/components/views/login';
 
 type MainViewProps = {
   view: View;
@@ -44,6 +45,8 @@ export default function MainView({ view, profileId, searchQuery, navigate }: Mai
           return <SearchView query={searchQuery} navigate={navigate} />;
         }
         return <FeedPage navigate={navigate} />; // Fallback to feed
+      case 'login':
+        return <LoginPage onLoginSuccess={() => navigate('feed')} />;
       default:
         return <FeedPage navigate={navigate} />;
     }

@@ -5,8 +5,9 @@ import { useState, useEffect } from 'react';
 import MainView from '@/components/main-view';
 import { AnimatedTitle } from '@/components/animated-title';
 import { Skeleton } from '@/components/ui/skeleton';
+import LoginPage from '@/components/views/login';
 
-export type View = 'feed' | 'alumni' | 'students' | 'jobs' | 'events' | 'mentors' | 'profile' | 'search';
+export type View = 'feed' | 'alumni' | 'students' | 'jobs' | 'events' | 'mentors' | 'profile' | 'search' | 'login';
 
 function getViewFromPath(path: string): { view: View; id: string | null, query: string | null } {
     const pathParts = path.split('/').filter(Boolean);
@@ -21,7 +22,7 @@ function getViewFromPath(path: string): { view: View; id: string | null, query: 
         return { view: 'search', id: null, query };
     }
 
-    if (['feed', 'alumni', 'students', 'jobs', 'events', 'mentors'].includes(view)) {
+    if (['feed', 'alumni', 'students', 'jobs', 'events', 'mentors', 'login'].includes(view)) {
          return { view, id: null, query: null };
     }
 
@@ -30,37 +31,47 @@ function getViewFromPath(path: string): { view: View; id: string | null, query: 
 
 
 export default function Home() {
-  const [view, setView] = useState<View>('feed');
+  const [view, setView] = useState<View>('login');
   const [profileId, setProfileId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const { view: initialView, id: initialId, query: initialQuery } = getViewFromPath(window.location.pathname);
-    setView(initialView);
-    setProfileId(initialId);
-    setSearchQuery(initialQuery);
+    // Simulate checking auth status
+    const authTimer = setTimeout(() => {
+        // In a real app, you would check a token here.
+        // For this demo, we'll just show the login page first.
+        setLoading(false); 
+    }, 2500);
 
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2500); // Show loading animation for 2.5 seconds
-
-    return () => clearTimeout(timer);
+    return () => clearTimeout(authTimer);
   }, []);
 
   useEffect(() => {
+    if(isAuthenticated) {
+        const { view: initialView, id: initialId, query: initialQuery } = getViewFromPath(window.location.pathname);
+        setView(initialView === 'login' ? 'feed' : initialView);
+        setProfileId(initialId);
+        setSearchQuery(initialQuery);
+    } else {
+        setView('login');
+    }
+
     const handlePopState = (event: PopStateEvent) => {
-        const { view, profileId, searchQuery } = event.state || getViewFromPath(window.location.pathname);
-        setView(view);
-        setProfileId(profileId);
-        setSearchQuery(searchQuery);
+        if(isAuthenticated){
+            const { view, profileId, searchQuery } = event.state || getViewFromPath(window.location.pathname);
+            setView(view);
+            setProfileId(profileId);
+            setSearchQuery(searchQuery);
+        }
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => {
         window.removeEventListener('popstate', handlePopState);
     };
-  }, []);
+  }, [isAuthenticated]);
 
   const navigate = (newView: View, id: string | null = null, query: string | null = null) => {
     let newUrl = `/${newView}`;
@@ -82,6 +93,11 @@ export default function Home() {
     window.scrollTo(0, 0);
   };
 
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true);
+    navigate('feed');
+  }
+
 
   if (loading) {
     return (
@@ -94,6 +110,10 @@ export default function Home() {
         </div>
       </div>
     );
+  }
+
+  if (!isAuthenticated) {
+    return <LoginPage onLoginSuccess={handleLoginSuccess} />;
   }
 
   return <MainView view={view} profileId={profileId} searchQuery={searchQuery} navigate={navigate} />;
