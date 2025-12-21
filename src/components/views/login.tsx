@@ -46,18 +46,9 @@ type LoginPageProps = {
   onLoginSuccess: () => void;
 };
 
-const SocialButton = ({ provider, icon, comingSoon }: { provider: string; icon: React.ReactNode; comingSoon?: boolean }) => {
-    const { toast } = useToast();
-    const handleClick = () => {
-        if (comingSoon) {
-            toast({
-                title: "Coming Soon!",
-                description: `Login with ${provider} is not yet available.`,
-            });
-        }
-    };
+const SocialButton = ({ provider, icon, onClick }: { provider: string; icon: React.ReactNode; onClick: () => void; }) => {
     return (
-        <Button variant="outline" className="w-full" onClick={handleClick} disabled={comingSoon}>
+        <Button variant="outline" className="w-full" onClick={onClick}>
             {icon}
             Sign in with {provider}
         </Button>
@@ -171,6 +162,22 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
     if (isValid) {
       setSignupStep(2);
     }
+  };
+  
+  const handleSocialLogin = (provider: 'Google' | 'LinkedIn') => {
+    setIsLoading(true);
+    toast({
+        title: "Signing in...",
+        description: `Authenticating with ${provider}.`,
+    });
+    setTimeout(() => {
+        setIsLoading(false);
+        toast({
+            title: "Login Successful",
+            description: `Successfully signed in with ${provider}.`,
+        });
+        onLoginSuccess();
+    }, 1500);
   };
 
   const isLogin = formType === 'login';
@@ -352,8 +359,8 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-                <SocialButton provider="Google" icon={<GoogleIcon/>} comingSoon={true} />
-                <SocialButton provider="LinkedIn" icon={<LinkedInIcon />} comingSoon={true} />
+                <SocialButton provider="Google" icon={<GoogleIcon/>} onClick={() => handleSocialLogin('Google')} />
+                <SocialButton provider="LinkedIn" icon={<LinkedInIcon />} onClick={() => handleSocialLogin('LinkedIn')} />
             </div>
         </CardContent>
 
@@ -383,5 +390,3 @@ const progressIndicator = `
   animation: indeterminate-progress 1.5s infinite ease-in-out;
 }
 `;
-
-    
