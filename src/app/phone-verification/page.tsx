@@ -28,7 +28,8 @@ import { useFirebase, useUser } from '@/firebase';
 import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
-  updateProfile,
+  PhoneAuthProvider,
+  linkWithCredential,
   type ConfirmationResult,
 } from 'firebase/auth';
 
@@ -100,15 +101,12 @@ export default function PhoneVerificationPage({ onVerificationSuccess }: PhoneVe
   };
 
   const handleVerifyOtp = async (values: OtpFormValues) => {
-    if (!confirmationResult) return;
+    if (!confirmationResult || !user) return;
     setIsLoading(true);
     try {
-        const credential = await confirmationResult.confirm(values.otp);
-        if (credential.user && user) {
-            // Because this is a new user, the phone number isn't yet in the user object
-            // We need to update it.
-            await updateProfile(user, { phoneNumber: credential.user.phoneNumber });
-        }
+        const credential = PhoneAuthProvider.credential(confirmationResult.verificationId, values.otp);
+        await linkWithCredential(user, credential);
+
         toast({
             title: 'Phone Verified!',
             description: 'Your phone number has been successfully verified.',
