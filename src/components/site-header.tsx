@@ -11,7 +11,11 @@ import {
   MessageSquare,
   Search,
   Users,
-  GraduationCap
+  GraduationCap,
+  LogOut,
+  User as UserIcon,
+  Settings,
+  Network
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -27,14 +31,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { CURRENT_USER } from "@/lib/data";
 import type { View } from '@/app/page';
 import { useToast } from "@/hooks/use-toast";
-
-type SiteHeaderProps = {
-  activeView: View;
-  navigate: (view: View, id?: string | null, query?: string | null) => void;
-};
+import { useUser, useFirebase } from "@/firebase";
+import { signOut } from "firebase/auth";
+import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 
 
 const navLinks = [
@@ -46,9 +48,17 @@ const navLinks = [
   { view: "mentors" as View, label: "Mentors", icon: MessageSquare },
 ];
 
+type SiteHeaderProps = {
+  activeView: View;
+  navigate: (view: View, id?: string | null, query?: string | null) => void;
+};
+
+
 export function SiteHeader({ activeView, navigate }: SiteHeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const { toast } = useToast();
+  const { user, isUserLoading } = useUser();
+  const { auth } = useFirebase();
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchQuery.trim() !== '') {
@@ -56,11 +66,22 @@ export function SiteHeader({ activeView, navigate }: SiteHeaderProps) {
     }
   };
 
-  const handleLogout = () => {
-    toast({
-        title: "You have been logged out.",
-        description: "Thank you for using Maatram ConnectX.",
-    });
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({
+          title: "You have been logged out.",
+          description: "Thank you for using Maatram ConnectX.",
+      });
+      // The main page component will handle redirection to login
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast({
+        variant: "destructive",
+        title: "Logout Failed",
+        description: "There was an error logging you out. Please try again.",
+      });
+    }
   }
   
   const handleSettings = () => {
@@ -93,10 +114,10 @@ export function SiteHeader({ activeView, navigate }: SiteHeaderProps) {
     <header className="fixed inset-x-0 top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center px-4">
         <div className="mr-2 flex items-center md:mr-4">
-          <button onClick={() => navigate('feed')} className="flex items-center space-x-2">
-            <Image src="/logo.png" alt="Maatram ConnectX Logo" width={24} height={24} className="h-6 w-6 text-primary" />
+          <Link href="/feed" className="flex items-center space-x-2">
+            <Network className="h-6 w-6 text-primary" />
             <span className="hidden font-bold sm:inline-block font-headline">Maatram ConnectX</span>
-          </button>
+          </Link>
         </div>
 
         {/* Mobile Menu */}
@@ -109,10 +130,10 @@ export function SiteHeader({ activeView, navigate }: SiteHeaderProps) {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-60">
-              <div className="flex items-center">
-                 <Image src="/logo.png" alt="Maatram ConnectX Logo" width={24} height={24} className="h-6 w-6 text-primary" />
+               <Link href="/feed" className="flex items-center">
+                 <Network className="h-6 w-6 text-primary" />
                  <span className="ml-2 font-bold font-headline">Maatram ConnectX</span>
-              </div>
+              </Link>
               <div className="mt-6 flex flex-col gap-2">{renderNavLinks(true)}</div>
             </SheetContent>
           </Sheet>
@@ -138,34 +159,44 @@ export function SiteHeader({ activeView, navigate }: SiteHeaderProps) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-                <Image
-                  src={CURRENT_USER.avatarUrl}
-                  alt={CURRENT_USER.name}
-                  width={36}
-                  height={36}
-                  className="rounded-full"
-                  data-ai-hint="profile avatar"
-                />
+                {isUserLoading ? (
+                  <Skeleton className="h-9 w-9 rounded-full" />
+                ) : user && user.photoURL ? (
+                   <Image
+                      src={user.photoURL}
+                      alt={user.displayName || 'User'}
+                      width={36}
+                      height={36}
+                      className="rounded-full"
+                    />
+                ) : (
+                  <UserIcon className="h-6 w-6" />
+                )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{CURRENT_USER.name}</p>
+                  <p className="text-sm font-medium leading-none">{user?.displayName || 'Welcome'}</p>
                   <p className="text-xs leading-none text-muted-foreground">
-                    {CURRENT_USER.headline}
+                    {user?.email}
                   </p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuItem onClick={() => navigate('profile', CURRENT_USER.id)}>
+                <DropdownMenuItem onClick={() => navigate('profile', user?.uid)}>
+                    <UserIcon className="mr-2 h-4 w-4" />
                     Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleSettings}>Settings</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSettings}>
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
+                </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
                 Log out
               </DropdownMenuItem>
             </DropdownMenuContent>

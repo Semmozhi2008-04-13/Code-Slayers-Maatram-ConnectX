@@ -2,7 +2,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -16,38 +15,23 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, Network } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { AnimatePresence, motion } from "framer-motion";
-import { cn } from "@/lib/utils";
-import { MOCK_USERS, REGISTERED_USERS, setCurrentUser } from "@/lib/data";
-import { User } from "@/lib/types";
+import { useFirebase } from "@/firebase";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import type { View } from '@/app/page';
 
 const loginSchema = z.object({
   email: z.string().min(1, "Email is required.").email("Invalid email address."),
-  password: z.string().min(8, "Password must be at least 8 characters long."),
-});
-
-const signupSchema = z.object({
-    name: z.string().min(2, "Name must be at least 2 characters."),
-    email: z.string().email("Invalid email address.").min(1, "Email is required."),
-    password: z.string().min(8, "Password must be at least 8 characters."),
-    dateOfBirth: z.string().min(1, "Date of birth is required.").refine((dob) => new Date(dob).toString() !== 'Invalid Date', { message: 'Invalid date format. Use YYYY-MM-DD.' }),
-    location: z.string().min(2, "Location is required."),
-    college: z.string().min(2, "College name is required."),
-    school: z.string().min(2, "School name is required."),
-    graduationYear: z.string().length(4, "Must be a 4-digit year.").regex(/^\d{4}$/, "Invalid year format."),
-    department: z.string().min(1, "Department is required."),
-    maatramId: z.string().min(1, "Maatram ID is required."),
+  password: z.string().min(1, "Password is required."),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
-type SignupFormValues = z.infer<typeof signupSchema>;
 
 type LoginPageProps = {
   onLoginSuccess: () => void;
+  navigate: (view: View) => void;
 };
 
 const SocialButton = ({ provider, icon, onClick }: { provider: string; icon: React.ReactNode; onClick: () => void; }) => {
@@ -64,12 +48,11 @@ const GoogleIcon = () => <svg className="mr-2 h-4 w-4" aria-hidden="true" focusa
 const LinkedInIcon = () => <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="linkedin-in" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M100.3 448H7.4V148.9h92.9V448zM53.8 108.1C24.1 108.1 0 83.5 0 53.8S24.1 0 53.8 0s53.8 24.1 53.8 53.8-24.1 54.3-53.8 54.3zM448 448h-92.7V302.4c0-34.7-.7-79.2-48.3-79.2-48.3 0-55.7 37.7-55.7 76.7V448h-92.8V148.9h89.1v40.8h1.3c12.4-23.5 42.7-48.3 87.9-48.3 94 0 111.3 61.9 111.3 142.3V448z"></path></svg>;
 
 
-export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
-  const [formType, setFormType] = useState<"login" | "signup">("login");
-  const [signupStep, setSignupStep] = useState(1);
+export default function LoginPage({ onLoginSuccess, navigate }: LoginPageProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { auth } = useFirebase();
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -80,318 +63,133 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
     },
   });
 
-  const signupForm = useForm<SignupFormValues>({
-    resolver: zodResolver(signupSchema),
-    mode: "onBlur",
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      dateOfBirth: "",
-      location: "",
-      college: "",
-      school: "",
-      graduationYear: "",
-      department: "",
-      maatramId: "",
-    },
-  });
-
-  const handleLogin = (values: LoginFormValues) => {
+  const handleLogin = async (values: LoginFormValues) => {
     setIsLoading(true);
-    setTimeout(() => {
-        const allUsers = [...MOCK_USERS, ...REGISTERED_USERS];
-        const user = allUsers.find(u => u.email === values.email);
-
-        if (user && user.password === values.password) {
-            setIsLoading(false);
-            setCurrentUser(user);
-            toast({ title: "Login Successful", description: "Welcome back!" });
-            onLoginSuccess();
-        } else {
-            setIsLoading(false);
-            toast({
-                variant: "destructive",
-                title: "Login Failed",
-                description: "Invalid email or password. Please try again.",
-            });
+    try {
+      await signInWithEmailAndPassword(auth, values.email, values.password);
+      toast({ title: "Login Successful", description: "Welcome back!" });
+      onLoginSuccess();
+    } catch (error: any) {
+        let description = "An unexpected error occurred. Please try again.";
+        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+            description = "Invalid email or password. Please try again.";
         }
-    }, 1500);
-  };
-  
-  const handleSignup = (values: SignupFormValues) => {
-    setIsLoading(true);
-    setTimeout(() => {
-        const allUsers = [...MOCK_USERS, ...REGISTERED_USERS];
-        const emailExists = allUsers.some(u => u.email === values.email);
-
-        if (emailExists) {
-            setIsLoading(false);
-            toast({
-                variant: "destructive",
-                title: "Sign Up Failed",
-                description: "An account with this email already exists.",
-            });
-            signupForm.setError("email", { type: "manual", message: "This email is already in use." });
-            setSignupStep(1);
-            return;
-        }
-
-        const newUser: User = {
-            id: `user-${Date.now()}`,
-            name: values.name,
-            email: values.email,
-            password: values.password, // In a real app, this would be hashed
-            avatarUrl: `https://picsum.photos/seed/${values.name}/80/80`,
-            headline: `${values.department} Student at ${values.college}`,
-            location: values.location,
-            industry: "Education",
-            skills: [],
-            isMentor: false,
-            connections: 0,
-            about: "A new member of the Maatram ConnectX community!",
-            experience: [],
-            role: 'Student',
-            college: values.college,
-            school: values.school,
-            graduationYear: values.graduationYear,
-            department: values.department,
-            dateOfBirth: values.dateOfBirth,
-        };
-
-        REGISTERED_USERS.push(newUser);
-        setCurrentUser(newUser);
+        toast({
+            variant: "destructive",
+            title: "Login Failed",
+            description: description,
+        });
+    } finally {
         setIsLoading(false);
-        toast({ title: "Sign Up Successful!", description: "Welcome to Maatram ConnectX!" });
-        onLoginSuccess();
-    }, 1500);
-  }
-
-  const handleNextStep = async () => {
-    let isValid;
-    if (signupStep === 1) {
-        isValid = await signupForm.trigger(["name", "email", "password"]);
-    } else if (signupStep === 2) {
-        isValid = await signupForm.trigger(["dateOfBirth", "location"]);
-    }
-    
-    if (isValid) {
-      setSignupStep(prev => prev + 1);
     }
   };
   
-  const handleSocialLogin = (provider: 'Google' | 'LinkedIn') => {
+  const handleSocialLogin = async (provider: 'Google' | 'LinkedIn') => {
     setIsLoading(true);
     toast({
         title: "Signing in...",
         description: `Authenticating with ${provider}.`,
     });
-    setTimeout(() => {
-        setIsLoading(false);
-        // On successful social login, we'd typically get user info back
-        // For this demo, we'll log in as the first mock user
-        setCurrentUser(MOCK_USERS[0]);
+    try {
+        const authProvider = new GoogleAuthProvider(); // Only Google is implemented for now
+        await signInWithPopup(auth, authProvider);
         toast({
             title: "Login Successful",
             description: `Successfully signed in with ${provider}.`,
         });
         onLoginSuccess();
-    }, 1500);
-  };
-
-  const isLogin = formType === 'login';
-  const progress = isLogin ? 0 : (signupStep - 1) / 3 * 100;
-  
-  const formVariants = {
-    hidden: { opacity: 0, x: isLogin ? -100 : 100 },
-    visible: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: isLogin ? 100 : -100 },
+    } catch (error) {
+        console.error(`${provider} sign-in error:`, error);
+        toast({
+            variant: "destructive",
+            title: "Sign-In Failed",
+            description: `Could not sign in with ${provider}. Please try again.`,
+        });
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background to-blue-950/50 p-4">
        <Card className="w-full max-w-md mx-auto overflow-hidden">
-        <div className="h-2.5">
-            <Progress value={progress} className="w-full h-full rounded-none bg-primary/20" indicatorClassName="bg-primary transition-all duration-500 ease-in-out" />
-        </div>
         <CardHeader className="text-center">
             <div className="flex justify-center items-center mb-4">
-                <Image src="/logo.png" alt="Maatram ConnectX Logo" width={40} height={40} />
+                <Network className="h-10 w-10 text-primary"/>
             </div>
             <CardTitle className="font-headline text-2xl">
-                {isLogin ? "Welcome Back" : "Create Your Account"}
+                Welcome Back
             </CardTitle>
             <CardDescription>
-                {isLogin ? "Sign in to continue to Maatram ConnectX" : "Join the network and connect with peers"}
+                Sign in to continue to Maatram ConnectX
             </CardDescription>
         </CardHeader>
         
         <CardContent className="px-6 pb-2">
-            <div className="relative h-[480px]">
-                <AnimatePresence initial={false} mode="wait">
-                    {isLogin ? (
-                    <motion.div
-                        key="login"
-                        variants={formVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        transition={{ duration: 0.3 }}
-                        className="absolute w-full"
-                    >
-                         <FormProvider {...loginForm}>
-                         <Form {...loginForm}>
-                            <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
-                            <FormField
-                                control={loginForm.control}
-                                name="email"
-                                render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Email</FormLabel>
-                                    <FormControl>
-                                    <Input placeholder="name@example.com" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                                )}
+            <FormProvider {...loginForm}>
+            <Form {...loginForm}>
+                <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
+                <FormField
+                    control={loginForm.control}
+                    name="email"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                        <Input placeholder="name@example.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                <FormField
+                    control={loginForm.control}
+                    name="password"
+                    render={({ field }) => (
+                    <FormItem>
+                        <div className="flex items-center justify-between">
+                            <FormLabel>Password</FormLabel>
+                            <button type="button" onClick={() => toast({ title: "Coming Soon!", description: "Password recovery is on its way."})} className="text-sm font-medium text-primary hover:underline">
+                                Forgot Password?
+                            </button>
+                        </div>
+                        <FormControl>
+                        <div className="relative">
+                            <Input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="••••••••"
+                            {...field}
                             />
-                            <FormField
-                                control={loginForm.control}
-                                name="password"
-                                render={({ field }) => (
-                                <FormItem>
-                                    <div className="flex items-center justify-between">
-                                        <FormLabel>Password</FormLabel>
-                                        <button type="button" onClick={() => toast({ title: "Coming Soon!", description: "Password recovery is on its way."})} className="text-sm font-medium text-primary hover:underline">
-                                            Forgot Password?
-                                        </button>
-                                    </div>
-                                    <FormControl>
-                                    <div className="relative">
-                                        <Input
-                                        type={showPassword ? "text" : "password"}
-                                        placeholder="••••••••"
-                                        {...field}
-                                        />
-                                        <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground"
-                                        >
-                                        {showPassword ? (
-                                            <EyeOff className="h-5 w-5" />
-                                        ) : (
-                                            <Eye className="h-5 w-5" />
-                                        )}
-                                        </button>
-                                    </div>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                                )}
-                            />
-                            <Button
-                                type="submit"
-                                className="w-full"
-                                disabled={!loginForm.formState.isValid || isLoading}
+                            <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground"
                             >
-                                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Sign In
-                            </Button>
-                            </form>
-                        </Form>
-                         </FormProvider>
-                    </motion.div>
-                ) : (
-                    <motion.div
-                        key="signup"
-                        variants={formVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        transition={{ duration: 0.3 }}
-                        className="absolute w-full"
-                    >
-                        <FormProvider {...signupForm}>
-                        <Form {...signupForm}>
-                           <form onSubmit={signupForm.handleSubmit(handleSignup)} className="space-y-4">
-                                <AnimatePresence mode="wait">
-                                {signupStep === 1 && (
-                                     <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
-                                        <FormField name="name" control={signupForm.control} render={({ field }) => (
-                                            <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="Your Name" {...field} /></FormControl><FormMessage /></FormItem>
-                                        )} />
-                                        <FormField name="email" control={signupForm.control} render={({ field }) => (
-                                            <FormItem><FormLabel>Email</FormLabel><FormControl><Input placeholder="name@example.com" {...field} /></FormControl><FormMessage /></FormItem>
-                                        )} />
-                                        <FormField name="password" control={signupForm.control} render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Password</FormLabel>
-                                                <FormControl>
-                                                <div className="relative">
-                                                    <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} />
-                                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground">
-                                                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                                                    </button>
-                                                </div>
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )} />
-                                        <Button type="button" onClick={handleNextStep} className="w-full">
-                                            Continue
-                                        </Button>
-                                    </motion.div>
-                                )}
-                                {signupStep === 2 && (
-                                    <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
-                                        <FormField name="dateOfBirth" control={signupForm.control} render={({ field }) => (
-                                            <FormItem><FormLabel>Date of Birth</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
-                                        )} />
-                                        <FormField name="location" control={signupForm.control} render={({ field }) => (
-                                            <FormItem><FormLabel>Location</FormLabel><FormControl><Input placeholder="City, Country" {...field} /></FormControl><FormMessage /></FormItem>
-                                        )} />
-                                        <div className="flex gap-2">
-                                            <Button type="button" variant="outline" onClick={() => setSignupStep(1)} className="w-full">Back</Button>
-                                            <Button type="button" onClick={handleNextStep} className="w-full">Continue</Button>
-                                        </div>
-                                    </motion.div>
-                                )}
-                                {signupStep === 3 && (
-                                    <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
-                                        <FormField name="college" control={signupForm.control} render={({ field }) => (
-                                            <FormItem><FormLabel>College Name</FormLabel><FormControl><Input placeholder="e.g., Chennai Institute of Technology" {...field} /></FormControl><FormMessage /></FormItem>
-                                        )} />
-                                        <FormField name="school" control={signupForm.control} render={({ field }) => (
-                                            <FormItem><FormLabel>School Name</FormLabel><FormControl><Input placeholder="e.g., SBOA School & Junior College" {...field} /></FormControl><FormMessage /></FormItem>
-                                        )} />
-                                        <FormField name="graduationYear" control={signupForm.control} render={({ field }) => (
-                                            <FormItem><FormLabel>Graduation Year</FormLabel><FormControl><Input placeholder="YYYY" {...field} /></FormControl><FormMessage /></FormItem>
-                                        )} />
-                                        <FormField name="department" control={signupForm.control} render={({ field }) => (
-                                            <FormItem><FormLabel>Department</FormLabel><FormControl><Input placeholder="e.g., Computer Science" {...field} /></FormControl><FormMessage /></FormItem>
-                                        )} />
-                                        <FormField name="maatramId" control={signupForm.control} render={({ field }) => (
-                                            <FormItem><FormLabel>Maatram ID</FormLabel><FormControl><Input placeholder="Your unique Maatram ID" {...field} /></FormControl><FormMessage /></FormItem>
-                                        )} />
-                                        <div className="flex gap-2">
-                                            <Button type="button" variant="outline" onClick={() => setSignupStep(2)} className="w-full">Back</Button>
-                                            <Button type="submit" className="w-full" disabled={!signupForm.formState.isValid || isLoading}>
-                                                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                                Sign Up & Create Profile
-                                            </Button>
-                                        </div>
-                                    </motion.div>
-                                )}
-                                </AnimatePresence>
-                            </form>
-                        </Form>
-                        </FormProvider>
-                    </motion.div>
-                 )}
-                 </AnimatePresence>
-            </div>
-             <div className="relative my-4">
+                            {showPassword ? (
+                                <EyeOff className="h-5 w-5" />
+                            ) : (
+                                <Eye className="h-5 w-5" />
+                            )}
+                            </button>
+                        </div>
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isLoading}
+                >
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Sign In
+                </Button>
+                </form>
+            </Form>
+            </FormProvider>
+
+            <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
               </div>
@@ -401,17 +199,17 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
             </div>
             <div className="grid grid-cols-2 gap-4">
                 <SocialButton provider="Google" icon={<GoogleIcon/>} onClick={() => handleSocialLogin('Google')} />
-                <SocialButton provider="LinkedIn" icon={<LinkedInIcon />} onClick={() => handleSocialLogin('LinkedIn')} />
+                <SocialButton provider="LinkedIn" icon={<LinkedInIcon />} onClick={() => toast({ title: "Coming Soon!", description: "LinkedIn sign-in is under development."})} />
             </div>
         </CardContent>
 
         <CardFooter className="justify-center text-sm py-6">
-            <button onClick={() => { setFormType(isLogin ? "signup" : "login"); setSignupStep(1); }}>
+            <button onClick={() => navigate("signup")}>
                 <span className="text-muted-foreground">
-                    {isLogin ? "Don't have an account?" : "Already have an account?"}
+                    Don't have an account?
                 </span>
                 <span className="font-medium text-primary hover:underline ml-1">
-                    {isLogin ? "Sign Up" : "Sign In"}
+                    Sign Up
                 </span>
             </button>
         </CardFooter>
@@ -419,15 +217,3 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
     </div>
   );
 }
-
-// Add this to your globals.css or a relevant CSS file if it's not already there for the Progress component
-const progressIndicator = `
-@keyframes indeterminate-progress {
-  0% { transform: translateX(0) scaleX(0.1); }
-  50% { transform: translateX(50%) scaleX(0.75); }
-  100% { transform: translateX(100%) scaleX(0.1); }
-}
-.animate-indeterminate {
-  animation: indeterminate-progress 1.5s infinite ease-in-out;
-}
-`;
