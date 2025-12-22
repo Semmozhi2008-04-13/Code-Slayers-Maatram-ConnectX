@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -70,18 +70,36 @@ export default function PhoneVerificationPage({ onVerificationSuccess }: PhoneVe
   const { toast } = useToast();
   const { auth } = useFirebase();
   const { user } = useUser();
-  
-  // A div with id="recaptcha-container" is needed for RecaptchaVerifier
+  const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null);
+
   useEffect(() => {
-    if (step === 'phone' && auth && !window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible',
-        callback: (response: any) => {
-          // reCAPTCHA solved, allow signInWithPhoneNumber.
-        },
-      });
+    if (!auth || recaptchaVerifierRef.current) return;
+
+    recaptchaVerifierRef.current = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      size: 'invisible',
+      callback: (response: any) => {
+        // reCAPTCHA solved, this callback is not always called for invisible reCAPTCHA
+        // but it's good practice to have it.
+      },
+      'expired-callback': () => {
+        // Response expired. Ask user to solve reCAPTCHA again.
+        toast({
+          variant: 'destructive',
+          title: 'reCAPTCHA Expired',
+          description: 'Please try sending the OTP again.',
+        });
+      },
+    });
+    
+    // Render the reCAPTCHA widget
+    recaptchaVerifierRef.current.render();
+
+    return () => {
+        if (recaptchaVerifierRef.current) {
+            recaptchaVerifierRef.current.clear();
+        }
     }
-  }, [auth, step]);
+  }, [auth, toast]);
 
   const phoneForm = useForm<PhoneFormValues>({
     resolver: zodResolver(phoneSchema),
@@ -99,23 +117,37 @@ export default function PhoneVerificationPage({ onVerificationSuccess }: PhoneVe
 
   const handleSendOtp = async (values: PhoneFormValues) => {
     setIsLoading(true);
+    if (!recaptchaVerifierRef.current) {
+        toast({ variant: 'destructive', title: 'Error', description: 'reCAPTCHA not initialized. Please refresh.'});
+        setIsLoading(false);
+        return;
+    }
+
     try {
-        const verifier = window.recaptchaVerifier;
+        const verifier = recaptchaVerifierRef.current;
         const fullPhoneNumber = `${values.countryCode}${values.phoneNumber}`;
         const result = await signInWithPhoneNumber(auth, fullPhoneNumber, verifier);
+        
         setConfirmationResult(result);
         setStep('otp');
         toast({
             title: 'OTP Sent',
             description: 'An OTP has been sent to your phone number.',
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error sending OTP:', error);
         toast({
             variant: 'destructive',
             title: 'Failed to Send OTP',
-            description: 'Please check the phone number and try again.',
+            description: error.message || 'Please check the phone number and try again.',
         });
+         // Reset reCAPTCHA
+        if (recaptchaVerifierRef.current) {
+          recaptchaVerifierRef.current.render().then((widgetId) => {
+            // @ts-ignore
+            grecaptcha.reset(widgetId);
+          });
+        }
     } finally {
         setIsLoading(false);
     }
