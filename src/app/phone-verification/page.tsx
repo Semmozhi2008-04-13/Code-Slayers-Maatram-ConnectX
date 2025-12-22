@@ -16,6 +16,13 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   Card,
   CardContent,
   CardDescription,
@@ -34,7 +41,8 @@ import {
 } from 'firebase/auth';
 
 const phoneSchema = z.object({
-  phoneNumber: z.string().min(10, 'Please enter a valid 10-digit phone number with country code.'),
+  countryCode: z.string(),
+  phoneNumber: z.string().min(10, 'Please enter a valid 10-digit phone number.'),
 });
 const otpSchema = z.object({
   otp: z.string().min(6, 'OTP must be 6 digits.').max(6, 'OTP must be 6 digits.'),
@@ -46,6 +54,15 @@ type OtpFormValues = z.infer<typeof otpSchema>;
 type PhoneVerificationPageProps = {
   onVerificationSuccess: () => void;
 };
+
+const countryCodes = [
+    { name: "India", code: "IN", dial_code: "+91" },
+    { name: "United States", code: "US", dial_code: "+1" },
+    { name: "United Kingdom", code: "GB", dial_code: "+44" },
+    { name: "Australia", code: "AU", dial_code: "+61" },
+    { name: "Canada", code: "CA", dial_code: "+1" },
+];
+
 
 export default function PhoneVerificationPage({ onVerificationSuccess }: PhoneVerificationPageProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -70,6 +87,10 @@ export default function PhoneVerificationPage({ onVerificationSuccess }: PhoneVe
   const phoneForm = useForm<PhoneFormValues>({
     resolver: zodResolver(phoneSchema),
     mode: 'onBlur',
+    defaultValues: {
+        countryCode: '+91',
+        phoneNumber: ''
+    }
   });
 
   const otpForm = useForm<OtpFormValues>({
@@ -81,7 +102,8 @@ export default function PhoneVerificationPage({ onVerificationSuccess }: PhoneVe
     setIsLoading(true);
     try {
         const verifier = window.recaptchaVerifier;
-        const result = await signInWithPhoneNumber(auth, values.phoneNumber, verifier);
+        const fullPhoneNumber = `${values.countryCode}${values.phoneNumber}`;
+        const result = await signInWithPhoneNumber(auth, fullPhoneNumber, verifier);
         setConfirmationResult(result);
         setStep('otp');
         toast({
@@ -149,19 +171,44 @@ export default function PhoneVerificationPage({ onVerificationSuccess }: PhoneVe
                   onSubmit={phoneForm.handleSubmit(handleSendOtp)}
                   className="space-y-4"
                 >
-                  <FormField
-                    control={phoneForm.control}
-                    name="phoneNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
-                        <FormControl>
-                          <Input placeholder="+1 123 456 7890" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <div className="grid grid-cols-3 gap-2">
+                        <FormField
+                            control={phoneForm.control}
+                            name="countryCode"
+                            render={({ field }) => (
+                                <FormItem className="col-span-1">
+                                    <FormLabel>Country</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                        <SelectValue placeholder="Country Code" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {countryCodes.map(country => (
+                                             <SelectItem key={country.code} value={country.dial_code}>
+                                                {country.code} ({country.dial_code})
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                    </Select>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={phoneForm.control}
+                            name="phoneNumber"
+                            render={({ field }) => (
+                            <FormItem className="col-span-2">
+                                <FormLabel>Phone Number</FormLabel>
+                                <FormControl>
+                                <Input placeholder="123 456 7890" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                    </div>
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
