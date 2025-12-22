@@ -1,0 +1,358 @@
+{
+  "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents a user profile in the ConnectX application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user profile."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the user.",
+          "format": "email"
+        },
+        "headline": {
+          "type": "string",
+          "description": "A short professional headline or summary."
+        },
+        "industry": {
+          "type": "string",
+          "description": "The industry the user works in."
+        },
+        "location": {
+          "type": "string",
+          "description": "The location of the user."
+        },
+        "profilePictureUrl": {
+          "type": "string",
+          "description": "URL of the user's profile picture.",
+          "format": "uri"
+        },
+        "skills": {
+          "type": "array",
+          "description": "List of skills the user possesses.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "alumni": {
+          "type": "boolean",
+          "description": "Indicates if the user is an Alumni."
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email"
+      ]
+    },
+    "JobPost": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "JobPost",
+      "type": "object",
+      "description": "Represents a job posting on the platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the job post."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the job."
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the job."
+        },
+        "company": {
+          "type": "string",
+          "description": "The company offering the job."
+        },
+        "location": {
+          "type": "string",
+          "description": "The location of the job."
+        },
+        "postedDate": {
+          "type": "string",
+          "description": "The date the job was posted.",
+          "format": "date-time"
+        },
+        "expiryDate": {
+          "type": "string",
+          "description": "The expiry date of the job posting.",
+          "format": "date-time"
+        },
+        "salary": {
+          "type": "number",
+          "description": "The salary offered for the job."
+        },
+        "contactEmail": {
+          "type": "string",
+          "description": "Contact email for the job posting.",
+          "format": "email"
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N JobPost)"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "company",
+        "location",
+        "postedDate",
+        "userProfileId"
+      ]
+    },
+    "Mentorship": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Mentorship",
+      "type": "object",
+      "description": "Represents a mentorship relationship between a mentor and a mentee.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the mentorship relationship."
+        },
+        "mentorId": {
+          "type": "string",
+          "description": "Reference to UserProfile (Mentor). (Relationship: UserProfile 1:N Mentorship)"
+        },
+        "menteeId": {
+          "type": "string",
+          "description": "Reference to UserProfile (Mentee). (Relationship: UserProfile 1:N Mentorship)"
+        },
+        "startDate": {
+          "type": "string",
+          "description": "The date the mentorship started.",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "description": "The date the mentorship ended (if applicable).",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the mentorship (e.g., active, completed, pending)."
+        }
+      },
+      "required": [
+        "id",
+        "mentorId",
+        "menteeId",
+        "startDate",
+        "status"
+      ]
+    },
+    "Event": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Event",
+      "type": "object",
+      "description": "Represents an event organized within the alumni network.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the event."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the event."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the event."
+        },
+        "location": {
+          "type": "string",
+          "description": "The location of the event."
+        },
+        "startTime": {
+          "type": "string",
+          "description": "The start time of the event.",
+          "format": "date-time"
+        },
+        "endTime": {
+          "type": "string",
+          "description": "The end time of the event.",
+          "format": "date-time"
+        },
+        "organizerId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N Event).  The user organizing the event."
+        },
+        "attendeeIds": {
+          "type": "array",
+          "description": "References to UserProfiles attending the event. (Relationship: UserProfile N:N Event)",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "location",
+        "startTime",
+        "endTime",
+        "organizerId"
+      ]
+    },
+    "AIRecommendation": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AIRecommendation",
+      "type": "object",
+      "description": "Represents an AI-powered recommendation for connections, jobs, or content.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the AI recommendation."
+        },
+        "userProfileId": {
+          "type": "string",
+          "description": "Reference to UserProfile that the recommendation is for. (Relationship: UserProfile 1:N AIRecommendation)"
+        },
+        "recommendationType": {
+          "type": "string",
+          "description": "The type of recommendation (e.g., connection, job, content)."
+        },
+        "targetId": {
+          "type": "string",
+          "description": "The ID of the recommended target (e.g., UserProfile ID for connection, JobPost ID for job)."
+        },
+        "score": {
+          "type": "number",
+          "description": "A score indicating the relevance of the recommendation."
+        },
+        "reason": {
+          "type": "string",
+          "description": "The reason or justification for the recommendation."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "The timestamp of when the recommendation was generated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userProfileId",
+        "recommendationType",
+        "targetId",
+        "score",
+        "timestamp"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/userProfiles/{userProfileId}",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores user profile information.  User profiles are publicly readable, but only the authenticated user can modify their own profile.",
+          "params": [
+            {
+              "name": "userProfileId",
+              "description": "The unique identifier for the user profile."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/userProfiles/{userProfileId}/jobPosts/{jobPostId}",
+        "definition": {
+          "entityName": "JobPost",
+          "schema": {
+            "$ref": "#/backend/entities/JobPost"
+          },
+          "description": "Stores job posts created by a user. Only the user who created the job post can modify or delete it.",
+          "params": [
+            {
+              "name": "userProfileId",
+              "description": "The unique identifier for the user profile (owner of the job post)."
+            },
+            {
+              "name": "jobPostId",
+              "description": "The unique identifier for the job post."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/mentorships/{mentorshipId}",
+        "definition": {
+          "entityName": "Mentorship",
+          "schema": {
+            "$ref": "#/backend/entities/Mentorship"
+          },
+          "description": "Stores mentorship relationships.  Includes mentorId and menteeId for direct access and authorization. Access control can be implemented to allow either the mentor or mentee to modify the mentorship details.",
+          "params": [
+            {
+              "name": "mentorshipId",
+              "description": "The unique identifier for the mentorship relationship."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/events/{eventId}",
+        "definition": {
+          "entityName": "Event",
+          "schema": {
+            "$ref": "#/backend/entities/Event"
+          },
+          "description": "Stores event information. The organizerId field indicates the user who created the event. Authorization rules should ensure only the organizer can modify event details.",
+          "params": [
+            {
+              "name": "eventId",
+              "description": "The unique identifier for the event."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/aiRecommendations/{aiRecommendationId}",
+        "definition": {
+          "entityName": "AIRecommendation",
+          "schema": {
+            "$ref": "#/backend/entities/AIRecommendation"
+          },
+          "description": "Stores AI-powered recommendations. The userProfileId indicates the user the recommendation is for. Access should be restricted to the user the recommendation is intended for.",
+          "params": [
+            {
+              "name": "aiRecommendationId",
+              "description": "The unique identifier for the AI recommendation."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to support the core features of the ConnectX application, focusing on professional networking, mentorship, job opportunities, and events. The structure prioritizes authorization independence, clarity, and scalability.  User profiles are stored under `/userProfiles/{userProfileId}`. Job posts created by users are stored as subcollections under the user's profile at `/userProfiles/{userProfileId}/jobPosts/{jobPostId}` to establish clear ownership and facilitate querying for jobs posted by a specific user.  Mentorship relationships are stored in the `/mentorships/{mentorshipId}` collection. This collection stores the mentor and mentee IDs directly within each document, avoiding the need for complex `get()` calls in security rules.  Events are stored in the `/events/{eventId}` collection. The `attendeeIds` array facilitates management of event attendees, but for scalable list operations and security, access control should rely on the organizer's ID. AI Recommendations are stored in `/aiRecommendations/{aiRecommendationId}` to store AI-powered recommendations for connections, jobs, or content. This structure avoids hierarchical authorization dependencies and enables atomic operations. Segregation of user-owned data (job posts under user profiles) and collaborative data (mentorships, events) simplifies security rules. The use of path-based ownership (`/userProfiles/{userProfileId}/jobPosts/{jobPostId}`) enhances security and simplifies ownership-based security rules."
+  }
+}

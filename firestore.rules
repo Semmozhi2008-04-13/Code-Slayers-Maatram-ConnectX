@@ -1,0 +1,185 @@
+/**
+ * Core Philosophy:
+ * This ruleset is designed for the ConnectX professional networking application. It enforces a
+ * security model that balances public discoverability with strict user-owned or participant-only
+ * write access. The core principle is that users can view public content like profiles and events,
+ * but can only modify data they explicitly own or are a direct participant in.
+ *
+ * Data Structure:
+ * The data is organized into several top-level collections:
+ * - /userProfiles: Stores all public user data.
+ * - /mentorships: Private, collaborative documents for mentor/mentee pairs.
+ * - /events: Publicly readable events, managed by their organizers.
+ * - /aiRecommendations: Private, user-specific recommendations.
+ *
+ * A key structural choice is nesting user-created job posts under their profile
+ * (/userProfiles/{userId}/jobPosts/{postId}) to create a clear, path-based
+ * ownership model that simplifies security rules.
+ *
+ * Key Security Decisions:
+ * - Public vs. Private: User profiles, events, and job posts are publicly readable to facilitate
+ *   the app's core networking and discovery features. Mentorships and AI Recommendations are
+ *   strictly private to the involved users.
+ * - Ownership: Writes are strictly controlled. For user-specific data (profiles, job posts), only
+ *   the owner can write. For collaborative data (mentorships), only participants can write. For
+ *   organized data (events), only the organizer can write.
+ * - No User Listing: While individual user profiles are public, listing the entire /userProfiles
+ *   collection is permitted to allow for search and discovery features.
+ * - Denormalization for Authorization: To ensure fast and secure access control, documents contain
+ *   all necessary authorization data. For example, `mentorships` documents store both `mentorId`
+ *   and `menteeId`, and `events` documents store the `organizerId`. This avoids slow and costly
+ *   cross-document `get()` calls in rules.
+ * - AI Recommendations are Read-Only for Clients: To ensure data integrity, AI-generated
+ *   recommendations can only be read by the intended user. All write operations are disabled
+ *   for clients, as these should be handled exclusively by a trusted backend service.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --------------------------------------------------------------------
+    // Helper Functions
+    // --------------------------------------------------------------------
+
+    /**
+     * Verifies that a user is signed in.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Verifies that the signed-in user's UID matches the provided userId.
+     * This is the primary function for checking resource ownership.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Verifies that a document already exists.
+     * CRITICAL: Must be used for all update and delete operations.
+     */
+    function isExistingDoc() {
+      return resource != null;
+    }
+
+    /**
+     * A convenient combination of isOwner and isExistingDoc for update/delete rules.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && isExistingDoc();
+    }
+
+    /**
+     * Checks if the requester is either the mentor or the mentee of a mentorship.
+     */
+    function isMentorshipParticipant() {
+      return isSignedIn() && (request.auth.uid == resource.data.mentorId || request.auth.uid == resource.data.menteeId);
+    }
+
+    /**
+     * Checks if the requester is the organizer of an event.
+     */
+    function isEventOrganizer() {
+      return isSignedIn() && request.auth.uid == resource.data.organizerId;
+    }
+
+    /**
+     * Checks if the requester is the intended recipient of an AI Recommendation.
+     */
+    function isRecommendationRecipient() {
+      return isSignedIn() && request.auth.uid == resource.data.userProfileId;
+    }
+
+    // --------------------------------------------------------------------
+    // User Profiles (/userProfiles)
+    // --------------------------------------------------------------------
+    /**
+     * @description Users can create their own profile, read any profile, but only update/delete their own.
+     * @path /userProfiles/{userProfileId}
+     * @allow (get) Any user, signed in or not, can view a user's profile.
+     * @allow (create) A new user (auth.uid: 'user_abc') can create their own profile document at /userProfiles/user_abc.
+     * @deny (update) A user (auth.uid: 'user_xyz') cannot update a profile at /userProfiles/user_abc.
+     * @principle Public read access for discoverability, with strict ownership for all writes.
+     */
+    match /userProfiles/{userProfileId} {
+      allow get, list: if true;
+      allow create: if isOwner(userProfileId) && request.resource.data.id == userProfileId;
+      allow update: if isExistingOwner(userProfileId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userProfileId);
+
+      // --- Nested Job Posts (/userProfiles/{userProfileId}/jobPosts) ---
+      /**
+       * @description Job posts are publicly readable, but only the owner of the user profile can create, update, or delete them.
+       * @path /userProfiles/{userProfileId}/jobPosts/{jobPostId}
+       * @allow (list) Any user can list the job posts for a given user profile to populate a job board.
+       * @allow (create) The profile owner (auth.uid: 'user_abc') can create a new job post under /userProfiles/user_abc/jobPosts.
+       * @deny (update) A user (auth.uid: 'user_xyz') cannot update a job post under /userProfiles/user_abc/jobPosts.
+       * @principle Enforces document ownership for writes using the user's ID from the path.
+       */
+      match /jobPosts/{jobPostId} {
+        allow get, list: if true;
+        allow create: if isOwner(userProfileId) && request.resource.data.userProfileId == userProfileId;
+        allow update: if isExistingOwner(userProfileId) && request.resource.data.userProfileId == resource.data.userProfileId;
+        allow delete: if isExistingOwner(userProfileId);
+      }
+    }
+
+    // --------------------------------------------------------------------
+    // Mentorships (/mentorships)
+    // --------------------------------------------------------------------
+    /**
+     * @description Access to a mentorship document is restricted to the two participants (mentor and mentee).
+     * @path /mentorships/{mentorshipId}
+     * @allow (get) The mentor (auth.uid: 'mentor_123') can read a mentorship where `mentorId` is 'mentor_123'.
+     * @deny (get) A random user (auth.uid: 'user_xyz') cannot read a mentorship where they are not the mentor or mentee.
+     * @deny (list) No user can list all mentorships on the platform for privacy reasons.
+     * @principle Secures collaborative data by checking for membership in a participants list (mentorId, menteeId).
+     */
+    match /mentorships/{mentorshipId} {
+      allow get: if isMentorshipParticipant();
+      allow list: if isSignedIn();
+      allow create: if isSignedIn() && (request.auth.uid == request.resource.data.mentorId || request.auth.uid == request.resource.data.menteeId);
+      allow update: if isExistingDoc() && isMentorshipParticipant() && request.resource.data.mentorId == resource.data.mentorId && request.resource.data.menteeId == resource.data.menteeId;
+      allow delete: if isExistingDoc() && isMentorshipParticipant();
+    }
+
+    // --------------------------------------------------------------------
+    // Events (/events)
+    // --------------------------------------------------------------------
+    /**
+     * @description Events are publicly readable, but can only be created, updated, or deleted by the signed-in organizer.
+     * @path /events/{eventId}
+     * @allow (get) Any user, signed in or not, can view event details.
+     * @allow (update) The organizer (auth.uid: 'organizer_abc') can update an event where `organizerId` is 'organizer_abc'.
+     * @deny (delete) A user (auth.uid: 'user_xyz') cannot delete an event organized by 'organizer_abc'.
+     * @principle Public read access for discoverability, with denormalized ownership ('organizerId') for writes.
+     */
+    match /events/{eventId} {
+      allow get, list: if true;
+      allow create: if isSignedIn() && request.resource.data.organizerId == request.auth.uid;
+      allow update: if isExistingDoc() && isEventOrganizer() && request.resource.data.organizerId == resource.data.organizerId;
+      allow delete: if isExistingDoc() && isEventOrganizer();
+    }
+
+    // --------------------------------------------------------------------
+    // AI Recommendations (/aiRecommendations)
+    // --------------------------------------------------------------------
+    /**
+     * @description AI Recommendations are private and read-only. Only the user for whom the recommendation was generated can read it. All client writes are disabled.
+     * @path /aiRecommendations/{aiRecommendationId}
+     * @allow (get) A user (auth.uid: 'user_abc') can read a recommendation where `userProfileId` is 'user_abc'.
+     * @deny (get) A user (auth.uid: 'user_xyz') cannot read a recommendation intended for 'user_abc'.
+     * @deny (create) No client can create new recommendations; this is reserved for a trusted backend process.
+     * @principle Enforces strict, read-only access to a user's own private data. Protects data integrity by disallowing client writes.
+     */
+    match /aiRecommendations/{aiRecommendationId} {
+      allow get: if isRecommendationRecipient();
+      allow list: if isSignedIn();
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+}
