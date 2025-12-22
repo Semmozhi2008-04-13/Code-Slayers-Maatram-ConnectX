@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "UserProfile": {
@@ -50,6 +51,14 @@
         "alumni": {
           "type": "boolean",
           "description": "Indicates if the user is an Alumni."
+        },
+        "about": {
+          "type": "string",
+          "description": "A detailed summary about the user."
+        },
+        "isMentor": {
+          "type": "boolean",
+          "description": "Indicates if the user is available as a mentor."
         }
       },
       "required": [

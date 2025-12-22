@@ -3,13 +3,13 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { MOCK_USERS, CURRENT_USER, REGISTERED_USERS, MOCK_POSTS } from "@/lib/data";
+import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
+import { doc, setDoc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Briefcase, Check, Plus, Edit, MessageSquare, Award, GraduationCap, Link as LinkIcon, Star } from "lucide-react";
 import AiProfileCompletion from "@/components/ai/profile-completion";
-import placeholderData from '@/lib/placeholder-images.json';
 import { useToast } from "@/hooks/use-toast";
 import type { View } from '@/app/page';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
@@ -17,12 +17,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import type { Post } from "@/lib/types";
-
-const getPlaceholderImageUrl = (id: string) => {
-    const image = placeholderData.placeholderImages.find(img => img.id === id);
-    return image ? image.imageUrl : `https://picsum.photos/seed/default/600/400`;
-}
+import type { Post, User, Experience } from "@/lib/types";
+import { Skeleton } from "../ui/skeleton";
 
 type ProfilePageProps = {
   id: string;
@@ -78,19 +74,36 @@ const FeaturedItemCard = ({item}: {item: Post | {type: 'link', url: string, titl
 }
 
 export default function ProfilePage({ id, navigate }: ProfilePageProps) {
-  const allUsers = [...MOCK_USERS, ...REGISTERED_USERS];
-  const user = allUsers.find(u => u.id === id);
-  const [requested, setRequested] = useState(false);
+  const { user: currentUser } = useUser();
+  const firestore = useFirestore();
   const { toast } = useToast();
+
+  const userDocRef = useMemoFirebase(
+    () => doc(firestore, 'userProfiles', id),
+    [firestore, id]
+  );
+  const { data: user, isLoading: isUserLoading } = useDoc<User>(userDocRef);
+
+  const [requested, setRequested] = useState(false);
   
-  const isCurrentUser = user?.id === CURRENT_USER.id;
+  const isCurrentUser = currentUser?.uid === id;
 
   // State for editable profile fields - only used if it's the current user
-  const [headline, setHeadline] = useState(isCurrentUser ? CURRENT_USER.headline : user?.headline || '');
-  const [location, setLocation] = useState(isCurrentUser ? CURRENT_USER.location : user?.location || '');
-  const [about, setAbout] = useState(isCurrentUser ? CURRENT_USER.about : user?.about || '');
+  const [headline, setHeadline] = useState(user?.headline || '');
+  const [location, setLocation] = useState(user?.location || '');
+  const [about, setAbout] = useState(user?.about || '');
   const [skills, setSkills] = useState(user?.skills || []);
-  const [certifications, setCertifications] = useState<Certification[]>([]);
+  const [certifications, setCertifications] = useState<Certification[]>([]); // Assuming this isn't in Firestore yet
+
+  // Update local state when user data loads
+  useState(() => {
+    if (user) {
+      setHeadline(user.headline);
+      setLocation(user.location);
+      setAbout(user.about);
+      setSkills(user.skills || []);
+    }
+  }, [user]);
 
   // State for dialogs
   const [isCertDialogOpen, setIsCertDialogOpen] = useState(false);
@@ -101,6 +114,9 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
   const [isSkillDialogOpen, setIsSkillDialogOpen] = useState(false);
   const [newSkill, setNewSkill] = useState('');
 
+  if (isUserLoading) {
+    return <Skeleton className="w-full h-96" />;
+  }
 
   if (!user) {
     return (
@@ -112,30 +128,36 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
     );
   }
 
-  const featuredItems = [
-    MOCK_POSTS[0],
-    { type: 'link', url: 'https://github.com', title: 'My Open Source Project', imageUrl: getPlaceholderImageUrl('post-image-2') },
-    MOCK_POSTS[2],
-  ];
-
   const handleConnect = () => {
     setRequested(true);
     toast({
       title: "Connection Request Sent",
-      description: `Your request to connect with ${user.name} has been sent.`,
+      description: `Your request to connect with ${user.firstName} ${user.lastName} has been sent.`,
     });
   };
 
-  const handleSaveProfile = () => {
-    // In a real app, you'd call an API here.
-    // For now, we just update the state and show a toast.
-    CURRENT_USER.headline = headline;
-    CURRENT_USER.location = location;
-    CURRENT_USER.about = about;
-    toast({
-      title: "Profile Updated",
-      description: "Your profile information has been saved.",
-    });
+  const handleSaveProfile = async () => {
+    if (!isCurrentUser) return;
+    
+    const profileData = {
+        headline,
+        location,
+        about,
+        skills,
+    };
+    try {
+        await setDoc(userDocRef, profileData, { merge: true });
+        toast({
+            title: "Profile Updated",
+            description: "Your profile information has been saved.",
+        });
+    } catch (error) {
+         toast({
+            variant: "destructive",
+            title: "Update Failed",
+            description: "Could not save your profile. Please try again.",
+        });
+    }
   };
 
   const handleAddCertification = () => {
@@ -152,17 +174,23 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
     }
   };
   
-  const handleAddSkill = () => {
+  const handleAddSkill = async () => {
     if (newSkill && isCurrentUser) {
       const updatedSkills = [...skills, newSkill];
-      setSkills(updatedSkills);
-      CURRENT_USER.skills = updatedSkills;
-      setNewSkill('');
-      setIsSkillDialogOpen(false);
-      toast({
-        title: "Skill Added",
-        description: `"${newSkill}" has been added to your skills.`,
-      });
+      setSkills(updatedSkills); // Optimistic update
+      try {
+        await setDoc(userDocRef, { skills: updatedSkills }, { merge: true });
+        toast({
+            title: "Skill Added",
+            description: `"${newSkill}" has been added to your skills.`,
+        });
+      } catch(error) {
+        setSkills(skills); // Revert on error
+        toast({ variant: 'destructive', title: "Error", description: "Could not add skill."});
+      } finally {
+        setNewSkill('');
+        setIsSkillDialogOpen(false);
+      }
     }
   };
 
@@ -173,12 +201,15 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
     });
   }
 
+  const experience: Experience[] = []; // Not yet in firestore
+  const featuredItems: Post[] = []; // Not yet in firestore
+
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <Card>
         <div className="relative h-32 md:h-48 rounded-t-lg overflow-hidden">
           <Image 
-            src={getPlaceholderImageUrl('profile-cover-1')}
+            src={`https://picsum.photos/seed/${user.id}/1200/300`}
             alt="Profile cover image"
             fill
             className="object-cover"
@@ -190,8 +221,8 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
             <div className="flex items-end gap-4">
                 <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-background p-1.5 inline-block shrink-0">
                   <Image
-                      src={user.avatarUrl}
-                      alt={user.name}
+                      src={user.profilePictureUrl}
+                      alt={`${user.firstName} ${user.lastName}`}
                       width={128}
                       height={128}
                       className="rounded-full"
@@ -199,7 +230,7 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
                   />
                 </div>
                 <div className="pb-4">
-                    <h1 className="text-xl sm:text-2xl font-bold font-headline">{user.name}</h1>
+                    <h1 className="text-xl sm:text-2xl font-bold font-headline">{user.firstName} {user.lastName}</h1>
                     <p className="text-base sm:text-lg text-foreground">{isCurrentUser ? headline : user.headline}</p>
                     <p className="text-sm text-muted-foreground mt-1">{isCurrentUser ? location : user.location}</p>
                 </div>
@@ -257,12 +288,13 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
                 )}
               </div>
           </div>
-           <p className="text-sm text-primary mt-4 font-semibold">{user.connections} connections</p>
+           {/* <p className="text-sm text-primary mt-4 font-semibold">{user.connections} connections</p> */}
         </CardContent>
       </Card>
       
       {isCurrentUser && <AiProfileCompletion />}
       
+      {featuredItems.length > 0 && (
        <Card>
         <CardHeader>
             <CardTitle className="font-headline text-xl flex items-center gap-2">
@@ -286,6 +318,7 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
             </Carousel>
         </CardContent>
       </Card>
+      )}
 
       <Card>
         <CardHeader>
@@ -296,7 +329,7 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
         </CardContent>
       </Card>
 
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle className="font-headline text-xl flex items-center gap-2">
             <GraduationCap className="w-6 h-6"/>
@@ -327,9 +360,9 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
             </div>
           )}
         </CardContent>
-      </Card>
+      </Card> */}
 
-      {user.experience.length > 0 && (
+      {experience.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="font-headline text-xl flex items-center gap-2">
@@ -338,7 +371,7 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {user.experience.map((exp, index) => (
+            {experience.map((exp, index) => (
               <div key={index} className="flex gap-4">
                 <Image
                   src={exp.companyLogoUrl}

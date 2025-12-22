@@ -1,73 +1,108 @@
 
 'use client';
 
-import { MOCK_USERS, MOCK_POSTS, MOCK_JOBS } from '@/lib/data';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, where, or, orderBy, limit } from 'firebase/firestore';
 import { UserCard } from '@/components/user-card';
 import PostCard from '@/components/feed/post-card';
 import { JobCard } from '@/components/job-card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { View } from '@/app/page';
+import type { User, Post, Job } from '@/lib/types';
+import { useMemo } from 'react';
 
 type SearchViewProps = {
   query: string;
   navigate: (view: View, id?: string | null) => void;
 };
 
-export default function SearchView({ query, navigate }: SearchViewProps) {
-  const lowercasedQuery = query.toLowerCase();
+export default function SearchView({ query: searchQuery, navigate }: SearchViewProps) {
+  const firestore = useFirestore();
 
-  const filteredUsers = MOCK_USERS.filter(user => 
-    user.name.toLowerCase().includes(lowercasedQuery) ||
-    user.headline.toLowerCase().includes(lowercasedQuery) ||
-    user.skills.some(skill => skill.toLowerCase().includes(lowercasedQuery))
-  );
+  const peopleQuery = useMemoFirebase(() => {
+    if (!searchQuery) return null;
+    return query(
+      collection(firestore, "userProfiles"),
+      // This is a simple prefix match. For full-text search, a dedicated
+      // service like Algolia or Typesense would be better.
+      orderBy('firstName'),
+      where('firstName', '>=', searchQuery),
+      where('firstName', '<=', searchQuery + '\uf8ff'),
+      limit(20)
+    );
+  }, [firestore, searchQuery]);
 
-  const filteredPosts = MOCK_POSTS.filter(post => 
-    post.content.toLowerCase().includes(lowercasedQuery) ||
-    post.author.name.toLowerCase().includes(lowercasedQuery)
-  );
+  const postsQuery = useMemoFirebase(() => {
+    if (!searchQuery) return null;
+    return query(
+      collection(firestore, "posts"),
+      // Firestore doesn't support full-text search on content. 
+      // This will be empty without a proper search index.
+      // where('content', '>=', searchQuery), where('content', '<=', searchQuery + '\uf8ff')
+      limit(20)
+    );
+  }, [firestore, searchQuery]);
+  
+  const jobsQuery = useMemoFirebase(() => {
+    if (!searchQuery) return null;
+     return query(
+      collection(firestore, "jobs"),
+      orderBy('title'),
+      where('title', '>=', searchQuery),
+      where('title', '<=', searchQuery + '\uf8ff'),
+      limit(20)
+    );
+  }, [firestore, searchQuery]);
 
-  const filteredJobs = MOCK_JOBS.filter(job => 
-    job.title.toLowerCase().includes(lowercasedQuery) ||
-    job.company.toLowerCase().includes(lowercasedQuery)
-  );
 
-  const totalResults = filteredUsers.length + filteredPosts.length + filteredJobs.length;
+  const { data: users, isLoading: usersLoading } = useCollection<User>(peopleQuery);
+  const { data: posts, isLoading: postsLoading } = useCollection<Post>(postsQuery);
+  const { data: jobs, isLoading: jobsLoading } = useCollection<Job>(jobsQuery);
+  
+  // This is a client-side filter because Firestore doesn't support OR queries
+  // on different fields with inequality operators, or full-text search.
+  const filteredPosts = useMemo(() => {
+    if (!posts || !searchQuery) return [];
+    const lowerQuery = searchQuery.toLowerCase();
+    return posts.filter(post => post.content.toLowerCase().includes(lowerQuery));
+  }, [posts, searchQuery]);
+  
+  const totalResults = (users?.length || 0) + (filteredPosts?.length || 0) + (jobs?.length || 0);
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold font-headline">Search Results</h1>
         <p className="text-muted-foreground">
-          Found {totalResults} results for "{query}"
+          Found {totalResults} results for "{searchQuery}"
         </p>
       </div>
 
       <Tabs defaultValue="all" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="people">People ({filteredUsers.length})</TabsTrigger>
-          <TabsTrigger value="posts">Posts ({filteredPosts.length})</TabsTrigger>
-          <TabsTrigger value="jobs">Jobs ({filteredJobs.length})</TabsTrigger>
+          <TabsTrigger value="people">People ({users?.length || 0})</TabsTrigger>
+          <TabsTrigger value="posts">Posts ({filteredPosts?.length || 0})</TabsTrigger>
+          <TabsTrigger value="jobs">Jobs ({jobs?.length || 0})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="mt-6 space-y-6">
             {totalResults === 0 ? (
                  <div className="text-center py-16">
-                    <p className="text-muted-foreground">No results found for "{query}".</p>
+                    <p className="text-muted-foreground">No results found for "{searchQuery}".</p>
                     <p className="text-sm text-muted-foreground">Try searching for something else.</p>
                 </div>
             ) : (
                 <>
-                    {filteredUsers.length > 0 && (
+                    {users && users.length > 0 && (
                         <section>
                             <h2 className="text-2xl font-bold font-headline mb-4">People</h2>
                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                                {filteredUsers.slice(0,4).map(user => <UserCard key={user.id} user={user} navigate={navigate} />)}
+                                {users.slice(0,4).map(user => <UserCard key={user.id} user={user} navigate={navigate} />)}
                             </div>
                         </section>
                     )}
-                    {filteredPosts.length > 0 && (
+                    {filteredPosts && filteredPosts.length > 0 && (
                         <section>
                             <h2 className="text-2xl font-bold font-headline mb-4">Posts</h2>
                             <div className="space-y-4">
@@ -75,11 +110,11 @@ export default function SearchView({ query, navigate }: SearchViewProps) {
                             </div>
                         </section>
                     )}
-                     {filteredJobs.length > 0 && (
+                     {jobs && jobs.length > 0 && (
                         <section>
                             <h2 className="text-2xl font-bold font-headline mb-4">Jobs</h2>
                             <div className="space-y-4">
-                                {filteredJobs.slice(0,3).map(job => <JobCard key={job.id} job={job} />)}
+                                {jobs.slice(0,3).map(job => <JobCard key={job.id} job={job} />)}
                             </div>
                         </section>
                     )}
@@ -88,9 +123,9 @@ export default function SearchView({ query, navigate }: SearchViewProps) {
         </TabsContent>
         
         <TabsContent value="people" className="mt-6">
-           {filteredUsers.length > 0 ? (
+           {users && users.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {filteredUsers.map(user => <UserCard key={user.id} user={user} navigate={navigate} />)}
+                    {users.map(user => <UserCard key={user.id} user={user} navigate={navigate} />)}
                 </div>
            ) : (
                <div className="text-center py-16">
@@ -100,7 +135,7 @@ export default function SearchView({ query, navigate }: SearchViewProps) {
         </TabsContent>
 
         <TabsContent value="posts" className="mt-6">
-             {filteredPosts.length > 0 ? (
+             {filteredPosts && filteredPosts.length > 0 ? (
                 <div className="max-w-2xl mx-auto space-y-4">
                     {filteredPosts.map(post => <PostCard key={post.id} post={post} navigate={navigate} />)}
                 </div>
@@ -112,9 +147,9 @@ export default function SearchView({ query, navigate }: SearchViewProps) {
         </TabsContent>
 
         <TabsContent value="jobs" className="mt-6">
-            {filteredJobs.length > 0 ? (
+            {jobs && jobs.length > 0 ? (
                  <div className="space-y-4">
-                    {filteredJobs.map(job => <JobCard key={job.id} job={job} />)}
+                    {jobs.map(job => <JobCard key={job.id} job={job} />)}
                 </div>
             ) : (
                  <div className="text-center py-16">

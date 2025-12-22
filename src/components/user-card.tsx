@@ -19,13 +19,14 @@ type UserCardProps = {
 export function UserCard({ user, navigate }: UserCardProps) {
   const [requested, setRequested] = useState(false);
   const { toast } = useToast();
+  const userName = `${user.firstName} ${user.lastName}`;
 
   const handleConnect = (e: React.MouseEvent) => {
     e.stopPropagation();
     setRequested(true);
     toast({
       title: "Connection Request Sent",
-      description: `Your request to connect with ${user.name} has been sent.`,
+      description: `Your request to connect with ${userName} has been sent.`,
     });
   };
 
@@ -33,14 +34,14 @@ export function UserCard({ user, navigate }: UserCardProps) {
     <Card className="text-center transition-shadow hover:shadow-lg cursor-pointer" onClick={() => navigate('profile', user.id)}>
       <CardContent className="p-6">
         <Image
-          src={user.avatarUrl}
-          alt={user.name}
+          src={user.profilePictureUrl}
+          alt={userName}
           width={80}
           height={80}
           className="rounded-full mx-auto mb-4"
           data-ai-hint="profile avatar"
         />
-        <h3 className="font-semibold font-headline text-lg hover:underline">{user.name}</h3>
+        <h3 className="font-semibold font-headline text-lg hover:underline">{userName}</h3>
         <p className="text-sm text-muted-foreground h-10">{user.headline}</p>
         <Button 
           variant="outline" 
