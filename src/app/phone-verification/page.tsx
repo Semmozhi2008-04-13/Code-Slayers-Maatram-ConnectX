@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -42,7 +41,7 @@ import {
 
 const phoneSchema = z.object({
   countryCode: z.string(),
-  phoneNumber: z.string().min(10, 'Please enter a valid 10-digit phone number.'),
+  phoneNumber: z.string().min(1, 'Please enter a valid phone number.'),
 });
 const otpSchema = z.object({
   otp: z.string().min(6, 'OTP must be 6 digits.').max(6, 'OTP must be 6 digits.'),
