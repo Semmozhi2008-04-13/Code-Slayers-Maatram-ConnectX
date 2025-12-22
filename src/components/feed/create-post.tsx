@@ -6,7 +6,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { CURRENT_USER } from "@/lib/data";
+import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
+import { doc } from "firebase/firestore";
 import { Image as ImageIcon, Video, Sparkles, Wand, Send } from "lucide-react";
 import { generatePost } from "@/ai/flows/ai-post-generation";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -21,7 +22,7 @@ import {
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useToast } from "@/hooks/use-toast";
-import type { Post } from "@/lib/types";
+import type { Post, User } from "@/lib/types";
 import FileUploader from "../file-uploader";
 
 type CreatePostProps = {
@@ -37,14 +38,24 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
   const [aiPrompt, setAiPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
+  
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const userDocRef = useMemoFirebase(
+    () => (user ? doc(firestore, 'userProfiles', user.uid) : null),
+    [user, firestore]
+  );
+  const { data: userProfile, isLoading: isUserProfileLoading } = useDoc<User>(userDocRef);
+
 
   const handleGeneratePost = async () => {
-    if (!aiPrompt) return;
+    if (!aiPrompt || !userProfile) return;
     setIsGenerating(true);
     try {
       const result = await generatePost({
         prompt: aiPrompt,
-        userName: CURRENT_USER.name,
+        userName: userProfile.name,
       });
       setPostContent(result.postContent);
       setIsAiModalOpen(false);
@@ -62,6 +73,8 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
   };
   
   const handlePost = () => {
+    if (!userProfile) return;
+
     if (postContent.trim() === "") {
         toast({
             variant: "destructive",
@@ -73,10 +86,10 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
     const newPost: Post = {
         id: `post-${Date.now()}-${Math.random()}`,
         author: {
-            id: CURRENT_USER.id,
-            name: CURRENT_USER.name,
-            avatarUrl: CURRENT_USER.avatarUrl,
-            headline: CURRENT_USER.headline,
+            id: userProfile.id,
+            name: userProfile.name,
+            avatarUrl: userProfile.avatarUrl,
+            headline: userProfile.headline,
         },
         content: postContent,
         imageUrl: imageUrl || undefined,
@@ -107,6 +120,25 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
         description: "We're working on bringing this feature to you.",
     });
   }
+  
+  if (isUserProfileLoading || !userProfile) {
+      return (
+          <Card>
+              <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                      <Skeleton className="h-12 w-12 rounded-full" />
+                      <div className="w-full space-y-2">
+                         <Skeleton className="h-10 flex-1 rounded-md" />
+                         <div className="flex justify-between">
+                            <Skeleton className="h-8 w-24 rounded-md" />
+                            <Skeleton className="h-8 w-20 rounded-md" />
+                         </div>
+                      </div>
+                  </div>
+              </CardContent>
+          </Card>
+      )
+  }
 
   return (
     <>
@@ -114,8 +146,8 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
         <CardContent className="p-4">
           <div className="flex items-start gap-4">
             <Image
-              src={CURRENT_USER.avatarUrl}
-              alt={CURRENT_USER.name}
+              src={userProfile.avatarUrl}
+              alt={userProfile.name}
               width={48}
               height={48}
               className="rounded-full"
@@ -123,7 +155,7 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
             />
             <div className="w-full">
               <Textarea
-                placeholder={`What's on your mind, ${CURRENT_USER.name.split(" ")[0]}?`}
+                placeholder={`What's on your mind, ${userProfile.name.split(" ")[0]}?`}
                 className="h-24 resize-none"
                 value={postContent}
                 onChange={(e) => setPostContent(e.target.value)}

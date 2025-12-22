@@ -8,28 +8,41 @@ import {
   getAIRecommendations,
   type AIRecommendationsOutput,
 } from "@/ai/flows/ai-powered-recommendations";
-import { CURRENT_USER } from "@/lib/data";
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
+import { useUser, useDoc, useMemoFirebase } from "@/firebase";
+import { doc } from "firebase/firestore";
+import { useFirestore } from "@/firebase";
+import type { User } from "@/lib/types";
 
 export default function AiRecommendations() {
   const [recommendations, setRecommendations] =
     useState<AIRecommendationsOutput | null>(null);
   const [loading, setLoading] = useState(true);
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const userDocRef = useMemoFirebase(
+    () => (user ? doc(firestore, "userProfiles", user.uid) : null),
+    [user, firestore]
+  );
+  const { data: userProfile, isLoading: isUserProfileLoading } = useDoc<User>(userDocRef);
 
   useEffect(() => {
     async function fetchRecommendations() {
+      if (!userProfile) return;
+
       setLoading(true);
       try {
-        const userProfile = `
-          Name: ${CURRENT_USER.name}
-          Headline: ${CURRENT_USER.headline}
-          Industry: ${CURRENT_USER.industry}
-          Skills: ${CURRENT_USER.skills.join(", ")}
-          About: ${CURRENT_USER.about}
+        const profileString = `
+          Name: ${userProfile.firstName} ${userProfile.lastName}
+          Headline: ${userProfile.headline}
+          Industry: ${userProfile.industry}
+          Skills: ${userProfile.skills?.join(", ")}
+          About: ${userProfile.about}
         `;
         const result = await getAIRecommendations({
-          userProfile,
+          userProfile: profileString,
           recentActivity: "Searched for 'product manager' jobs. Viewed profiles in the tech industry.",
         });
         setRecommendations(result);
@@ -39,8 +52,13 @@ export default function AiRecommendations() {
         setLoading(false);
       }
     }
-    fetchRecommendations();
-  }, []);
+    
+    if (userProfile) {
+        fetchRecommendations();
+    } else if (!isUserProfileLoading) {
+        setLoading(false);
+    }
+  }, [userProfile, isUserProfileLoading]);
 
   const renderLoading = () => (
     <div className="space-y-4">
@@ -83,13 +101,13 @@ export default function AiRecommendations() {
             <TabsTrigger value="content">Content</TabsTrigger>
           </TabsList>
           <TabsContent value="people" className="mt-4">
-            {loading ? renderLoading() : renderList(recommendations?.connectionRecommendations ?? [], 'person')}
+            {loading || isUserProfileLoading ? renderLoading() : renderList(recommendations?.connectionRecommendations ?? [], 'person')}
           </TabsContent>
           <TabsContent value="jobs" className="mt-4">
-            {loading ? renderLoading() : renderList(recommendations?.jobRecommendations ?? [], 'job')}
+            {loading || isUserProfileLoading ? renderLoading() : renderList(recommendations?.jobRecommendations ?? [], 'job')}
           </TabsContent>
           <TabsContent value="content" className="mt-4">
-            {loading ? renderLoading() : renderList(recommendations?.contentRecommendations ?? [], 'content')}
+            {loading || isUserProfileLoading ? renderLoading() : renderList(recommendations?.contentRecommendations ?? [], 'content')}
           </TabsContent>
         </Tabs>
       </CardContent>

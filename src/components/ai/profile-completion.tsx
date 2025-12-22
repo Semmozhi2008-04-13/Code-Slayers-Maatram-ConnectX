@@ -5,7 +5,10 @@ import {
   completeProfile,
   type CompleteProfileOutput,
 } from "@/ai/flows/ai-profile-completion";
-import { CURRENT_USER } from "@/lib/data";
+import { useUser, useDoc, useMemoFirebase } from "@/firebase";
+import type { User } from "@/lib/types";
+import { doc } from "firebase/firestore";
+import { useFirestore } from "@/firebase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -16,15 +19,25 @@ export default function AiProfileCompletion() {
   const [suggestions, setSuggestions] =
     useState<CompleteProfileOutput | null>(null);
   const [loading, setLoading] = useState(true);
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const userDocRef = useMemoFirebase(
+    () => (user ? doc(firestore, "userProfiles", user.uid) : null),
+    [user, firestore]
+  );
+  const { data: userProfile, isLoading: isUserProfileLoading } = useDoc<User>(userDocRef);
 
   useEffect(() => {
     async function fetchSuggestions() {
+      if (!userProfile) return;
+
       setLoading(true);
       try {
         const result = await completeProfile({
-          currentProfile: `Skills: ${CURRENT_USER.skills.join(", ")}. About: ${CURRENT_USER.about}`,
-          jobTitle: CURRENT_USER.experience[0]?.title || CURRENT_USER.headline,
-          industry: CURRENT_USER.industry,
+          currentProfile: `Skills: ${userProfile.skills?.join(", ") || ""}. About: ${userProfile.about || ""}`,
+          jobTitle: userProfile.headline,
+          industry: userProfile.industry || "",
         });
         setSuggestions(result);
       } catch (error) {
@@ -33,10 +46,13 @@ export default function AiProfileCompletion() {
         setLoading(false);
       }
     }
-    fetchSuggestions();
-  }, []);
+    
+    if (userProfile) {
+        fetchSuggestions();
+    }
+  }, [userProfile]);
 
-  if (loading) {
+  if (isUserProfileLoading || loading) {
     return (
         <Card>
             <CardHeader>
