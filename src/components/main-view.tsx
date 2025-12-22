@@ -14,7 +14,6 @@ import type { View } from '@/app/page';
 import LoginPage from '@/components/views/login';
 import CreateProfilePage from '@/app/create-profile/page';
 import SignUpPage from '@/app/signup/page';
-import PhoneVerificationPage from '@/app/phone-verification/page';
 
 
 type MainViewProps = {
@@ -55,14 +54,12 @@ export default function MainView({ view, profileId, searchQuery, navigate }: Mai
         return <SignUpPage navigate={navigate} />;
       case 'create-profile':
         return <CreateProfilePage onProfileCreated={() => navigate('feed')} />;
-       case 'phone-verification':
-        return <PhoneVerificationPage onVerificationSuccess={() => navigate('create-profile')} />;
       default:
         return <FeedPage navigate={navigate} />;
     }
   };
 
-  const showHeader = !['login', 'signup', 'create-profile', 'phone-verification'].includes(view);
+  const showHeader = !['login', 'signup', 'create-profile'].includes(view);
 
   return (
     <>

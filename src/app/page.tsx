@@ -9,7 +9,6 @@ import LoginPage from '@/components/views/login';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import CreateProfilePage from '@/app/create-profile/page';
-import PhoneVerificationPage from '@/app/phone-verification/page';
 import SignUpPage from '@/app/signup/page';
 
 export type View =
@@ -23,8 +22,7 @@ export type View =
   | 'search'
   | 'login'
   | 'signup'
-  | 'create-profile'
-  | 'phone-verification';
+  | 'create-profile';
 
 function getViewFromPath(path: string): {
   view: View;
@@ -54,7 +52,6 @@ function getViewFromPath(path: string): {
       'login',
       'signup',
       'create-profile',
-      'phone-verification',
     ].includes(view)
   ) {
     return { view, id: null, query: null };
@@ -73,9 +70,6 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
   const [appLoading, setAppLoading] = useState(true);
   const [profileExists, setProfileExists] = useState<boolean | null>(null);
-  const [isPhoneNumberVerified, setIsPhoneNumberVerified] = useState<
-    boolean | null
-  >(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -105,15 +99,7 @@ export default function Home() {
         return;
       }
 
-      // Authenticated: check phone, then profile
-      if (!user.phoneNumber) {
-        setIsPhoneNumberVerified(false);
-        navigate('phone-verification');
-        setAppLoading(false);
-        return;
-      }
-      setIsPhoneNumberVerified(true);
-
+      // Authenticated: check for profile
       const userDocRef = doc(firestore, 'userProfiles', user.uid);
       try {
         const userDoc = await getDoc(userDocRef);
@@ -123,8 +109,7 @@ export default function Home() {
           if (
             initialView === 'login' ||
             initialView === 'signup' ||
-            initialView === 'create-profile' ||
-            initialView === 'phone-verification'
+            initialView === 'create-profile'
           ) {
             navigate('feed');
           } else {
@@ -215,10 +200,6 @@ export default function Home() {
         return <SignUpPage navigate={navigate} />;
       }
       return <LoginPage onLoginSuccess={() => {}} navigate={navigate} />;
-    }
-
-    if (!isPhoneNumberVerified) {
-      return <PhoneVerificationPage onVerificationSuccess={() => setIsPhoneNumberVerified(true)} />;
     }
 
     if (!profileExists) {
