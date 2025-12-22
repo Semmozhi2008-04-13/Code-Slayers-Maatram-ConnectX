@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
-import { doc } from "firebase/firestore";
+import { collection, doc, addDoc, serverTimestamp } from "firebase/firestore";
 import { Image as ImageIcon, Video, Sparkles, Wand, Send } from "lucide-react";
 import { generatePost } from "@/ai/flows/ai-post-generation";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -55,7 +55,7 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
     try {
       const result = await generatePost({
         prompt: aiPrompt,
-        userName: userProfile.name,
+        userName: `${userProfile.firstName} ${userProfile.lastName}`,
       });
       setPostContent(result.postContent);
       setIsAiModalOpen(false);
@@ -72,8 +72,8 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
     }
   };
   
-  const handlePost = () => {
-    if (!userProfile) return;
+  const handlePost = async () => {
+    if (!userProfile || !user) return;
 
     if (postContent.trim() === "") {
         toast({
@@ -83,27 +83,38 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
         });
         return;
     }
-    const newPost: Post = {
-        id: `post-${Date.now()}-${Math.random()}`,
+    const newPostData = {
         author: {
-            id: userProfile.id,
-            name: userProfile.name,
-            avatarUrl: userProfile.avatarUrl,
+            id: user.uid,
+            name: `${userProfile.firstName} ${userProfile.lastName}`,
+            avatarUrl: userProfile.profilePictureUrl,
             headline: userProfile.headline,
         },
         content: postContent,
         imageUrl: imageUrl || undefined,
         likes: 0,
         comments: 0,
-        createdAt: "Just now",
+        createdAt: serverTimestamp(),
     };
-    onPostCreated(newPost);
-    setPostContent("");
-    setImageUrl("");
-     toast({
-        title: "Post Created",
-        description: "Your post has been successfully published.",
+    
+    try {
+      const postsCollection = collection(firestore, 'posts');
+      await addDoc(postsCollection, newPostData);
+      
+      setPostContent("");
+      setImageUrl("");
+      toast({
+          title: "Post Created",
+          description: "Your post has been successfully published.",
       });
+    } catch (error) {
+        console.error("Error creating post:", error);
+        toast({
+            variant: "destructive",
+            title: "Failed to Create Post",
+            description: "An unexpected error occurred. Please try again.",
+        });
+    }
   }
 
   const handleAddMedia = () => {
@@ -111,13 +122,6 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
     toast({
         title: "Media Added",
         description: "Your media has been attached to the post.",
-    });
-  }
-  
-  const handleFeatureNotAvailable = () => {
-    toast({
-        title: "Feature Coming Soon",
-        description: "We're working on bringing this feature to you.",
     });
   }
   
@@ -146,8 +150,8 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
         <CardContent className="p-4">
           <div className="flex items-start gap-4">
             <Image
-              src={userProfile.avatarUrl}
-              alt={userProfile.name}
+              src={userProfile.profilePictureUrl}
+              alt={`${userProfile.firstName} ${userProfile.lastName}`}
               width={48}
               height={48}
               className="rounded-full"
@@ -155,7 +159,7 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
             />
             <div className="w-full">
               <Textarea
-                placeholder={`What's on your mind, ${userProfile.name.split(" ")[0]}?`}
+                placeholder={`What's on your mind, ${userProfile.firstName}?`}
                 className="h-24 resize-none"
                 value={postContent}
                 onChange={(e) => setPostContent(e.target.value)}
@@ -247,3 +251,5 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
     </>
   );
 }
+
+    

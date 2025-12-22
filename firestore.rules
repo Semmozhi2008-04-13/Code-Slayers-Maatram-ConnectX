@@ -8,23 +8,19 @@
  * Data Structure:
  * The data is organized into several top-level collections:
  * - /userProfiles: Stores all public user data.
+ * - /posts: A top-level collection for all user posts, optimized for feed queries.
+ * - /jobs: A top-level collection for all job posts, for the global job board.
  * - /mentorships: Private, collaborative documents for mentor/mentee pairs.
  * - /events: Publicly readable events, managed by their organizers.
  * - /aiRecommendations: Private, user-specific recommendations.
- *
- * A key structural choice is nesting user-created job posts under their profile
- * (/userProfiles/{userId}/jobPosts/{postId}) to create a clear, path-based
- * ownership model that simplifies security rules.
  *
  * Key Security Decisions:
  * - Public vs. Private: User profiles, events, and job posts are publicly readable to facilitate
  *   the app's core networking and discovery features. Mentorships and AI Recommendations are
  *   strictly private to the involved users.
- * - Ownership: Writes are strictly controlled. For user-specific data (profiles, job posts), only
+ * - Ownership: Writes are strictly controlled. For user-specific data (profiles, posts), only
  *   the owner can write. For collaborative data (mentorships), only participants can write. For
  *   organized data (events), only the organizer can write.
- * - No User Listing: While individual user profiles are public, listing the entire /userProfiles
- *   collection is permitted to allow for search and discovery features.
  * - Denormalization for Authorization: To ensure fast and secure access control, documents contain
  *   all necessary authorization data. For example, `mentorships` documents store both `mentorId`
  *   and `menteeId`, and `events` documents store the `organizerId`. This avoids slow and costly
@@ -108,23 +104,41 @@ service cloud.firestore {
       allow create: if isOwner(userProfileId) && request.resource.data.id == userProfileId;
       allow update: if isExistingOwner(userProfileId) && request.resource.data.id == resource.data.id;
       allow delete: if isExistingOwner(userProfileId);
-
-      // --- Nested Job Posts (/userProfiles/{userProfileId}/jobPosts) ---
-      /**
-       * @description Job posts are publicly readable, but only the owner of the user profile can create, update, or delete them.
-       * @path /userProfiles/{userProfileId}/jobPosts/{jobPostId}
-       * @allow (list) Any user can list the job posts for a given user profile to populate a job board.
-       * @allow (create) The profile owner (auth.uid: 'user_abc') can create a new job post under /userProfiles/user_abc/jobPosts.
-       * @deny (update) A user (auth.uid: 'user_xyz') cannot update a job post under /userProfiles/user_abc/jobPosts.
-       * @principle Enforces document ownership for writes using the user's ID from the path.
-       */
-      match /jobPosts/{jobPostId} {
-        allow get, list: if true;
-        allow create: if isOwner(userProfileId) && request.resource.data.userProfileId == userProfileId;
-        allow update: if isExistingOwner(userProfileId) && request.resource.data.userProfileId == resource.data.userProfileId;
-        allow delete: if isExistingOwner(userProfileId);
-      }
     }
+    
+    // --------------------------------------------------------------------
+    // Posts (/posts)
+    // --------------------------------------------------------------------
+    /**
+     * @description Posts are readable by any authenticated user, but only the author can write.
+     * @path /posts/{postId}
+     * @allow (list) Any authenticated user can list posts to see the main feed.
+     * @allow (create) The author (auth.uid matches author.id) can create a post.
+     * @deny (update) A user cannot update a post they did not write.
+     * @principle Enables a global feed while securing content ownership.
+     */
+     match /posts/{postId} {
+        allow get, list: if isSignedIn();
+        allow create: if isOwner(request.resource.data.author.id);
+        allow update, delete: if isOwner(resource.data.author.id);
+     }
+
+    // --------------------------------------------------------------------
+    // Jobs (/jobs)
+    // --------------------------------------------------------------------
+    /**
+     * @description Job posts are readable by any authenticated user, but only the author can write.
+     * @path /jobs/{jobId}
+     * @allow (list) Any authenticated user can list jobs.
+     * @allow (create) The author (auth.uid matches userProfileId) can create a job post.
+     * @deny (update) A user cannot update a job post they did not create.
+     * @principle Enables a global job board while securing content ownership.
+     */
+     match /jobs/{jobId} {
+        allow get, list: if isSignedIn();
+        allow create: if isOwner(request.resource.data.userProfileId);
+        allow update, delete: if isOwner(resource.data.userProfileId);
+     }
 
     // --------------------------------------------------------------------
     // Mentorships (/mentorships)

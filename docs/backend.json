@@ -59,6 +59,64 @@
         "email"
       ]
     },
+    "Post": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Post",
+      "type": "object",
+      "description": "Represents a post made by a user in the feed.",
+      "properties": {
+        "author": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "avatarUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "headline": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "avatarUrl"
+          ],
+          "description": "Denormalized author information for quick display."
+        },
+        "content": {
+          "type": "string",
+          "description": "The main text content of the post."
+        },
+        "imageUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "An optional image URL for the post."
+        },
+        "likes": {
+          "type": "number",
+          "description": "The number of likes on the post."
+        },
+        "comments": {
+          "type": "number",
+          "description": "The number of comments on the post."
+        },
+        "createdAt": {
+          "type": "object",
+          "description": "The server timestamp when the post was created."
+        }
+      },
+      "required": [
+        "author",
+        "content",
+        "createdAt"
+      ]
+    },
     "JobPost": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "JobPost",
@@ -285,20 +343,32 @@
         }
       },
       {
-        "path": "/userProfiles/{userProfileId}/jobPosts/{jobPostId}",
+        "path": "/posts/{postId}",
+        "definition": {
+          "entityName": "Post",
+          "schema": {
+            "$ref": "#/backend/entities/Post"
+          },
+          "description": "Top-level collection for all posts. Publicly readable by all authenticated users, but only the original author can modify or delete their own posts.",
+          "params": [
+            {
+              "name": "postId",
+              "description": "The unique identifier for the post."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/jobs/{jobId}",
         "definition": {
           "entityName": "JobPost",
           "schema": {
             "$ref": "#/backend/entities/JobPost"
           },
-          "description": "Stores job posts created by a user. Only the user who created the job post can modify or delete it.",
+          "description": "Top-level collection for all job posts. Publicly readable, but only the user who created the job post can modify or delete it.",
           "params": [
             {
-              "name": "userProfileId",
-              "description": "The unique identifier for the user profile (owner of the job post)."
-            },
-            {
-              "name": "jobPostId",
+              "name": "jobId",
               "description": "The unique identifier for the job post."
             }
           ]
@@ -353,6 +423,6 @@
         }
       }
     ],
-    "reasoning": "The Firestore data structure is designed to support the core features of the ConnectX application, focusing on professional networking, mentorship, job opportunities, and events. The structure prioritizes authorization independence, clarity, and scalability.  User profiles are stored under `/userProfiles/{userProfileId}`. Job posts created by users are stored as subcollections under the user's profile at `/userProfiles/{userProfileId}/jobPosts/{jobPostId}` to establish clear ownership and facilitate querying for jobs posted by a specific user.  Mentorship relationships are stored in the `/mentorships/{mentorshipId}` collection. This collection stores the mentor and mentee IDs directly within each document, avoiding the need for complex `get()` calls in security rules.  Events are stored in the `/events/{eventId}` collection. The `attendeeIds` array facilitates management of event attendees, but for scalable list operations and security, access control should rely on the organizer's ID. AI Recommendations are stored in `/aiRecommendations/{aiRecommendationId}` to store AI-powered recommendations for connections, jobs, or content. This structure avoids hierarchical authorization dependencies and enables atomic operations. Segregation of user-owned data (job posts under user profiles) and collaborative data (mentorships, events) simplifies security rules. The use of path-based ownership (`/userProfiles/{userProfileId}/jobPosts/{jobPostId}`) enhances security and simplifies ownership-based security rules."
+    "reasoning": "The Firestore data structure is designed to support the core features of the ConnectX application, focusing on professional networking, mentorship, job opportunities, and events. The structure prioritizes authorization independence, clarity, and scalability. User profiles are stored under `/userProfiles/{userProfileId}`. A top-level `/jobs` collection is used for the main job board to allow global querying. Mentorship relationships are stored in the `/mentorships/{mentorshipId}` collection. This collection stores the mentor and mentee IDs directly within each document, avoiding the need for complex `get()` calls in security rules. Events are stored in the `/events/{eventId}` collection. The `attendeeIds` array facilitates management of event attendees, but for scalable list operations and security, access control should rely on the organizer's ID. AI Recommendations are stored in `/aiRecommendations/{aiRecommendationId}` to store AI-powered recommendations for connections, jobs, or content. This structure avoids hierarchical authorization dependencies and enables atomic operations. Segregation of user-owned data (job posts under user profiles) and collaborative data (mentorships, events) simplifies security rules."
   }
 }

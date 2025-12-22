@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import type { Job } from "@/lib/types";
 import { MapPin, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { formatDistanceToNow } from 'date-fns';
 
 type JobCardProps = {
   job: Job;
@@ -17,6 +18,18 @@ type JobCardProps = {
 export function JobCard({ job }: JobCardProps) {
   const { toast } = useToast();
   const [isApplied, setIsApplied] = useState(false);
+  
+  const postedAtLabel = useMemo(() => {
+    if (!job.postedAt) return 'N/A';
+    try {
+        // postedAt could be a string or a Timestamp-like object from Firestore
+        const date = typeof job.postedAt === 'string' ? new Date(job.postedAt) : (job.postedAt as any).toDate();
+        return formatDistanceToNow(date, { addSuffix: true });
+    } catch (e) {
+        return 'N/A';
+    }
+  }, [job.postedAt]);
+
 
   const handleApply = () => {
     setIsApplied(true);
@@ -48,7 +61,7 @@ export function JobCard({ job }: JobCardProps) {
         <div className="flex flex-col items-start sm:items-end gap-2 w-full sm:w-auto">
           <div className="flex gap-2">
             <Badge variant="secondary">{job.type}</Badge>
-            <Badge variant="outline">Posted {job.postedAt}</Badge>
+            <Badge variant="outline">Posted {postedAtLabel}</Badge>
           </div>
           <Button className="mt-2 w-full sm:w-auto" onClick={handleApply} disabled={isApplied}>
             {isApplied ? (

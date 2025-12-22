@@ -1,24 +1,18 @@
 
+import type { Timestamp } from 'firebase/firestore';
+
 export type User = {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  password?: string; // Should always be handled securely, never sent to client
-  avatarUrl: string;
+  profilePictureUrl: string;
   headline: string;
   location: string;
   industry: string;
   skills: string[];
-  isMentor: boolean;
-  connections: number;
+  alumni: boolean;
   about: string;
-  experience: Experience[];
-  role: 'Alumni' | 'Student';
-  college?: string;
-  school?: string;
-  graduationYear?: string;
-  department?: string;
-  dateOfBirth?: string;
 };
 
 export type Experience = {
@@ -32,12 +26,17 @@ export type Experience = {
 
 export type Post = {
   id: string;
-  author: Pick<User, 'id' | 'name' | 'avatarUrl' | 'headline'>;
+  author: {
+    id: string;
+    name: string;
+    avatarUrl: string;
+    headline: string;
+  };
   content: string;
   imageUrl?: string;
   likes: number;
   comments: number;
-  createdAt: string;
+  createdAt: Timestamp;
 };
 
 export type Job = {
@@ -58,3 +57,5 @@ export type Event = {
   location: string;
   attendees: number;
 };
+
+    

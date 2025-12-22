@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "../ui/textarea";
 import type { View } from '@/app/page';
+import { formatDistanceToNow } from 'date-fns';
 
 type PostCardProps = {
   post: Post;
@@ -72,6 +73,9 @@ export default function PostCard({ post, navigate }: PostCardProps) {
         });
     }
   };
+  
+  const formattedDate = post.createdAt ? formatDistanceToNow(post.createdAt.toDate(), { addSuffix: true }) : 'Just now';
+
 
   return (
     <Card className="group">
@@ -97,7 +101,7 @@ export default function PostCard({ post, navigate }: PostCardProps) {
             <p className="text-xs text-muted-foreground">
               {post.author.headline}
             </p>
-            <p className="text-xs text-muted-foreground">{post.createdAt}</p>
+            <p className="text-xs text-muted-foreground">{formattedDate}</p>
           </div>
         </div>
       </CardHeader>
@@ -182,3 +186,5 @@ export default function PostCard({ post, navigate }: PostCardProps) {
     </Card>
   );
 }
+
+    
