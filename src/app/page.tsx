@@ -10,6 +10,8 @@ import { useUser, useFirestore } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import CreateProfilePage from '@/app/create-profile/page';
 import SignUpPage from '@/app/signup/page';
+import EmailVerificationPage from '@/app/email-verification/page';
+
 
 export type View =
   | 'feed'
@@ -22,7 +24,8 @@ export type View =
   | 'search'
   | 'login'
   | 'signup'
-  | 'create-profile';
+  | 'create-profile'
+  | 'email-verification';
 
 function getViewFromPath(path: string): {
   view: View;
@@ -52,6 +55,7 @@ function getViewFromPath(path: string): {
       'login',
       'signup',
       'create-profile',
+      'email-verification',
     ].includes(view)
   ) {
     return { view, id: null, query: null };
@@ -98,6 +102,16 @@ export default function Home() {
         setAppLoading(false);
         return;
       }
+      
+      // User is authenticated, force reload to get latest emailVerified status
+      await user.reload();
+      
+      if (!user.emailVerified) {
+        navigate('email-verification');
+        setAppLoading(false);
+        return;
+      }
+
 
       // Authenticated: check for profile
       const userDocRef = doc(firestore, 'userProfiles', user.uid);
@@ -107,9 +121,7 @@ export default function Home() {
           setProfileExists(true);
           // Profile exists, show the intended page or default to feed
           if (
-            initialView === 'login' ||
-            initialView === 'signup' ||
-            initialView === 'create-profile'
+            ['login', 'signup', 'create-profile', 'email-verification'].includes(initialView)
           ) {
             navigate('feed');
           } else {
@@ -200,6 +212,10 @@ export default function Home() {
         return <SignUpPage navigate={navigate} />;
       }
       return <LoginPage onLoginSuccess={() => {}} navigate={navigate} />;
+    }
+    
+    if (!user.emailVerified) {
+        return <EmailVerificationPage navigate={navigate} />
     }
 
     if (!profileExists) {

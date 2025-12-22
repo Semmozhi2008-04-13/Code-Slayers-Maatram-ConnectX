@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -26,7 +25,7 @@ import {
 import { Eye, EyeOff, Loader2, Network } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useFirebase } from '@/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import type { View } from '@/app/page';
 import PasswordStrengthChecker from '@/components/password-strength-checker';
 
@@ -83,13 +82,15 @@ export default function SignUpPage({ navigate }: SignUpPageProps) {
   const handleSignUp = async (values: SignUpFormValues) => {
     setIsLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, values.email, values.password);
+      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      await sendEmailVerification(userCredential.user);
+      
       toast({
-        title: 'Sign Up Successful',
+        title: 'Sign Up Successful!',
         description:
-          'Your account has been created. Please sign in to continue.',
+          'A verification link has been sent to your email. Please verify to continue.',
       });
-      navigate('login');
+      // The main page component will now automatically handle showing the verification page.
     } catch (error: any) {
       let description = 'An unexpected error occurred. Please try again.';
       if (error.code === 'auth/email-already-in-use') {
