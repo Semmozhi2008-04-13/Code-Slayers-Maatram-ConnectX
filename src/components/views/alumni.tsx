@@ -16,6 +16,8 @@ import { collection, query, where } from "firebase/firestore";
 import type { View } from '@/app/page';
 import { Skeleton } from "../ui/skeleton";
 import type { User } from "@/lib/types";
+import { Card, CardContent } from "../ui/card";
+
 
 type AlumniPageProps = {
   navigate: (view: View, id?: string | null) => void;
@@ -50,7 +52,7 @@ export default function AlumniPage({ navigate }: AlumniPageProps) {
 
     return alumniUsers.filter((user) => {
       const searchLower = search.toLowerCase();
-      const nameMatch = user.name.toLowerCase().includes(searchLower);
+      const nameMatch = `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchLower);
       const headlineMatch = user.headline.toLowerCase().includes(searchLower);
       const skillsMatch = user.skills?.some((skill) =>
         skill.toLowerCase().includes(searchLower)
