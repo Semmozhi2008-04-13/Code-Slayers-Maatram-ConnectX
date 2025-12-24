@@ -38,7 +38,7 @@ function getViewFromPath(path: string): {
   if (view === 'profile' && pathParts[1]) {
     return { view: 'profile', id: pathParts[1], query: null };
   }
-  if (view === 'search') {
+  if (view === 'search' && typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
     const query = urlParams.get('q');
     return { view: 'search', id: null, query };
@@ -153,7 +153,7 @@ export default function Home() {
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [user, isUserLoading]);
+  }, [user, isUserLoading, firestore]);
 
   const navigate = (
     newView: View,
@@ -218,18 +218,43 @@ export default function Home() {
         return <EmailVerificationPage navigate={navigate} />
     }
 
-    if (!profileExists) {
-      return <CreateProfilePage onProfileCreated={() => setProfileExists(true)} />;
+    if (profileExists === false) {
+      return <CreateProfilePage onProfileCreated={() => {
+        setProfileExists(true);
+        navigate('feed');
+      }} />;
+    }
+
+    if (profileExists === true) {
+        return (
+        <MainView
+            view={view}
+            profileId={profileId}
+            searchQuery={searchQuery}
+            navigate={navigate}
+        />
+        );
     }
 
     return (
-      <MainView
-        view={view}
-        profileId={profileId}
-        searchQuery={searchQuery}
-        navigate={navigate}
-      />
-    );
+        <div className="flex flex-col items-center justify-center min-h-screen bg-background text-primary p-4">
+          <AnimatedTitle text="Maatram ConnectX" />
+          <div className="mt-4 flex items-center space-x-2">
+            <Skeleton
+              className="h-4 w-4 rounded-full animate-pulse"
+              style={{ animationDelay: '0.2s' }}
+            />
+            <Skeleton
+              className="h-4 w-4 rounded-full animate-pulse"
+              style={{ animationDelay: '0.4s' }}
+            />
+            <Skeleton
+              className="h-4 w-4 rounded-full animate-pulse"
+              style={{ animationDelay: '0.6s' }}
+            />
+          </div>
+        </div>
+      );
   };
 
   return <>{renderContent()}</>;

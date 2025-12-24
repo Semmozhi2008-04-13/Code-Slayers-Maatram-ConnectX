@@ -83,7 +83,8 @@ export default function CreateProfilePage({ onProfileCreated }: CreateProfilePag
         profilePictureUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
         skills: [],
         alumni: false, // Default value
-      });
+        isMentor: false, // Default value
+      }, { merge: true });
 
       toast({
         title: 'Profile Created!',
