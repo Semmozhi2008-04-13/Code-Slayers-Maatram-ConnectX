@@ -22,7 +22,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Eye, EyeOff, Loader2, Network } from 'lucide-react';
+import { Loader2, Network } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useFirebase } from '@/firebase';
 import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
@@ -149,7 +149,7 @@ export default function SignUpPage({ navigate }: SignUpPageProps) {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <PasswordStrengthChecker />
+                        <PasswordStrengthChecker {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

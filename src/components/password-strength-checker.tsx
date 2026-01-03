@@ -15,76 +15,87 @@ const passwordCriteria = [
   { id: 'special', text: 'At least one special character', regex: /[^A-Za-z0-9]/ },
 ];
 
-const PasswordStrengthChecker = () => {
-  const [password, setPassword] = useState('');
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+interface PasswordStrengthCheckerProps {
+    value: string;
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    [key: string]: any; // Allow other props to be passed down
+}
 
-  const { strengthScore, criteriaMet } = useMemo(() => {
-    let score = 0;
-    const met = passwordCriteria.map(criterion => {
-      const isMet = criterion.regex.test(password);
-      if (isMet) {
-        score++;
-      }
-      return { ...criterion, met: isMet };
-    });
-    return { strengthScore: score, criteriaMet: met };
-  }, [password]);
+const PasswordStrengthChecker = React.forwardRef<HTMLInputElement, PasswordStrengthCheckerProps>(
+    ({ value, onChange, ...props }, ref) => {
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-  const getStrengthColor = () => {
-    if (strengthScore <= 2) return 'bg-red-500';
-    if (strengthScore <= 4) return 'bg-orange-500';
-    return 'bg-green-500';
-  };
+    const { strengthScore, criteriaMet } = useMemo(() => {
+        let score = 0;
+        const met = passwordCriteria.map(criterion => {
+        const isMet = criterion.regex.test(value);
+        if (isMet) {
+            score++;
+        }
+        return { ...criterion, met: isMet };
+        });
+        return { strengthScore: score, criteriaMet: met };
+    }, [value]);
 
-  const progressValue = (strengthScore / passwordCriteria.length) * 100;
+    const getStrengthColor = () => {
+        if (strengthScore <= 2) return 'bg-red-500';
+        if (strengthScore <= 4) return 'bg-orange-500';
+        return 'bg-green-500';
+    };
 
-  const togglePasswordVisibility = () => {
-    setIsPasswordVisible(!isPasswordVisible);
-  };
+    const progressValue = (strengthScore / passwordCriteria.length) * 100;
 
-  return (
-    <div className="w-full max-w-sm space-y-4">
-      <div className="relative">
-        <Input
-          type={isPasswordVisible ? 'text' : 'password'}
-          placeholder="Enter your password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="pr-10"
-        />
-        <button
-          type="button"
-          onClick={togglePasswordVisibility}
-          className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
-        >
-          {isPasswordVisible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-        </button>
-      </div>
+    const togglePasswordVisibility = () => {
+        setIsPasswordVisible(!isPasswordVisible);
+    };
 
-      <div>
-        <Progress value={progressValue} indicatorClassName={cn("transition-all duration-300", getStrengthColor())} className="h-2"/>
-        <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
-          {criteriaMet.map((criterion) => (
-            <div
-              key={criterion.id}
-              className={cn(
-                'flex items-center text-xs transition-colors',
-                criterion.met ? 'text-green-600' : 'text-muted-foreground'
-              )}
+    return (
+        <div className="w-full space-y-4">
+        <div className="relative">
+            <Input
+            type={isPasswordVisible ? 'text' : 'password'}
+            placeholder="Enter your password"
+            value={value}
+            onChange={onChange}
+            className="pr-10"
+            ref={ref}
+            {...props}
+            />
+            <button
+            type="button"
+            onClick={togglePasswordVisibility}
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
             >
-              {criterion.met ? (
-                <Check className="mr-2 h-4 w-4" />
-              ) : (
-                <X className="mr-2 h-4 w-4" />
-              )}
-              <span>{criterion.text}</span>
-            </div>
-          ))}
+            {isPasswordVisible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
         </div>
-      </div>
-    </div>
-  );
-};
+
+        <div>
+            <Progress value={progressValue} indicatorClassName={cn("transition-all duration-300", getStrengthColor())} className="h-2"/>
+            <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
+            {criteriaMet.map((criterion) => (
+                <div
+                key={criterion.id}
+                className={cn(
+                    'flex items-center text-xs transition-colors',
+                    criterion.met ? 'text-green-600' : 'text-muted-foreground'
+                )}
+                >
+                {criterion.met ? (
+                    <Check className="mr-2 h-4 w-4" />
+                ) : (
+                    <X className="mr-2 h-4 w-4" />
+                )}
+                <span>{criterion.text}</span>
+                </div>
+            ))}
+            </div>
+        </div>
+        </div>
+    );
+});
+
+PasswordStrengthChecker.displayName = 'PasswordStrengthChecker';
+
 
 export default PasswordStrengthChecker;
