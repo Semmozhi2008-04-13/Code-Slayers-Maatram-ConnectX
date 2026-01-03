@@ -59,6 +59,14 @@
         "isMentor": {
           "type": "boolean",
           "description": "Indicates if the user is available as a mentor."
+        },
+        "graduationYear": {
+          "type": "number",
+          "description": "The year the user graduated."
+        },
+        "major": {
+          "type": "string",
+          "description": "The user's major or field of study."
         }
       },
       "required": [

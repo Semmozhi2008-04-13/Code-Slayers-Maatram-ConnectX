@@ -34,6 +34,8 @@ const profileSchema = z.object({
   headline: z.string().min(1, 'Headline is required.'),
   location: z.string().min(1, 'Location is required.'),
   about: z.string().min(10, 'Tell us a bit more about yourself (min. 10 characters).'),
+  major: z.string().optional(),
+  graduationYear: z.coerce.number().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -57,6 +59,8 @@ export default function CreateProfilePage({ onProfileCreated }: CreateProfilePag
       headline: '',
       location: '',
       about: '',
+      major: '',
+      graduationYear: undefined,
     },
   });
 
@@ -80,6 +84,8 @@ export default function CreateProfilePage({ onProfileCreated }: CreateProfilePag
         headline: values.headline,
         location: values.location,
         about: values.about,
+        major: values.major,
+        graduationYear: values.graduationYear,
         profilePictureUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
         skills: [],
         alumni: false, // Default value
@@ -179,6 +185,34 @@ export default function CreateProfilePage({ onProfileCreated }: CreateProfilePag
                     </FormItem>
                   )}
                 />
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField
+                        control={profileForm.control}
+                        name="major"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Major</FormLabel>
+                            <FormControl>
+                            <Input placeholder="e.g., Computer Science" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={profileForm.control}
+                        name="graduationYear"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Graduation Year</FormLabel>
+                            <FormControl>
+                            <Input type="number" placeholder="e.g., 2024" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                </div>
                 <FormField
                   control={profileForm.control}
                   name="about"
