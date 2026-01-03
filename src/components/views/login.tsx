@@ -48,14 +48,16 @@ const SocialButton = ({
   provider,
   icon,
   onClick,
+  isLoading,
 }: {
   provider: string;
   icon: React.ReactNode;
   onClick: () => void;
+  isLoading: boolean;
 }) => {
   return (
-    <Button variant="outline" className="w-full" onClick={onClick}>
-      {icon}
+    <Button variant="outline" className="w-full" onClick={onClick} disabled={isLoading}>
+      {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : icon}
       Sign in with {provider}
     </Button>
   );
@@ -99,6 +101,7 @@ const LinkedInIcon = () => (
 export default function LoginPage({ navigate }: LoginPageProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSocialLoading, setIsSocialLoading] = useState<false | 'Google' | 'LinkedIn'>(false);
   const { toast } = useToast();
   const { auth } = useFirebase();
 
@@ -152,11 +155,7 @@ export default function LoginPage({ navigate }: LoginPageProps) {
       });
       return;
     }
-    setIsLoading(true);
-    toast({
-      title: 'Signing in...',
-      description: `Authenticating with ${provider}.`,
-    });
+    setIsSocialLoading(provider);
     try {
       const authProvider = new GoogleAuthProvider(); // Only Google is implemented for now
       await signInWithPopup(auth, authProvider);
@@ -172,7 +171,7 @@ export default function LoginPage({ navigate }: LoginPageProps) {
         description: `Could not sign in with ${provider}. Please try again.`,
       });
     } finally {
-      setIsLoading(false);
+      setIsSocialLoading(false);
     }
   };
 
@@ -253,7 +252,7 @@ export default function LoginPage({ navigate }: LoginPageProps) {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full" disabled={isLoading || !!isSocialLoading}>
                   {isLoading && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
@@ -278,6 +277,7 @@ export default function LoginPage({ navigate }: LoginPageProps) {
               provider="Google"
               icon={<GoogleIcon />}
               onClick={() => handleSocialLogin('Google')}
+              isLoading={isSocialLoading === 'Google'}
             />
             <SocialButton
               provider="LinkedIn"
@@ -288,6 +288,7 @@ export default function LoginPage({ navigate }: LoginPageProps) {
                   description: 'LinkedIn sign-in is under development.',
                 })
               }
+              isLoading={isSocialLoading === 'LinkedIn'}
             />
           </div>
         </CardContent>
