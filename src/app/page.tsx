@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -211,7 +212,7 @@ export default function Home() {
       if (view === 'signup') {
         return <SignUpPage navigate={navigate} />;
       }
-      return <LoginPage onLoginSuccess={() => {}} navigate={navigate} />;
+      return <LoginPage navigate={navigate} />;
     }
     
     if (!user.emailVerified) {

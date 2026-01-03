@@ -30,7 +30,6 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 type LoginPageProps = {
-  onLoginSuccess: () => void;
   navigate: (view: View) => void;
 };
 
@@ -48,7 +47,7 @@ const GoogleIcon = () => <svg className="mr-2 h-4 w-4" aria-hidden="true" focusa
 const LinkedInIcon = () => <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="linkedin-in" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M100.3 448H7.4V148.9h92.9V448zM53.8 108.1C24.1 108.1 0 83.5 0 53.8S24.1 0 53.8 0s53.8 24.1 53.8 53.8-24.1 54.3-53.8 54.3zM448 448h-92.7V302.4c0-34.7-.7-79.2-48.3-79.2-48.3 0-55.7 37.7-55.7 76.7V448h-92.8V148.9h89.1v40.8h1.3c12.4-23.5 42.7-48.3 87.9-48.3 94 0 111.3 61.9 111.3 142.3V448z"></path></svg>;
 
 
-export default function LoginPage({ onLoginSuccess, navigate }: LoginPageProps) {
+export default function LoginPage({ navigate }: LoginPageProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -68,7 +67,7 @@ export default function LoginPage({ onLoginSuccess, navigate }: LoginPageProps) 
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({ title: "Login Successful", description: "Welcome back!" });
-      onLoginSuccess();
+      // onLoginSuccess is handled by the root page's useEffect
     } catch (error: any) {
         let description = "An unexpected error occurred. Please try again.";
         if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
@@ -97,7 +96,7 @@ export default function LoginPage({ onLoginSuccess, navigate }: LoginPageProps) 
             title: "Login Successful",
             description: `Successfully signed in with ${provider}.`,
         });
-        onLoginSuccess();
+        // onLoginSuccess is handled by the root page's useEffect
     } catch (error) {
         console.error(`${provider} sign-in error:`, error);
         toast({

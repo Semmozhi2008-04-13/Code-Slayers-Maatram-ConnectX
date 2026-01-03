@@ -1,3 +1,4 @@
+
 'use client';
 
 import { SiteHeader } from '@/components/site-header';
@@ -49,7 +50,7 @@ export default function MainView({ view, profileId, searchQuery, navigate }: Mai
         }
         return <FeedPage navigate={navigate} />; // Fallback to feed
       case 'login':
-        return <LoginPage onLoginSuccess={() => navigate('feed')} navigate={navigate} />;
+        return <LoginPage navigate={navigate} />;
        case 'signup':
         return <SignUpPage navigate={navigate} />;
       case 'create-profile':
