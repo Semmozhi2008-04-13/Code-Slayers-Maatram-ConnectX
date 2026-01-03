@@ -67,6 +67,32 @@
         "major": {
           "type": "string",
           "description": "The user's major or field of study."
+        },
+        "experience": {
+          "type": "array",
+          "description": "List of professional experiences.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "company": { "type": "string" },
+              "startDate": { "type": "string" },
+              "endDate": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        },
+        "certifications": {
+          "type": "array",
+          "description": "List of licenses and certifications.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "issuingOrganization": { "type": "string" },
+              "credentialId": { "type": "string" }
+            }
+          }
         }
       },
       "required": [
@@ -338,7 +364,8 @@
   "auth": {
     "providers": [
       "password",
-      "anonymous"
+      "anonymous",
+      "google.com"
     ]
   },
   "firestore": {
