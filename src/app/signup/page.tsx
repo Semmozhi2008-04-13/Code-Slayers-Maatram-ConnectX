@@ -79,32 +79,33 @@ export default function SignUpPage({ navigate }: SignUpPageProps) {
     },
   });
 
-  const handleSignUp = async (values: SignUpFormValues) => {
+  const handleSignUp = (values: SignUpFormValues) => {
     setIsLoading(true);
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      await sendEmailVerification(userCredential.user);
-      
-      toast({
-        title: 'Sign Up Successful!',
-        description:
-          'A verification link has been sent to your email. Please verify to continue.',
+    createUserWithEmailAndPassword(auth, values.email, values.password)
+      .then((userCredential) => {
+        sendEmailVerification(userCredential.user);
+        toast({
+          title: 'Sign Up Successful!',
+          description:
+            'A verification link has been sent to your email. Please verify to continue.',
+        });
+        // The main page component will now automatically handle showing the verification page.
+      })
+      .catch((error: any) => {
+        let description = 'An unexpected error occurred. Please try again.';
+        if (error.code === 'auth/email-already-in-use') {
+          description =
+            'This email is already in use. Please try another email or sign in.';
+        }
+        toast({
+          variant: 'destructive',
+          title: 'Sign Up Failed',
+          description: description,
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
-      // The main page component will now automatically handle showing the verification page.
-    } catch (error: any) {
-      let description = 'An unexpected error occurred. Please try again.';
-      if (error.code === 'auth/email-already-in-use') {
-        description =
-          'This email is already in use. Please try another email or sign in.';
-      }
-      toast({
-        variant: 'destructive',
-        title: 'Sign Up Failed',
-        description: description,
-      });
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   return (
