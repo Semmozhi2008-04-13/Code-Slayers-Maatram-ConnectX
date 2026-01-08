@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -129,6 +128,8 @@ export default function LoginPage({ navigate }: LoginPageProps) {
           error.code === 'auth/invalid-credential'
         ) {
           description = 'Invalid email or password. Please try again.';
+        } else if (error.code === 'auth/operation-not-allowed') {
+          description = 'Email/Password sign-in is not enabled. Please enable it in your Firebase console.';
         }
         toast({
           variant: 'destructive',
