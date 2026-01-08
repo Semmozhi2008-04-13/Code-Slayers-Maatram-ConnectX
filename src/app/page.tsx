@@ -81,63 +81,62 @@ export default function Home() {
   // This effect handles the initial routing logic and state transitions
   useEffect(() => {
     const handleState = async () => {
-      setAppLoading(true);
-
-      if (isUserLoading) {
-        return;
-      }
-      
-      const {
-        view: pathView,
-        id: pathId,
-        query: pathQuery,
-      } = getViewFromPath(window.location.pathname);
-
-      if (!user) {
-        // Not authenticated
-        const targetView = pathView === 'signup' ? 'signup' : 'login';
-        navigate(targetView);
-        setAppLoading(false);
-        return;
-      }
-      
-      // User is authenticated, force reload to get latest emailVerified status
-      await user.reload();
-      
-      if (!user.emailVerified) {
-        navigate('email-verification');
-        setAppLoading(false);
-        return;
-      }
-
-      // Authenticated and verified: check for profile
-      const userDocRef = doc(firestore, 'userProfiles', user.uid);
-      try {
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          setProfileExists(true);
-          // Profile exists, show the intended page or default to feed
-          if (
-            ['login', 'signup', 'create-profile', 'email-verification'].includes(pathView)
-          ) {
-            navigate('feed');
-          } else {
-            navigate(pathView, pathId, pathQuery);
-          }
-        } else {
-          setProfileExists(false);
-          navigate('create-profile');
+        if (isUserLoading) {
+            setAppLoading(true);
+            return;
         }
-      } catch (error) {
-        console.error('Error checking user profile:', error);
-        navigate('login'); // Fallback
-      } finally {
-        setAppLoading(false);
-      }
-    };
 
+        const {
+            view: pathView,
+            id: pathId,
+            query: pathQuery,
+        } = getViewFromPath(window.location.pathname);
+
+        if (!user) {
+            // Not authenticated
+            setAppLoading(false);
+            const targetView = pathView === 'signup' ? 'signup' : 'login';
+            navigate(targetView);
+            return;
+        }
+        
+        // User is authenticated, force reload to get latest emailVerified status
+        await user.reload();
+        
+        if (!user.emailVerified) {
+            setAppLoading(false);
+            navigate('email-verification');
+            return;
+        }
+
+        // Authenticated and verified: check for profile
+        try {
+            const userDocRef = doc(firestore, 'userProfiles', user.uid);
+            const userDoc = await getDoc(userDocRef);
+            if (userDoc.exists()) {
+                setProfileExists(true);
+                // Profile exists, show the intended page or default to feed
+                if (
+                    ['login', 'signup', 'create-profile', 'email-verification'].includes(pathView)
+                ) {
+                    navigate('feed');
+                } else {
+                    navigate(pathView, pathId, pathQuery);
+                }
+            } else {
+                setProfileExists(false);
+                navigate('create-profile');
+            }
+        } catch (error) {
+            console.error('Error checking user profile:', error);
+            navigate('login'); // Fallback
+        } finally {
+            setAppLoading(false);
+        }
+    };
+    
     handleState();
-  }, [user, isUserLoading, firestore]);
+  }, [user, isUserLoading]);
 
   // This effect handles browser back/forward navigation
   useEffect(() => {
@@ -164,16 +163,20 @@ export default function Home() {
       newUrl = `/profile/${id}`;
     } else if (newView === 'search' && query) {
       newUrl = `/search?q=${encodeURIComponent(query)}`;
-    } else if (newView === 'feed' || newView === 'login') {
+    } else if (newView === 'feed') {
       newUrl = `/`;
     }
 
     const newState = { view: newView, id: id, query: query };
+    
+    const currentUrl = typeof window !== 'undefined' ? window.location.pathname + window.location.search : '';
 
-    // Only push state if the URL is actually different
-    if (typeof window !== 'undefined' && (window.location.pathname + window.location.search !== newUrl)) {
-      window.history.pushState(newState, '', newUrl);
+    if (newView !== 'login' && newView !== 'signup' && currentUrl !== newUrl) {
+        window.history.pushState(newState, '', newUrl);
+    } else if ((newView === 'login' || newView === 'signup') && currentUrl !== '/') {
+         window.history.pushState(newState, '', newView === 'login' ? '/' : '/signup');
     }
+
 
     setCurrentView(newView);
     setProfileId(id);
