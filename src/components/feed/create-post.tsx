@@ -92,8 +92,8 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
         },
         content: postContent,
         imageUrl: imageUrl || undefined,
-        likes: 0,
-        comments: 0,
+        likeCount: 0,
+        commentCount: 0,
         createdAt: serverTimestamp(),
     };
     

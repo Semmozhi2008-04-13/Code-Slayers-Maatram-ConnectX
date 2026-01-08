@@ -2,7 +2,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -11,13 +11,31 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import type { Post } from "@/lib/types";
+import type { Post, User, Comment } from "@/lib/types";
 import { ThumbsUp, MessageCircle, Share2, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "../ui/textarea";
 import type { View } from '@/app/page';
 import { formatDistanceToNow } from 'date-fns';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
+import { doc, collection, writeBatch, serverTimestamp, query, orderBy, getDoc, getDocs } from "firebase/firestore";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+
+const CommentCard = ({ comment }: { comment: Comment }) => {
+  return (
+    <div className="flex items-start gap-3">
+        <Avatar className="h-8 w-8">
+            <AvatarImage src={comment.author.avatarUrl} alt={comment.author.name} />
+            <AvatarFallback>{comment.author.name.charAt(0)}</AvatarFallback>
+        </Avatar>
+        <div className="bg-muted rounded-lg px-3 py-2 text-sm w-full">
+            <p className="font-semibold">{comment.author.name}</p>
+            <p className="text-muted-foreground">{comment.content}</p>
+        </div>
+    </div>
+  )
+}
 
 type PostCardProps = {
   post: Post;
@@ -25,17 +43,76 @@ type PostCardProps = {
 };
 
 export default function PostCard({ post, navigate }: PostCardProps) {
-  const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(post.likes);
-  const [commentCount, setCommentCount] = useState(post.comments);
-  const [showCommentInput, setShowCommentInput] = useState(false);
-  const [comment, setComment] = useState("");
+  const { user } = useUser();
+  const firestore = useFirestore();
   const { toast } = useToast();
 
-  const handleLike = () => {
-    setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
-    setIsLiked(!isLiked);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(post.likeCount);
+  const [showComments, setShowComments] = useState(false);
+  const [comment, setComment] = useState("");
+  
+  const postRef = useMemoFirebase(() => doc(firestore, "posts", post.id), [firestore, post.id]);
+  const commentsQuery = useMemoFirebase(() => query(collection(postRef, "comments"), orderBy("createdAt", "desc")), [postRef]);
+  const likesRef = useMemoFirebase(() => collection(postRef, "likes"), [postRef]);
+
+  const { data: comments, isLoading: commentsLoading } = useCollection<Comment>(commentsQuery);
+
+  useEffect(() => {
+    if (!user) return;
+    const likeDocRef = doc(likesRef, user.uid);
+    getDoc(likeDocRef).then(doc => {
+      if (doc.exists()) {
+        setIsLiked(true);
+      }
+    });
+  }, [likesRef, user]);
+
+
+  const handleLike = async () => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Authentication required",
+        description: "You must be logged in to like a post.",
+      });
+      return;
+    }
+
+    const newIsLiked = !isLiked;
+    setIsLiked(newIsLiked);
+    setLikeCount(prev => newIsLiked ? prev + 1 : prev - 1);
+
+    try {
+        const batch = writeBatch(firestore);
+        const likeDocRef = doc(likesRef, user.uid);
+        const postDocRef = doc(firestore, 'posts', post.id);
+
+        const postDoc = await getDoc(postDocRef);
+        if (!postDoc.exists()) throw new Error("Post not found");
+        const currentLikeCount = postDoc.data().likeCount || 0;
+
+        if (newIsLiked) {
+            batch.set(likeDocRef, { userId: user.uid });
+            batch.update(postDocRef, { likeCount: currentLikeCount + 1 });
+        } else {
+            batch.delete(likeDocRef);
+            batch.update(postDocRef, { likeCount: Math.max(0, currentLikeCount - 1) });
+        }
+        await batch.commit();
+    } catch (error) {
+        console.error("Error updating like:", error);
+        // Revert UI changes on error
+        setIsLiked(!newIsLiked);
+        setLikeCount(prev => newIsLiked ? prev - 1 : prev + 1);
+        toast({
+            variant: "destructive",
+            title: "Something went wrong",
+            description: "Your like could not be processed. Please try again.",
+        });
+    }
   };
+
 
   const handleShare = async () => {
     try {
@@ -62,15 +139,52 @@ export default function PostCard({ post, navigate }: PostCardProps) {
     }
   };
   
-  const handleCommentSubmit = () => {
-    if (comment.trim()) {
-        setCommentCount(prev => prev + 1);
-        setComment("");
-        setShowCommentInput(false);
-        toast({
-            title: "Comment Posted",
-            description: "Your comment has been successfully posted."
-        });
+  const handleCommentSubmit = async () => {
+    if (!user || !comment.trim()) return;
+
+    const userProfileRef = doc(firestore, 'userProfiles', user.uid);
+    
+    try {
+      const userProfileSnap = await getDoc(userProfileRef);
+      if (!userProfileSnap.exists()) {
+        throw new Error("User profile not found");
+      }
+      const userProfile = userProfileSnap.data() as User;
+
+      const newComment = {
+        author: {
+          id: user.uid,
+          name: `${userProfile.firstName} ${userProfile.lastName}`,
+          avatarUrl: userProfile.profilePictureUrl,
+        },
+        content: comment,
+        createdAt: serverTimestamp(),
+      };
+
+      const batch = writeBatch(firestore);
+      const newCommentRef = doc(collection(postRef, "comments"));
+      batch.set(newCommentRef, newComment);
+
+      const postDocRef = doc(firestore, "posts", post.id);
+      const postDoc = await getDoc(postDocRef);
+      const currentCommentCount = postDoc.data()?.commentCount || 0;
+      batch.update(postDocRef, { commentCount: currentCommentCount + 1 });
+
+      await batch.commit();
+
+      setComment("");
+      setShowComments(true);
+      toast({
+        title: "Comment Posted",
+        description: "Your comment has been successfully posted."
+      });
+    } catch (error) {
+      console.error("Error posting comment:", error);
+      toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Could not post your comment. Please try again."
+      });
     }
   };
   
@@ -119,11 +233,13 @@ export default function PostCard({ post, navigate }: PostCardProps) {
           </div>
         )}
       </CardContent>
-      <CardFooter className="flex flex-col items-start px-6 pb-4">
-        <div className="flex justify-between w-full text-xs text-muted-foreground mb-2">
-          <span>{likeCount} Likes</span>
-          <span>{commentCount} Comments</span>
-        </div>
+      <CardFooter className="flex flex-col items-start px-4 sm:px-6 pb-4">
+        {(likeCount > 0 || post.commentCount > 0) && (
+            <div className="flex justify-between w-full text-xs text-muted-foreground mb-2">
+                <span>{likeCount} Likes</span>
+                <span>{post.commentCount} Comments</span>
+            </div>
+        )}
         <Separator />
         <div className="w-full grid grid-cols-3 gap-1 pt-2">
           <Button
@@ -142,7 +258,7 @@ export default function PostCard({ post, navigate }: PostCardProps) {
           <Button
             variant="ghost"
             className="text-muted-foreground hover:text-primary"
-            onClick={() => setShowCommentInput(!showCommentInput)}
+            onClick={() => setShowComments(!showComments)}
           >
             <MessageCircle className="mr-2 h-4 w-4" /> Comment
           </Button>
@@ -154,37 +270,49 @@ export default function PostCard({ post, navigate }: PostCardProps) {
             <Share2 className="mr-2 h-4 w-4" /> Share
           </Button>
         </div>
-        {showCommentInput && (
-          <div className="w-full pt-4">
-            <div className="flex items-start space-x-4">
-              <div className="min-w-0 flex-1">
-                <div className="relative">
-                  <Textarea
-                    placeholder="Add a comment..."
-                    className="pr-16"
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                  />
-                  <div className="absolute bottom-1 right-1 flex items-center">
-                    <Button
-                      type="submit"
-                      size="icon"
-                      variant="ghost"
-                      onClick={handleCommentSubmit}
-                      disabled={!comment.trim()}
-                    >
-                      <Send className="h-5 w-5 text-primary" />
-                      <span className="sr-only">Send comment</span>
-                    </Button>
-                  </div>
+        <div className="w-full pt-4 space-y-4">
+            <div className="flex items-start space-x-2 sm:space-x-4">
+                {user && (
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user.photoURL ?? undefined}/>
+                      <AvatarFallback>{user.displayName?.charAt(0) ?? 'U'}</AvatarFallback>
+                    </Avatar>
+                )}
+                <div className="min-w-0 flex-1">
+                    <div className="relative">
+                    <Textarea
+                        placeholder="Add a comment..."
+                        className="pr-16"
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                    />
+                    <div className="absolute bottom-1 right-1 flex items-center">
+                        <Button
+                        type="submit"
+                        size="icon"
+                        variant="ghost"
+                        onClick={handleCommentSubmit}
+                        disabled={!comment.trim()}
+                        >
+                        <Send className="h-5 w-5 text-primary" />
+                        <span className="sr-only">Send comment</span>
+                        </Button>
+                    </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-        )}
+            {showComments && (
+              <div className="space-y-4">
+                {commentsLoading && <p className="text-sm text-muted-foreground">Loading comments...</p>}
+                {comments && comments.length > 0 ? (
+                  comments.map(c => <CommentCard key={c.id} comment={c} />)
+                ) : (
+                  !commentsLoading && <p className="text-sm text-muted-foreground">No comments yet.</p>
+                )}
+              </div>
+            )}
+        </div>
       </CardFooter>
     </Card>
   );
 }
-
-    

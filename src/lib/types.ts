@@ -43,10 +43,21 @@ export type Post = {
   };
   content: string;
   imageUrl?: string;
-  likes: number;
-  comments: number;
+  likeCount: number;
+  commentCount: number;
   createdAt: Timestamp;
 };
+
+export type Comment = {
+  id: string;
+  author: {
+    id: string;
+    name: string;
+    avatarUrl: string;
+  };
+  content: string;
+  createdAt: Timestamp;
+}
 
 export type Job = {
   id: string;

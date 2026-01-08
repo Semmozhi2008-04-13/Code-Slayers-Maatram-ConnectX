@@ -121,7 +121,28 @@ service cloud.firestore {
      match /posts/{postId} {
         allow get, list: if isSignedIn();
         allow create: if isOwner(request.resource.data.author.id);
-        allow update, delete: if isOwner(resource.data.author.id);
+        allow update: if isOwner(resource.data.author.id);
+        allow delete: if isOwner(resource.data.author.id);
+
+        // --- Subcollections for Posts ---
+        
+        // Likes subcollection (/posts/{postId}/likes)
+        match /likes/{userId} {
+            allow get, list: if isSignedIn();
+            // A user can only create or delete their own 'like' document.
+            allow create: if isOwner(userId);
+            allow delete: if isOwner(userId);
+            allow update: if false; // Likes are atomic, no updates needed.
+        }
+
+        // Comments subcollection (/posts/{postId}/comments)
+        match /comments/{commentId} {
+            allow get, list: if isSignedIn();
+            // Any signed-in user can create a comment.
+            allow create: if isSignedIn() && isOwner(request.resource.data.author.id);
+            // Only the author of the comment can update or delete it.
+            allow update, delete: if isOwner(resource.data.author.id);
+        }
      }
 
     // --------------------------------------------------------------------

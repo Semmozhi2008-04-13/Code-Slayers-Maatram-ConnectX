@@ -141,11 +141,11 @@
           "format": "uri",
           "description": "An optional image URL for the post."
         },
-        "likes": {
+        "likeCount": {
           "type": "number",
           "description": "The number of likes on the post."
         },
-        "comments": {
+        "commentCount": {
           "type": "number",
           "description": "The number of comments on the post."
         },
@@ -157,8 +157,34 @@
       "required": [
         "author",
         "content",
-        "createdAt"
+        "createdAt",
+        "likeCount",
+        "commentCount"
       ]
+    },
+    "Comment": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Comment",
+        "type": "object",
+        "description": "Represents a comment on a post.",
+        "properties": {
+            "author": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string" },
+                    "name": { "type": "string" },
+                    "avatarUrl": { "type": "string", "format": "uri" }
+                },
+                "required": ["id", "name", "avatarUrl"]
+            },
+            "content": {
+                "type": "string"
+            },
+            "createdAt": {
+                "type": "object"
+            }
+        },
+        "required": ["author", "content", "createdAt"]
     },
     "JobPost": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -400,7 +426,30 @@
               "description": "The unique identifier for the post."
             }
           ]
-        }
+        },
+        "subcollections": [
+            {
+                "path": "/posts/{postId}/comments/{commentId}",
+                "definition": {
+                    "entityName": "Comment",
+                    "schema": { "$ref": "#/backend/entities/Comment"},
+                    "description": "Stores comments for a specific post. Readable by anyone, but only the comment author can write."
+                }
+            },
+            {
+                "path": "/posts/{postId}/likes/{userId}",
+                "definition": {
+                    "entityName": "Like",
+                    "schema": { 
+                        "type": "object",
+                        "properties": {
+                            "userId": {"type": "string"}
+                        }
+                    },
+                    "description": "Stores a like for a post. The document ID is the UID of the user who liked it."
+                }
+            }
+        ]
       },
       {
         "path": "/jobs/{jobId}",
