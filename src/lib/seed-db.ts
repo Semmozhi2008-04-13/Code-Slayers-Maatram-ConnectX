@@ -4,6 +4,7 @@ import {
   collection,
   writeBatch,
   serverTimestamp,
+  doc,
 } from 'firebase/firestore';
 import { dummyUsers, dummyPosts, dummyJobs, dummyEvents } from './dummy-data';
 
