@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -84,8 +83,15 @@ export default function SignUpPage({ navigate }: SignUpPageProps) {
     setIsLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      await sendEmailVerification(userCredential.user);
-      
+
+      // Define actionCodeSettings to redirect user back to the app
+      const actionCodeSettings = {
+        url: window.location.origin, // Redirects to the homepage
+        handleCodeInApp: true,
+      };
+
+      await sendEmailVerification(userCredential.user, actionCodeSettings);
+
       toast({
         title: 'One last step...',
         description: `We've sent a verification link to ${values.email}. Please check your inbox.`,

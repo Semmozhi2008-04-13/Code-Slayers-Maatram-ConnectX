@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -6,12 +5,13 @@ import MainView from '@/components/main-view';
 import { AnimatedTitle } from '@/components/animated-title';
 import { Skeleton } from '@/components/ui/skeleton';
 import LoginPage from '@/components/views/login';
-import { useUser, useFirestore } from '@/firebase';
+import { useUser, useFirebase } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import { applyActionCode } from 'firebase/auth';
 import CreateProfilePage from '@/app/create-profile/page';
 import SignUpPage from '@/app/signup/page';
 import VerifyEmailPage from '@/components/views/verify-email';
-
+import { useToast } from '@/hooks/use-toast';
 
 export type View =
   | 'feed'
@@ -71,72 +71,109 @@ function getViewFromPath(path: string): {
 }
 
 export default function Home() {
-  const { user, isUserLoading } = useUser();
+  const { user, isUserLoading, auth } = useFirebase();
   const firestore = useFirestore();
+  const { toast } = useToast();
 
   const [currentView, setCurrentView] = useState<View>('login');
   const [profileId, setProfileId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
   const [appLoading, setAppLoading] = useState(true);
   const [profileExists, setProfileExists] = useState<boolean | null>(null);
-  
-  // This effect handles the initial routing logic and state transitions
+  const [isVerifying, setIsVerifying] = useState(true);
+
+  // This effect handles the email verification action code
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    const actionCode = urlParams.get('oobCode');
+
+    if (mode === 'verifyEmail' && actionCode && auth) {
+      applyActionCode(auth, actionCode)
+        .then(() => {
+          toast({
+            title: 'Email Verified!',
+            description: 'Your email has been successfully verified. Welcome!',
+          });
+          // Remove query params from URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+          // The main state handler will now pick up the verified user.
+        })
+        .catch((error) => {
+          toast({
+            variant: 'destructive',
+            title: 'Verification Failed',
+            description: error.message || 'The verification link is invalid or has expired.',
+          });
+        })
+        .finally(() => {
+          setIsVerifying(false);
+        });
+    } else {
+        setIsVerifying(false);
+    }
+  }, [auth, toast]);
+
+  // This effect handles the main routing logic and state transitions
+  useEffect(() => {
+    if (isVerifying) {
+        setAppLoading(true);
+        return;
+    }
+
     const handleState = async () => {
-        if (isUserLoading) {
-            setAppLoading(true);
-            return;
-        }
+      if (isUserLoading) {
+        setAppLoading(true);
+        return;
+      }
 
-        const {
-            view: pathView,
-            id: pathId,
-            query: pathQuery,
-        } = getViewFromPath(window.location.pathname);
+      const {
+        view: pathView,
+        id: pathId,
+        query: pathQuery,
+      } = getViewFromPath(window.location.pathname);
 
-        if (!user) {
-            // Not authenticated
-            setAppLoading(false);
-            const targetView = pathView === 'signup' ? 'signup' : 'login';
-            navigate(targetView);
-            return;
-        }
+      if (!user) {
+        // Not authenticated
+        setAppLoading(false);
+        const targetView = pathView === 'signup' ? 'signup' : 'login';
+        navigate(targetView);
+        return;
+      }
 
-        // User is authenticated, now check email verification
-        if (!user.emailVerified) {
-          navigate('verify-email');
-          setAppLoading(false);
-          return;
-        }
+      // User is authenticated, now check email verification
+      if (!user.emailVerified) {
+        navigate('verify-email');
+        setAppLoading(false);
+        return;
+      }
 
-        // Authenticated and verified: check for profile
-        try {
-            const userDocRef = doc(firestore, 'userProfiles', user.uid);
-            const userDoc = await getDoc(userDocRef);
-            if (userDoc.exists()) {
-                setProfileExists(true);
-                // Profile exists, show the intended page or default to feed
-                if (
-                    ['login', 'signup', 'create-profile', 'verify-email'].includes(pathView)
-                ) {
-                    navigate('feed');
-                } else {
-                    navigate(pathView, pathId, pathQuery);
-                }
-            } else {
-                setProfileExists(false);
-                navigate('create-profile');
-            }
-        } catch (error) {
-            console.error('Error checking user profile:', error);
-            navigate('login'); // Fallback
-        } finally {
-            setAppLoading(false);
+      // Authenticated and verified: check for profile
+      try {
+        const userDocRef = doc(firestore, 'userProfiles', user.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          setProfileExists(true);
+          // Profile exists, show the intended page or default to feed
+          if (['login', 'signup', 'create-profile', 'verify-email'].includes(pathView)) {
+            navigate('feed');
+          } else {
+            navigate(pathView, pathId, pathQuery);
+          }
+        } else {
+          setProfileExists(false);
+          navigate('create-profile');
         }
+      } catch (error) {
+        console.error('Error checking user profile:', error);
+        navigate('login'); // Fallback
+      } finally {
+        setAppLoading(false);
+      }
     };
-    
+
     handleState();
-  }, [user, isUserLoading, firestore]);
+  }, [user, isUserLoading, firestore, isVerifying]);
 
   // This effect handles browser back/forward navigation
   useEffect(() => {
@@ -168,15 +205,14 @@ export default function Home() {
     }
 
     const newState = { view: newView, id: id, query: query };
-    
+
     const currentUrl = typeof window !== 'undefined' ? window.location.pathname + window.location.search : '';
 
     if (newView !== 'login' && newView !== 'signup' && currentUrl !== newUrl) {
-        window.history.pushState(newState, '', newUrl);
+      window.history.pushState(newState, '', newUrl);
     } else if ((newView === 'login' || newView === 'signup') && currentUrl !== '/') {
-         window.history.pushState(newState, '', newView === 'login' ? '/' : '/signup');
+      window.history.pushState(newState, '', newView === 'login' ? '/' : '/signup');
     }
-
 
     setCurrentView(newView);
     setProfileId(id);
@@ -185,7 +221,7 @@ export default function Home() {
   };
 
   const renderContent = () => {
-    if (appLoading) {
+    if (appLoading || isVerifying) {
       return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-background text-primary p-4">
           <AnimatedTitle text="Maatram ConnectX" />
@@ -206,7 +242,7 @@ export default function Home() {
         </div>
       );
     }
-    
+
     if (currentView === 'login') {
       return <LoginPage navigate={navigate} />;
     }
@@ -217,44 +253,41 @@ export default function Home() {
       return <VerifyEmailPage />;
     }
     if (currentView === 'create-profile') {
-      return <CreateProfilePage onProfileCreated={() => {
-        setProfileExists(true);
-        navigate('feed');
-      }} />;
+      return (
+        <CreateProfilePage
+          onProfileCreated={() => {
+            setProfileExists(true);
+            navigate('feed');
+          }}
+        />
+      );
     }
 
     // If we've reached here, the user should be authenticated and have a profile.
     if (user && user.emailVerified && profileExists) {
-        return (
-          <MainView
-              view={currentView}
-              profileId={profileId}
-              searchQuery={searchQuery}
-              navigate={navigate}
-          />
-        );
+      return <MainView view={currentView} profileId={profileId} searchQuery={searchQuery} navigate={navigate} />;
     }
-    
+
     // Fallback loading state while things resolve
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-background text-primary p-4">
-          <AnimatedTitle text="Maatram ConnectX" />
-          <div className="mt-4 flex items-center space-x-2">
-            <Skeleton
-              className="h-4 w-4 rounded-full animate-pulse"
-              style={{ animationDelay: '0.2s' }}
-            />
-            <Skeleton
-              className="h-4 w-4 rounded-full animate-pulse"
-              style={{ animationDelay: '0.4s' }}
-            />
-            <Skeleton
-              className="h-4 w-4 rounded-full animate-pulse"
-              style={{ animationDelay: '0.6s' }}
-            />
-          </div>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background text-primary p-4">
+        <AnimatedTitle text="Maatram ConnectX" />
+        <div className="mt-4 flex items-center space-x-2">
+          <Skeleton
+            className="h-4 w-4 rounded-full animate-pulse"
+            style={{ animationDelay: '0.2s' }}
+          />
+          <Skeleton
+            className="h-4 w-4 rounded-full animate-pulse"
+            style={{ animationDelay: '0.4s' }}
+          />
+          <Skeleton
+            className="h-4 w-4 rounded-full animate-pulse"
+            style={{ animationDelay: '0.6s' }}
+          />
         </div>
-      );
+      </div>
+    );
   };
 
   return <>{renderContent()}</>;
