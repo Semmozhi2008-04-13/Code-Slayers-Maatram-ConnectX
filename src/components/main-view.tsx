@@ -15,8 +15,6 @@ import LoginPage from '@/components/views/login';
 import CreateProfilePage from '@/app/create-profile/page';
 import SignUpPage from '@/app/signup/page';
 import MentorshipsPage from './views/mentorships';
-import VerifyEmailPage from './views/verify-email';
-
 
 type MainViewProps = {
   view: View;
@@ -58,14 +56,12 @@ export default function MainView({ view, profileId, searchQuery, navigate }: Mai
         return <SignUpPage navigate={navigate} />;
       case 'create-profile':
         return <CreateProfilePage onProfileCreated={() => navigate('feed')} />;
-      case 'verify-email':
-        return <VerifyEmailPage />;
       default:
         return <FeedPage navigate={navigate} />;
     }
   };
 
-  const showHeader = !['login', 'signup', 'create-profile', 'verify-email'].includes(view);
+  const showHeader = !['login', 'signup', 'create-profile'].includes(view);
 
   return (
     <>

@@ -8,10 +8,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import LoginPage from '@/components/views/login';
 import { useUser, useFirebase } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { applyActionCode } from 'firebase/auth';
 import CreateProfilePage from '@/app/create-profile/page';
 import SignUpPage from '@/app/signup/page';
-import VerifyEmailPage from '@/components/views/verify-email';
 import { useToast } from '@/hooks/use-toast';
 
 export type View =
@@ -26,8 +24,7 @@ export type View =
   | 'search'
   | 'login'
   | 'signup'
-  | 'create-profile'
-  | 'verify-email';
+  | 'create-profile';
 
 function getViewFromPath(path: string): {
   view: View;
@@ -62,7 +59,6 @@ function getViewFromPath(path: string): {
       'login',
       'signup',
       'create-profile',
-      'verify-email',
     ].includes(view)
   ) {
     return { view, id: null, query: null };
@@ -80,47 +76,9 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
   const [appLoading, setAppLoading] = useState(true);
   const [profileExists, setProfileExists] = useState<boolean | null>(null);
-  const [isVerifying, setIsVerifying] = useState(true);
-
-  // This effect handles the email verification action code
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const mode = urlParams.get('mode');
-    const actionCode = urlParams.get('oobCode');
-
-    if (mode === 'verifyEmail' && actionCode && auth) {
-      applyActionCode(auth, actionCode)
-        .then(() => {
-          toast({
-            title: 'Email Verified!',
-            description: 'Your email has been successfully verified. Welcome!',
-          });
-          // Remove query params from URL
-          window.history.replaceState({}, document.title, window.location.pathname);
-          // The main state handler will now pick up the verified user.
-        })
-        .catch((error) => {
-          toast({
-            variant: 'destructive',
-            title: 'Verification Failed',
-            description: error.message || 'The verification link is invalid or has expired.',
-          });
-        })
-        .finally(() => {
-          setIsVerifying(false);
-        });
-    } else {
-        setIsVerifying(false);
-    }
-  }, [auth, toast]);
-
+  
   // This effect handles the main routing logic and state transitions
   useEffect(() => {
-    if (isVerifying) {
-        setAppLoading(true);
-        return;
-    }
-
     const handleState = async () => {
       if (isUserLoading) {
         setAppLoading(true);
@@ -141,21 +99,14 @@ export default function Home() {
         return;
       }
 
-      // User is authenticated, now check email verification
-      if (!user.emailVerified) {
-        navigate('verify-email');
-        setAppLoading(false);
-        return;
-      }
-
-      // Authenticated and verified: check for profile
+      // Authenticated: check for profile
       try {
         const userDocRef = doc(firestore, 'userProfiles', user.uid);
         const userDoc = await getDoc(userDocRef);
         if (userDoc.exists()) {
           setProfileExists(true);
           // Profile exists, show the intended page or default to feed
-          if (['login', 'signup', 'create-profile', 'verify-email'].includes(pathView)) {
+          if (['login', 'signup', 'create-profile'].includes(pathView)) {
             navigate('feed');
           } else {
             navigate(pathView, pathId, pathQuery);
@@ -173,7 +124,7 @@ export default function Home() {
     };
 
     handleState();
-  }, [user, isUserLoading, firestore, isVerifying]);
+  }, [user, isUserLoading, firestore]);
 
   // This effect handles browser back/forward navigation
   useEffect(() => {
@@ -221,7 +172,7 @@ export default function Home() {
   };
 
   const renderContent = () => {
-    if (appLoading || isVerifying) {
+    if (appLoading) {
       return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-background text-primary p-4">
           <AnimatedTitle text="Maatram ConnectX" />
@@ -249,9 +200,6 @@ export default function Home() {
     if (currentView === 'signup') {
       return <SignUpPage navigate={navigate} />;
     }
-    if (currentView === 'verify-email') {
-      return <VerifyEmailPage />;
-    }
     if (currentView === 'create-profile') {
       return (
         <CreateProfilePage
@@ -264,7 +212,7 @@ export default function Home() {
     }
 
     // If we've reached here, the user should be authenticated and have a profile.
-    if (user && user.emailVerified && profileExists) {
+    if (user && profileExists) {
       return <MainView view={currentView} profileId={profileId} searchQuery={searchQuery} navigate={navigate} />;
     }
 
