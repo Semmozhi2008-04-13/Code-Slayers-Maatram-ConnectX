@@ -7,13 +7,17 @@ import { useToast } from "@/hooks/use-toast";
 import type { Event } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { dummyEvents } from "@/lib/dummy-data";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection } from 'firebase/firestore';
+
 
 export default function EventsPage() {
   const { toast } = useToast();
-  
-  const events = dummyEvents;
-  const isLoading = false; // Using dummy data
+  const firestore = useFirestore();
+
+  const eventsQuery = useMemoFirebase(() => collection(firestore, 'events'), [firestore]);
+  const { data: events, isLoading } = useCollection<Event>(eventsQuery);
+
 
   const handleCreateEvent = () => {
     toast({
@@ -66,5 +70,3 @@ export default function EventsPage() {
     </div>
   );
 }
-
-    

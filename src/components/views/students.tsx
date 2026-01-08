@@ -15,7 +15,8 @@ import type { View } from '@/app/page';
 import type { User } from "@/lib/types";
 import { Skeleton } from "../ui/skeleton";
 import { Card, CardContent } from "../ui/card";
-import { dummyUsers } from "@/lib/dummy-data";
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
+import { collection, query, where } from "firebase/firestore";
 
 type StudentsPageProps = {
   navigate: (view: View, id?: string | null) => void;
@@ -24,9 +25,11 @@ type StudentsPageProps = {
 export default function StudentsPage({ navigate }: StudentsPageProps) {
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState("all");
+  const firestore = useFirestore();
 
-  const studentUsers = useMemo(() => dummyUsers.filter(u => !u.alumni), []);
-  const isLoading = false; // Using dummy data
+  const studentsQuery = useMemoFirebase(() => query(collection(firestore, 'userProfiles'), where('alumni', '==', false)), [firestore]);
+  const { data: studentUsers, isLoading } = useCollection<User>(studentsQuery);
+
 
   const locations = useMemo(() => {
     if (!studentUsers) return [];
@@ -110,5 +113,3 @@ export default function StudentsPage({ navigate }: StudentsPageProps) {
     </div>
   );
 }
-
-    

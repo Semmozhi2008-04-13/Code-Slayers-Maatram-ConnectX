@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from "next/image";
 import type { Post, User } from "@/lib/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -11,10 +11,10 @@ import CreatePost from "@/components/feed/create-post";
 import PostCard from "@/components/feed/post-card";
 import AiRecommendations from "@/components/ai/recommendations";
 import type { View } from '@/app/page';
-import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
-import { doc } from 'firebase/firestore';
+import { useUser, useDoc, useFirestore, useMemoFirebase, useCollection } from "@/firebase";
+import { doc, collection, query, orderBy } from 'firebase/firestore';
 import { Skeleton } from '../ui/skeleton';
-import { dummyPosts } from '@/lib/dummy-data';
+import { seedDatabase } from '@/lib/seed-db';
 
 type FeedPageProps = {
   navigate: (view: View, id?: string | null) => void;
@@ -23,15 +23,31 @@ type FeedPageProps = {
 export default function FeedPage({ navigate }: FeedPageProps) {
   const { user } = useUser();
   const firestore = useFirestore();
+  const [isSeeding, setIsSeeding] = useState(false);
 
   const userDocRef = useMemoFirebase(
     () => (user ? doc(firestore, "userProfiles", user.uid) : null),
     [user, firestore]
   );
   const { data: userProfile, isLoading: isUserProfileLoading } = useDoc<User>(userDocRef);
-  
-  const posts = dummyPosts as Post[];
-  const arePostsLoading = false;
+
+  const postsQuery = useMemoFirebase(() => query(collection(firestore, 'posts'), orderBy('createdAt', 'desc')), [firestore]);
+  const { data: posts, isLoading: arePostsLoading } = useCollection<Post>(postsQuery);
+
+  useEffect(() => {
+    // Seed the database if it's empty
+    if (posts?.length === 0 && !arePostsLoading && !isSeeding) {
+      setIsSeeding(true);
+      console.log("Database is empty, seeding with dummy data...");
+      seedDatabase(firestore).then(() => {
+        console.log("Database seeding complete.");
+        setIsSeeding(false);
+      }).catch(error => {
+        console.error("Database seeding failed:", error);
+        setIsSeeding(false);
+      });
+    }
+  }, [posts, arePostsLoading, firestore, isSeeding]);
 
 
   const handlePostCreated = (newPost: Post) => {
@@ -116,7 +132,7 @@ export default function FeedPage({ navigate }: FeedPageProps) {
       <div className="md:col-span-7 lg:col-span-5 space-y-6">
         <CreatePost onPostCreated={handlePostCreated} />
         <div className="space-y-4">
-          {arePostsLoading ? (
+          {arePostsLoading || isSeeding ? (
             [...Array(3)].map((_, i) => (
                 <Card key={i}>
                   <CardHeader className="flex flex-row items-center gap-3 space-y-0">
@@ -134,11 +150,11 @@ export default function FeedPage({ navigate }: FeedPageProps) {
                 </Card>
               ))
           ) : (
-            posts?.map((post, index) => (
-              <PostCard key={index} post={post} navigate={navigate} />
+            posts?.map((post) => (
+              <PostCard key={post.id} post={post} navigate={navigate} />
             ))
           )}
-           {!arePostsLoading && posts?.length === 0 && (
+           {!arePostsLoading && !isSeeding && posts?.length === 0 && (
             <div className="text-center py-16">
               <p className="text-muted-foreground">Your feed is empty.</p>
               <p className="text-sm text-muted-foreground">Create a post to get started!</p>
@@ -165,5 +181,3 @@ export default function FeedPage({ navigate }: FeedPageProps) {
     </div>
   );
 }
-
-    
