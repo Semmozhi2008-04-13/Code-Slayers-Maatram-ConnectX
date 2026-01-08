@@ -112,16 +112,21 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
   const [headline, setHeadline] = useState(user?.headline || '');
   const [location, setLocation] = useState(user?.location || '');
   const [about, setAbout] = useState(user?.about || '');
-  const [skills, setSkills] = useState(user?.skills || []);
-  const [certifications, setCertifications] = useState<Certification[]>([]); // Assuming this isn't in Firestore yet
+  const [skills, setSkills] = useState<string[]>(user?.skills || []);
+  const [experience, setExperience] = useState<Experience[]>(user?.experience || []);
+  const [certifications, setCertifications] = useState<Certification[]>(user?.certifications || []);
+  const featuredItems: Post[] = []; // Not yet in firestore
+
 
   // Update local state when user data loads
   useEffect(() => {
     if (user) {
-      setHeadline(user.headline);
-      setLocation(user.location);
-      setAbout(user.about);
+      setHeadline(user.headline || '');
+      setLocation(user.location || '');
+      setAbout(user.about || '');
       setSkills(user.skills || []);
+      setExperience(user.experience || []);
+      setCertifications(user.certifications || []);
     }
   }, [user]);
 
@@ -133,6 +138,14 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
 
   const [isSkillDialogOpen, setIsSkillDialogOpen] = useState(false);
   const [newSkill, setNewSkill] = useState('');
+  
+  const [isExpDialogOpen, setIsExpDialogOpen] = useState(false);
+  const [expTitle, setExpTitle] = useState('');
+  const [expCompany, setExpCompany] = useState('');
+  const [expStartDate, setExpStartDate] = useState('');
+  const [expEndDate, setExpEndDate] = useState('');
+  const [expDescription, setExpDescription] = useState('');
+
 
   if (isUserLoading) {
     return <Skeleton className="w-full h-96" />;
@@ -184,17 +197,10 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
       });
   };
 
-  const handleSaveProfile = async () => {
+  const handleSaveProfile = async (data: Partial<User>) => {
     if (!isCurrentUser) return;
-    
-    const profileData = {
-        headline,
-        location,
-        about,
-        skills,
-    };
     try {
-        await setDoc(userDocRef, profileData, { merge: true });
+        await setDoc(userDocRef, data, { merge: true });
         toast({
             title: "Profile Updated",
             description: "Your profile information has been saved.",
@@ -208,37 +214,50 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
     }
   };
 
-  const handleAddCertification = () => {
+  const handleAddCertification = async () => {
     if (certName && certOrg) {
-      setCertifications(prev => [...prev, { name: certName, issuingOrganization: certOrg, credentialId: certId }]);
+      const newCert = { name: certName, issuingOrganization: certOrg, credentialId: certId };
+      const updatedCerts = [...certifications, newCert];
+      setCertifications(updatedCerts);
+      await handleSaveProfile({ certifications: updatedCerts });
+      
       setCertName('');
       setCertOrg('');
       setCertId('');
       setIsCertDialogOpen(false);
-      toast({
-        title: "Certification Added",
-        description: `${certName} has been added to your profile.`,
-      });
     }
   };
   
-  const handleAddSkill = async () => {
-    if (newSkill && isCurrentUser) {
-      const updatedSkills = [...skills, newSkill];
-      setSkills(updatedSkills); // Optimistic update
-      try {
-        await setDoc(userDocRef, { skills: updatedSkills }, { merge: true });
-        toast({
-            title: "Skill Added",
-            description: `"${newSkill}" has been added to your skills.`,
-        });
-      } catch(error) {
-        setSkills(skills); // Revert on error
-        toast({ variant: 'destructive', title: "Error", description: "Could not add skill."});
-      } finally {
-        setNewSkill('');
-        setIsSkillDialogOpen(false);
-      }
+  const handleAddSkill = async (skillToAdd: string) => {
+    if (skillToAdd && isCurrentUser) {
+      const updatedSkills = [...new Set([...skills, skillToAdd])]; // Avoid duplicates
+      setSkills(updatedSkills);
+      await handleSaveProfile({ skills: updatedSkills });
+      setNewSkill('');
+      setIsSkillDialogOpen(false);
+    }
+  };
+
+  const handleAddExperience = async () => {
+    if(expTitle && expCompany && expStartDate) {
+        const newExp: Experience = {
+            title: expTitle,
+            company: expCompany,
+            startDate: expStartDate,
+            endDate: expEndDate,
+            description: expDescription,
+            companyLogoUrl: `https://logo.clearbit.com/${expCompany.toLowerCase().replace(/\s/g, '')}.com`
+        };
+        const updatedExperience = [...experience, newExp];
+        setExperience(updatedExperience);
+        await handleSaveProfile({ experience: updatedExperience });
+
+        setExpTitle('');
+        setExpCompany('');
+        setExpStartDate('');
+        setExpEndDate('');
+        setExpDescription('');
+        setIsExpDialogOpen(false);
     }
   };
 
@@ -248,9 +267,6 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
       description: `The "Message" feature is currently under development.`,
     });
   }
-
-  const experience: Experience[] = []; // Not yet in firestore
-  const featuredItems: Post[] = []; // Not yet in firestore
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -309,7 +325,7 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
                         </div>
                       </div>
                       <DialogFooter>
-                        <Button onClick={handleSaveProfile}>Save changes</Button>
+                        <Button onClick={() => handleSaveProfile({ headline, location, about })}>Save changes</Button>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
@@ -343,7 +359,6 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
                 )}
               </div>
           </div>
-           {/* <p className="text-sm text-primary mt-4 font-semibold">{user.connections} connections</p> */}
         </CardContent>
       </Card>
       
@@ -384,46 +399,50 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
         </CardContent>
       </Card>
 
-      {/* <Card>
-        <CardHeader>
-          <CardTitle className="font-headline text-xl flex items-center gap-2">
-            <GraduationCap className="w-6 h-6"/>
-            Education
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {user.college && (
-            <div className="flex gap-4">
-              <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-muted rounded-lg">
-                  <GraduationCap className="w-6 h-6 text-muted-foreground"/>
-              </div>
-              <div>
-                <h3 className="font-semibold text-base sm:text-lg">{user.college}</h3>
-                {user.department && <p className="text-sm">{user.department}</p>}
-                {user.graduationYear && <p className="text-xs text-muted-foreground">Graduated {user.graduationYear}</p>}
-              </div>
-            </div>
-          )}
-          {user.school && (
-             <div className="flex gap-4">
-              <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-muted rounded-lg">
-                  <GraduationCap className="w-6 h-6 text-muted-foreground"/>
-              </div>
-              <div>
-                <h3 className="font-semibold text-base sm:text-lg">{user.school}</h3>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card> */}
-
-      {experience.length > 0 && (
+      {(isCurrentUser || experience.length > 0) && (
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="font-headline text-xl flex items-center gap-2">
                 <Briefcase className="w-6 h-6"/>
                 Experience
             </CardTitle>
+             {isCurrentUser && (
+                <Dialog open={isExpDialogOpen} onOpenChange={setIsExpDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="icon"><Plus className="h-4 w-4"/></Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add Experience</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="exp-title" className="text-right">Title</Label>
+                        <Input id="exp-title" value={expTitle} onChange={(e) => setExpTitle(e.target.value)} className="col-span-3" />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="exp-company" className="text-right">Company</Label>
+                        <Input id="exp-company" value={expCompany} onChange={(e) => setExpCompany(e.target.value)} className="col-span-3" />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="exp-start" className="text-right">Start Date</Label>
+                        <Input id="exp-start" type="month" value={expStartDate} onChange={(e) => setExpStartDate(e.target.value)} className="col-span-3" />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="exp-end" className="text-right">End Date</Label>
+                        <Input id="exp-end" type="month" value={expEndDate} onChange={(e) => setExpEndDate(e.target.value)} className="col-span-3" />
+                      </div>
+                       <div className="grid grid-cols-4 items-start gap-4">
+                        <Label htmlFor="exp-desc" className="text-right mt-2">Description</Label>
+                        <Textarea id="exp-desc" value={expDescription} onChange={(e) => setExpDescription(e.target.value)} className="col-span-3" />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button onClick={handleAddExperience}>Save</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              )}
           </CardHeader>
           <CardContent className="space-y-6">
             {experience.map((exp, index) => (
@@ -433,17 +452,20 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
                   alt={`${exp.company} logo`}
                   width={48}
                   height={48}
-                  className="rounded-lg border p-1 h-12 w-12 shrink-0"
+                  className="rounded-lg border p-1 h-12 w-12 shrink-0 bg-white"
                   data-ai-hint="company logo"
                 />
                 <div>
                   <h3 className="font-semibold text-base sm:text-lg">{exp.title}</h3>
                   <p className="text-sm">{exp.company}</p>
-                  <p className="text-xs text-muted-foreground">{exp.startDate} - {exp.endDate}</p>
+                  <p className="text-xs text-muted-foreground">{exp.startDate} - {exp.endDate || 'Present'}</p>
                   <p className="text-sm mt-2 whitespace-pre-wrap">{exp.description}</p>
                 </div>
               </div>
             ))}
+             {experience.length === 0 && isCurrentUser && (
+                <p className="text-sm text-muted-foreground text-center py-4">Showcase your professional journey by adding your work experience.</p>
+            )}
           </CardContent>
         </Card>
       )}
@@ -534,7 +556,7 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button onClick={handleAddSkill}>Add Skill</Button>
+                  <Button onClick={() => handleAddSkill(newSkill)}>Add Skill</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>

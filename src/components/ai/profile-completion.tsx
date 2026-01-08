@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -5,15 +6,14 @@ import {
   completeProfile,
   type CompleteProfileOutput,
 } from "@/ai/flows/ai-profile-completion";
-import { useUser, useDoc, useMemoFirebase } from "@/firebase";
+import { useUser, useDoc, useMemoFirebase, useFirestore } from "@/firebase";
 import type { User } from "@/lib/types";
-import { doc } from "firebase/firestore";
-import { useFirestore } from "@/firebase";
+import { doc, setDoc } from "firebase/firestore";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Lightbulb, Plus } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AiProfileCompletion() {
   const [suggestions, setSuggestions] =
@@ -21,6 +21,7 @@ export default function AiProfileCompletion() {
   const [loading, setLoading] = useState(true);
   const { user } = useUser();
   const firestore = useFirestore();
+  const { toast } = useToast();
 
   const userDocRef = useMemoFirebase(
     () => (user ? doc(firestore, "userProfiles", user.uid) : null),
@@ -51,6 +52,36 @@ export default function AiProfileCompletion() {
         fetchSuggestions();
     }
   }, [userProfile]);
+  
+  const handleAddSkill = async (skill: string) => {
+    if (!userProfile || !userDocRef) return;
+    
+    const updatedSkills = [...new Set([...(userProfile.skills || []), skill])];
+    
+    try {
+      await setDoc(userDocRef, { skills: updatedSkills }, { merge: true });
+      toast({
+        title: "Skill Added",
+        description: `"${skill}" has been successfully added to your profile.`,
+      });
+      // Remove the skill from suggestions to provide feedback
+      setSuggestions(prev => prev ? ({ ...prev, suggestedSkills: prev.suggestedSkills.filter(s => s !== skill) }) : null);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not add skill. Please try again.",
+      });
+    }
+  };
+  
+   const handleAddExperience = (exp: string) => {
+    toast({
+        title: "Feature In Development",
+        description: "Adding experiences from AI suggestions is coming soon!",
+    });
+  };
+
 
   if (isUserProfileLoading || loading) {
     return (
@@ -103,7 +134,7 @@ export default function AiProfileCompletion() {
             <h3 className="font-semibold mb-2">Suggested Skills</h3>
             <div className="flex flex-wrap gap-2">
               {suggestions.suggestedSkills.map((skill, index) => (
-                <Button key={index} variant="secondary" size="sm" className="h-auto">
+                <Button key={index} variant="secondary" size="sm" className="h-auto" onClick={() => handleAddSkill(skill)}>
                   <Plus className="mr-2 h-4 w-4" />
                   {skill}
                 </Button>
@@ -118,7 +149,7 @@ export default function AiProfileCompletion() {
               {suggestions.suggestedExperiences.map((exp, index) => (
                 <div key={index} className="flex items-center justify-between p-3 bg-background rounded-md border">
                   <p className="text-sm flex-1 mr-4">{exp}</p>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={() => handleAddExperience(exp)}>
                     <Plus className="mr-2 h-4 w-4" /> Add
                   </Button>
                 </div>

@@ -14,6 +14,8 @@ export type User = {
   alumni: boolean;
   about: string;
   isMentor?: boolean;
+  experience?: Experience[];
+  certifications?: Certification[];
 };
 
 export type Experience = {
@@ -24,6 +26,12 @@ export type Experience = {
   endDate: string | 'Present';
   description: string;
 };
+
+export type Certification = {
+  name: string;
+  issuingOrganization: string;
+  credentialId: string;
+}
 
 export type Post = {
   id: string;
