@@ -125,7 +125,7 @@ export default function MentorsPage({ navigate }: MentorsPageProps) {
           <UserCard key={user.id} user={user} navigate={navigate} />
         ))}
       </div>
-       {filteredMentors.length === 0 && !isLoading && (
+       {!isLoading && filteredMentors.length === 0 && (
           <div className="col-span-full text-center py-16">
             <p className="text-muted-foreground">No mentors found matching your criteria.</p>
           </div>

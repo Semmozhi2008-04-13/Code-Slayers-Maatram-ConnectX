@@ -13,6 +13,7 @@ export type User = {
   skills: string[];
   alumni: boolean;
   about: string;
+  isMentor?: boolean;
 };
 
 export type Experience = {
@@ -58,4 +59,13 @@ export type Event = {
   attendees: number;
 };
 
-    
+export type Mentorship = {
+    id: string;
+    mentorId: string;
+    menteeId: string;
+    status: 'pending' | 'active' | 'completed' | 'declined';
+    startDate: Timestamp;
+    endDate?: Timestamp;
+    mentor?: User; // Denormalized data for easier display
+    mentee?: User; // Denormalized data for easier display
+}

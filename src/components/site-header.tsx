@@ -15,7 +15,8 @@ import {
   LogOut,
   User as UserIcon,
   Settings,
-  Network
+  Network,
+  Handshake,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -45,7 +46,8 @@ const navLinks = [
   { view: "students" as View, label: "Students", icon: GraduationCap },
   { view: "jobs" as View, label: "Jobs", icon: Briefcase },
   { view: "events" as View, label: "Events", icon: Calendar },
-  { view: "mentors" as View, label: "Mentors", icon: MessageSquare },
+  { view: "mentors" as View, label: "Find a Mentor", icon: MessageSquare },
+  { view: "mentorships" as View, label: "My Mentorships", icon: Handshake },
 ];
 
 type SiteHeaderProps = {

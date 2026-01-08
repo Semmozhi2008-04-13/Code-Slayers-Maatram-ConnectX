@@ -15,6 +15,7 @@ import LoginPage from '@/components/views/login';
 import CreateProfilePage from '@/app/create-profile/page';
 import SignUpPage from '@/app/signup/page';
 import EmailVerificationPage from '@/app/email-verification/page';
+import MentorshipsPage from './views/mentorships';
 
 
 type MainViewProps = {
@@ -39,6 +40,8 @@ export default function MainView({ view, profileId, searchQuery, navigate }: Mai
         return <EventsPage />;
       case 'mentors':
         return <MentorsPage navigate={navigate} />;
+      case 'mentorships':
+        return <MentorshipsPage navigate={navigate} />;
       case 'profile':
         if (profileId) {
           return <ProfilePage id={profileId} navigate={navigate} />;

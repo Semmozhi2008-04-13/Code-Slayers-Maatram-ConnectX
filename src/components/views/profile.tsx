@@ -2,13 +2,13 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, addDoc, collection, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, Check, Plus, Edit, MessageSquare, Award, GraduationCap, Link as LinkIcon, Star } from "lucide-react";
+import { Briefcase, Check, Plus, Edit, MessageSquare, Award, GraduationCap, Link as LinkIcon, Star, Handshake } from "lucide-react";
 import AiProfileCompletion from "@/components/ai/profile-completion";
 import { useToast } from "@/hooks/use-toast";
 import type { View } from '@/app/page';
@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import type { Post, User, Experience } from "@/lib/types";
+import type { Post, User, Experience, Mentorship } from "@/lib/types";
 import { Skeleton } from "../ui/skeleton";
 
 type ProfilePageProps = {
@@ -85,8 +85,28 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
   const { data: user, isLoading: isUserLoading } = useDoc<User>(userDocRef);
 
   const [requested, setRequested] = useState(false);
+  const [mentorshipStatus, setMentorshipStatus] = useState<'idle' | 'pending' | 'active'>('idle');
   
   const isCurrentUser = currentUser?.uid === id;
+
+  useEffect(() => {
+    if (!currentUser || !user || isCurrentUser) return;
+    
+    const mentorshipsRef = collection(firestore, 'mentorships');
+    const q = query(
+      mentorshipsRef,
+      where('mentorId', '==', user.id),
+      where('menteeId', '==', currentUser.uid)
+    );
+
+    getDocs(q).then((snapshot) => {
+      if (!snapshot.empty) {
+        const doc = snapshot.docs[0];
+        const data = doc.data() as Mentorship;
+        setMentorshipStatus(data.status as 'pending' | 'active');
+      }
+    });
+  }, [currentUser, user, isCurrentUser, firestore]);
 
   // State for editable profile fields - only used if it's the current user
   const [headline, setHeadline] = useState(user?.headline || '');
@@ -96,7 +116,7 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
   const [certifications, setCertifications] = useState<Certification[]>([]); // Assuming this isn't in Firestore yet
 
   // Update local state when user data loads
-  useState(() => {
+  useEffect(() => {
     if (user) {
       setHeadline(user.headline);
       setLocation(user.location);
@@ -134,6 +154,34 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
       title: "Connection Request Sent",
       description: `Your request to connect with ${user.firstName} ${user.lastName} has been sent.`,
     });
+  };
+
+  const handleRequestMentorship = () => {
+    if (!currentUser) return;
+    
+    const mentorshipData = {
+        mentorId: user.id,
+        menteeId: currentUser.uid,
+        status: 'pending',
+        startDate: serverTimestamp(),
+    };
+
+    addDoc(collection(firestore, 'mentorships'), mentorshipData)
+      .then(() => {
+        setMentorshipStatus('pending');
+        toast({
+            title: "Mentorship Request Sent",
+            description: `Your request to ${user.firstName} has been sent.`
+        });
+      })
+      .catch((error) => {
+        console.error("Error requesting mentorship:", error);
+        toast({
+            variant: 'destructive',
+            title: "Error",
+            description: "Could not send mentorship request. Please try again."
+        });
+      });
   };
 
   const handleSaveProfile = async () => {
@@ -284,6 +332,13 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
                             <MessageSquare className="mr-2 h-4 w-4"/>
                             Message
                         </Button>
+                        {user.isMentor && (
+                           <Button onClick={handleRequestMentorship} disabled={mentorshipStatus !== 'idle'}>
+                                {mentorshipStatus === 'idle' && <><Handshake className="mr-2 h-4 w-4"/>Request Mentorship</>}
+                                {mentorshipStatus === 'pending' && <><Check className="mr-2 h-4 w-4"/>Request Sent</>}
+                                {mentorshipStatus === 'active' && <><Check className="mr-2 h-4 w-4"/>Mentoring</>}
+                           </Button> 
+                        )}
                     </>
                 )}
               </div>

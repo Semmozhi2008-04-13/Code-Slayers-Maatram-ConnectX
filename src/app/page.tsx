@@ -20,6 +20,7 @@ export type View =
   | 'jobs'
   | 'events'
   | 'mentors'
+  | 'mentorships'
   | 'profile'
   | 'search'
   | 'login'
@@ -56,6 +57,7 @@ function getViewFromPath(path: string): {
       'jobs',
       'events',
       'mentors',
+      'mentorships',
       'login',
       'signup',
       'create-profile',
