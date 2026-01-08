@@ -60,7 +60,7 @@ export default function CreateProfilePage({ onProfileCreated }: CreateProfilePag
       location: '',
       about: '',
       major: '',
-      graduationYear: undefined,
+      graduationYear: '' as any, // Initialize with empty string to avoid uncontrolled error
     },
   });
 
@@ -85,7 +85,7 @@ export default function CreateProfilePage({ onProfileCreated }: CreateProfilePag
         location: values.location,
         about: values.about,
         major: values.major,
-        graduationYear: values.graduationYear,
+        graduationYear: values.graduationYear || null, // Store as null if empty
         profilePictureUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
         skills: [],
         alumni: false, // Default value
