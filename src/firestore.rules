@@ -74,7 +74,7 @@ service cloud.firestore {
     function isMentorshipParticipant() {
       return isSignedIn() && (request.auth.uid == resource.data.mentorId || request.auth.uid == resource.data.menteeId);
     }
-
+    
     /**
      * Checks if the requester is the organizer of an event.
      */
@@ -87,7 +87,6 @@ service cloud.firestore {
        // Rule on 'request.resource' for new docs.
       return isSignedIn() && request.auth.uid == request.resource.data.organizerId;
     }
-
 
     /**
      * Checks if the requester is the intended recipient of an AI Recommendation.
@@ -109,8 +108,7 @@ service cloud.firestore {
      */
     match /userProfiles/{userProfileId} {
       allow get, list: if true;
-      // Allow creation if the doc ID matches the user's UID or for seeding.
-      allow create: if isOwner(userProfileId) || isSignedIn();
+      allow create: if isOwner(userProfileId);
       allow update: if isExistingOwner(userProfileId) && request.resource.data.id == resource.data.id;
       allow delete: if isExistingOwner(userProfileId);
     }
@@ -128,8 +126,7 @@ service cloud.firestore {
      */
      match /posts/{postId} {
         allow get, list: if isSignedIn();
-        // Allow create if user is the author, or for seeding.
-        allow create: if isOwner(request.resource.data.author.id) || isSignedIn();
+        allow create: if isOwner(request.resource.data.author.id);
         allow update: if isOwner(resource.data.author.id);
         allow delete: if isOwner(resource.data.author.id);
 
@@ -167,8 +164,7 @@ service cloud.firestore {
      */
      match /jobs/{jobId} {
         allow get, list: if isSignedIn();
-        // Allow creation if user is the job poster, or for seeding.
-        allow create: if isOwner(request.resource.data.userProfileId) || isSignedIn();
+        allow create: if isOwner(request.resource.data.userProfileId);
         allow update, delete: if isOwner(resource.data.userProfileId);
      }
 
@@ -204,8 +200,7 @@ service cloud.firestore {
      */
     match /events/{eventId} {
       allow get, list: if true;
-      // Allow creation if user is the organizer, or for seeding.
-      allow create: if isEventOrganizerOnCreate() || isSignedIn();
+      allow create: if isEventOrganizerOnCreate();
       allow update: if isExistingDoc() && isEventOrganizer() && request.resource.data.organizerId == resource.data.organizerId;
       allow delete: if isExistingDoc() && isEventOrganizer();
     }
