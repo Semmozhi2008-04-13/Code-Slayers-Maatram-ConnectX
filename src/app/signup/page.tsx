@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -25,7 +26,7 @@ import {
 import { Loader2, Network } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useFirebase } from '@/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import type { View } from '@/app/page';
 import PasswordStrengthChecker from '@/components/password-strength-checker';
 
@@ -79,32 +80,30 @@ export default function SignUpPage({ navigate }: SignUpPageProps) {
     },
   });
 
-  const handleSignUp = (values: SignUpFormValues) => {
+  const handleSignUp = async (values: SignUpFormValues) => {
     setIsLoading(true);
-    createUserWithEmailAndPassword(auth, values.email, values.password)
-      .then((userCredential) => {
-        toast({
-          title: 'Sign Up Successful!',
-          description:
-            "Welcome to Maatram ConnectX! Let's build your profile.",
-        });
-        // The main page component will now automatically handle navigation.
-      })
-      .catch((error: any) => {
-        let description = 'An unexpected error occurred. Please try again.';
-        if (error.code === 'auth/email-already-in-use') {
-          description =
-            'This email is already in use. Please try another email or sign in.';
-        }
-        toast({
-          variant: 'destructive',
-          title: 'Sign Up Failed',
-          description: description,
-        });
-      })
-      .finally(() => {
-        setIsLoading(false);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      await sendEmailVerification(userCredential.user);
+      
+      toast({
+        title: 'One last step...',
+        description: `We've sent a verification link to ${values.email}. Please check your inbox.`,
       });
+      // The main page component will now automatically handle navigation to the verify-email page.
+    } catch (error: any) {
+      let description = 'An unexpected error occurred. Please try again.';
+      if (error.code === 'auth/email-already-in-use') {
+        description = 'This email is already in use. Please try another email or sign in.';
+      }
+      toast({
+        variant: 'destructive',
+        title: 'Sign Up Failed',
+        description: description,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

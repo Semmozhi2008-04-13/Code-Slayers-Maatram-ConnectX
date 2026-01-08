@@ -10,6 +10,7 @@ import { useUser, useFirestore } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import CreateProfilePage from '@/app/create-profile/page';
 import SignUpPage from '@/app/signup/page';
+import VerifyEmailPage from '@/components/views/verify-email';
 
 
 export type View =
@@ -24,7 +25,8 @@ export type View =
   | 'search'
   | 'login'
   | 'signup'
-  | 'create-profile';
+  | 'create-profile'
+  | 'verify-email';
 
 function getViewFromPath(path: string): {
   view: View;
@@ -59,6 +61,7 @@ function getViewFromPath(path: string): {
       'login',
       'signup',
       'create-profile',
+      'verify-email',
     ].includes(view)
   ) {
     return { view, id: null, query: null };
@@ -99,7 +102,14 @@ export default function Home() {
             return;
         }
 
-        // Authenticated: check for profile
+        // User is authenticated, now check email verification
+        if (!user.emailVerified) {
+          navigate('verify-email');
+          setAppLoading(false);
+          return;
+        }
+
+        // Authenticated and verified: check for profile
         try {
             const userDocRef = doc(firestore, 'userProfiles', user.uid);
             const userDoc = await getDoc(userDocRef);
@@ -107,7 +117,7 @@ export default function Home() {
                 setProfileExists(true);
                 // Profile exists, show the intended page or default to feed
                 if (
-                    ['login', 'signup', 'create-profile'].includes(pathView)
+                    ['login', 'signup', 'create-profile', 'verify-email'].includes(pathView)
                 ) {
                     navigate('feed');
                 } else {
@@ -126,7 +136,7 @@ export default function Home() {
     };
     
     handleState();
-  }, [user, isUserLoading]);
+  }, [user, isUserLoading, firestore]);
 
   // This effect handles browser back/forward navigation
   useEffect(() => {
@@ -203,6 +213,9 @@ export default function Home() {
     if (currentView === 'signup') {
       return <SignUpPage navigate={navigate} />;
     }
+    if (currentView === 'verify-email') {
+      return <VerifyEmailPage />;
+    }
     if (currentView === 'create-profile') {
       return <CreateProfilePage onProfileCreated={() => {
         setProfileExists(true);
@@ -211,8 +224,7 @@ export default function Home() {
     }
 
     // If we've reached here, the user should be authenticated and have a profile.
-    // If not, something is wrong, but we can still try to render the main view.
-    if (user && profileExists) {
+    if (user && user.emailVerified && profileExists) {
         return (
           <MainView
               view={currentView}
