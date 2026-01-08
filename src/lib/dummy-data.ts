@@ -45,6 +45,24 @@ export const dummyUsers: User[] = [
       { name: 'Certified Scrum Product Owner (CSPO)', issuingOrganization: 'Scrum Alliance', credentialId: 'CSPO-67890' }
     ]
   },
+    {
+    id: 'user-8',
+    firstName: 'Rohan',
+    lastName: 'Gupta',
+    email: 'rohan.g@example.com',
+    profilePictureUrl: 'https://picsum.photos/seed/user8/200/200',
+    headline: 'Lead Data Scientist at Tiger Analytics',
+    location: 'Chennai, Tamil Nadu',
+    industry: 'Data Science',
+    skills: ['Python', 'Machine Learning', 'Deep Learning', 'NLP', 'Big Data'],
+    alumni: true,
+    isMentor: true,
+    about: 'Lead Data Scientist with a passion for solving complex business problems using machine learning. Experienced in leading teams and delivering high-impact data science projects. Alumnus of IIT Madras.',
+    experience: [
+      { title: 'Lead Data Scientist', company: 'Tiger Analytics', companyLogoUrl: 'https://logo.clearbit.com/tigeranalytics.com', startDate: '2019', endDate: 'Present', description: 'Leading a team of data scientists on various client projects.' },
+    ],
+    certifications: []
+  },
   // Recent Alumni
   {
     id: 'user-3',
@@ -122,6 +140,70 @@ export const dummyUsers: User[] = [
     alumni: false,
     isMentor: false,
     about: 'Currently in my third year, focusing on AI and Machine Learning. I have a keen interest in computer vision and deep learning applications. I am actively working on personal projects to build my skills and portfolio.'
+  },
+  {
+    id: 'user-9',
+    firstName: 'Meera',
+    lastName: 'Nair',
+    email: 'meera.n@example.com',
+    profilePictureUrl: 'https://picsum.photos/seed/user9/200/200',
+    headline: 'UX Designer at ThoughtWorks',
+    location: 'Coimbatore, Tamil Nadu',
+    industry: 'Design',
+    skills: ['UX Design', 'UI Design', 'Figma', 'User Research', 'Prototyping'],
+    alumni: true,
+    isMentor: true,
+    about: 'Creative UX designer focused on crafting intuitive and user-friendly digital experiences. I believe in a user-centered design approach to solve real-world problems. Graduate of National Institute of Design.',
+    experience: [
+      { title: 'UX Designer', company: 'ThoughtWorks', companyLogoUrl: 'https://logo.clearbit.com/thoughtworks.com', startDate: '2020', endDate: 'Present', description: 'Designing user experiences for various clients across different domains.' },
+    ],
+    certifications: []
+  },
+  {
+    id: 'user-10',
+    firstName: 'Aditya',
+    lastName: 'Sharma',
+    email: 'aditya.s@example.com',
+    profilePictureUrl: 'https://picsum.photos/seed/user10/200/200',
+    headline: 'DevOps Engineer at HCL Technologies',
+    location: 'Madurai, Tamil Nadu',
+    industry: 'IT Services',
+    skills: ['DevOps', 'CI/CD', 'Docker', 'Kubernetes', 'AWS'],
+    alumni: true,
+    isMentor: false,
+    about: 'DevOps engineer with experience in automating and streamlining the software development lifecycle. Proficient in building and maintaining CI/CD pipelines. Alumnus of Thiagarajar College of Engineering.',
+    experience: [
+      { title: 'DevOps Engineer', company: 'HCL Technologies', companyLogoUrl: 'https://logo.clearbit.com/hcltech.com', startDate: '2019', endDate: 'Present', description: 'Managing infrastructure and deployment pipelines for enterprise clients.' },
+    ],
+    certifications: []
+  },
+  {
+    id: 'user-11',
+    firstName: 'Sneha',
+    lastName: 'Patel',
+    email: 'sneha.p@example.com',
+    profilePictureUrl: 'https://picsum.photos/seed/user11/200/200',
+    headline: 'Student at SRM Institute of Science and Technology',
+    location: 'Chennai, Tamil Nadu',
+    industry: 'Engineering',
+    skills: ['JavaScript', 'React', 'HTML', 'CSS', 'Git'],
+    alumni: false,
+    isMentor: false,
+    about: 'A motivated engineering student with a strong interest in web development. I am currently learning React and looking for opportunities to apply my skills in a real-world project.'
+  },
+  {
+    id: 'user-12',
+    firstName: 'Rajesh',
+    lastName: 'Kumar',
+    email: 'rajesh.k@example.com',
+    profilePictureUrl: 'https://picsum.photos/seed/user12/200/200',
+    headline: 'Student at VIT Chennai',
+    location: 'Chennai, Tamil Nadu',
+    industry: 'Computer Science',
+    skills: ['Java', 'Spring Boot', 'MySQL', 'REST APIs', 'Microservices'],
+    alumni: false,
+    isMentor: false,
+    about: 'A computer science student with a passion for backend development. I have experience building RESTful APIs using Spring Boot and I am eager to learn more about microservices architecture.'
   }
 ];
 
@@ -191,4 +273,80 @@ export const dummyEvents: Event[] = [
   },
 ];
 
-    
+
+export const dummyPosts: Omit<Post, 'id'>[] = [
+  {
+    author: {
+      id: 'user-1',
+      name: 'Arjun Krishnamurthy',
+      avatarUrl: 'https://picsum.photos/seed/user1/200/200',
+      headline: 'Principal Engineer at Zoho Corporation'
+    },
+    content: 'Just wrapped up a great session mentoring students on system design principles. It\'s incredibly rewarding to see the next generation of engineers so passionate and full of potential. Keep learning, keep building! #mentorship #systemdesign #engineering',
+    imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1080&q=80',
+    likeCount: 152,
+    commentCount: 18,
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) as any
+  },
+  {
+    author: {
+      id: 'user-3',
+      name: 'Karthik Narayanan',
+      avatarUrl: 'https://picsum.photos/seed/user3/200/200',
+      headline: 'Software Engineer at Microsoft'
+    },
+    content: 'Thrilled to share that I\'ve officially joined Microsoft as a Software Engineer! A big thank you to my mentors and professors from SSN College. Looking forward to contributing to amazing products and learning from the best in the industry. #newbeginnings #microsoft #softwareengineer',
+    likeCount: 230,
+    commentCount: 45,
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) as any
+  },
+  {
+    author: {
+      id: 'user-5',
+      name: 'Sanjay Kumar',
+      avatarUrl: 'https://picsum.photos/seed/user5/200/200',
+      headline: 'Final Year CSE Student at IIT Madras'
+    },
+    content: 'Our team just won the internal hackathon at IIT Madras! We built a project using computer vision to help farmers detect crop diseases early. It was an intense 24 hours, but so proud of what we accomplished. #hackathon #computervision #iitmadras #agritech',
+    imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1080&q=80',
+    likeCount: 98,
+    commentCount: 12,
+    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000) as any
+  },
+  {
+    author: {
+      id: 'user-2',
+      name: 'Priya Subramanian',
+      avatarUrl: 'https://picsum.photos/seed/user2/200/200',
+      headline: 'Director of Product Management at Freshworks'
+    },
+    content: 'What are the key metrics you track for a new product launch? I find that focusing on a single "North Star Metric" often provides more clarity than a dashboard full of vanity metrics. For us, it\'s usually tied to user activation and retention. Would love to hear other perspectives! #productmanagement #kpis #saas',
+    likeCount: 180,
+    commentCount: 32,
+    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) as any
+  },
+  {
+    author: {
+      id: 'user-9',
+      name: 'Meera Nair',
+      avatarUrl: 'https://picsum.photos/seed/user9/200/200',
+      headline: 'UX Designer at ThoughtWorks'
+    },
+    content: 'A reminder for all designers: you are not your user. The most beautiful interface can fail if it doesn\'t solve the user\'s problem. Always start with empathy and research. #uxdesign #uidesign #designthinking',
+    likeCount: 112,
+    commentCount: 20,
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) as any
+  },
+  {
+    author: {
+      id: 'user-7',
+      name: 'Vikram Singh',
+      avatarUrl: 'https://picsum.photos/seed/user7/200/200',
+      headline: 'AI & Data Science Student at PSG College of Technology'
+    },
+    content: 'Just completed the "AI for Everyone" course by Andrew Ng. It\'s a fantastic introduction to the world of AI, even for non-technical folks. Highly recommend it to anyone curious about how AI is changing our world. #ai #machinelearning #datascience #coursera',
+    likeCount: 75,
+    commentCount: 9,
+    createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000) as any
+  }
+];

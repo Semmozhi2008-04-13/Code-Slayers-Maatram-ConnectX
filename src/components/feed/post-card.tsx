@@ -52,14 +52,14 @@ export default function PostCard({ post, navigate }: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
   const [comment, setComment] = useState("");
   
-  const postRef = useMemoFirebase(() => doc(firestore, "posts", post.id), [firestore, post.id]);
-  const commentsQuery = useMemoFirebase(() => query(collection(postRef, "comments"), orderBy("createdAt", "desc")), [postRef]);
-  const likesRef = useMemoFirebase(() => collection(postRef, "likes"), [postRef]);
+  const postRef = post.id ? useMemoFirebase(() => doc(firestore, "posts", post.id), [firestore, post.id]) : null;
+  const commentsQuery = postRef ? useMemoFirebase(() => query(collection(postRef, "comments"), orderBy("createdAt", "desc")), [postRef]) : null;
+  const likesRef = postRef ? useMemoFirebase(() => collection(postRef, "likes"), [postRef]) : null;
 
   const { data: comments, isLoading: commentsLoading } = useCollection<Comment>(commentsQuery);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !likesRef) return;
     const likeDocRef = doc(likesRef, user.uid);
     getDoc(likeDocRef).then(doc => {
       if (doc.exists()) {
@@ -78,6 +78,15 @@ export default function PostCard({ post, navigate }: PostCardProps) {
       });
       return;
     }
+    
+    if(!post.id) {
+       toast({
+         variant: "destructive",
+         title: "Cannot like dummy post",
+         description: "This is a dummy post and cannot be liked.",
+       });
+       return;
+    }
 
     const newIsLiked = !isLiked;
     setIsLiked(newIsLiked);
@@ -85,7 +94,7 @@ export default function PostCard({ post, navigate }: PostCardProps) {
 
     try {
         const batch = writeBatch(firestore);
-        const likeDocRef = doc(likesRef, user.uid);
+        const likeDocRef = doc(likesRef!, user.uid);
         const postDocRef = doc(firestore, 'posts', post.id);
 
         const postDoc = await getDoc(postDocRef);
@@ -142,6 +151,15 @@ export default function PostCard({ post, navigate }: PostCardProps) {
   const handleCommentSubmit = async () => {
     if (!user || !comment.trim()) return;
 
+    if(!postRef) {
+        toast({
+         variant: "destructive",
+         title: "Cannot comment on dummy post",
+         description: "This is a dummy post and cannot be commented on.",
+       });
+       return;
+    }
+
     const userProfileRef = doc(firestore, 'userProfiles', user.uid);
     
     try {
@@ -188,7 +206,7 @@ export default function PostCard({ post, navigate }: PostCardProps) {
     }
   };
   
-  const formattedDate = post.createdAt ? formatDistanceToNow(post.createdAt.toDate(), { addSuffix: true }) : 'Just now';
+  const formattedDate = post.createdAt ? formatDistanceToNow(post.createdAt instanceof Date ? post.createdAt : post.createdAt.toDate(), { addSuffix: true }) : 'Just now';
 
 
   return (

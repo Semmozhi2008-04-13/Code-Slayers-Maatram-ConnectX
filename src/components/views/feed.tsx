@@ -11,9 +11,10 @@ import CreatePost from "@/components/feed/create-post";
 import PostCard from "@/components/feed/post-card";
 import AiRecommendations from "@/components/ai/recommendations";
 import type { View } from '@/app/page';
-import { useUser, useDoc, useCollection, useFirestore, useMemoFirebase } from "@/firebase";
-import { collection, doc, query, orderBy } from 'firebase/firestore';
+import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
+import { doc } from 'firebase/firestore';
 import { Skeleton } from '../ui/skeleton';
+import { dummyPosts } from '@/lib/dummy-data';
 
 type FeedPageProps = {
   navigate: (view: View, id?: string | null) => void;
@@ -29,11 +30,9 @@ export default function FeedPage({ navigate }: FeedPageProps) {
   );
   const { data: userProfile, isLoading: isUserProfileLoading } = useDoc<User>(userDocRef);
   
-  const postsQuery = useMemoFirebase(
-    () => query(collection(firestore, "posts"), orderBy("createdAt", "desc")),
-    [firestore]
-  );
-  const { data: posts, isLoading: arePostsLoading } = useCollection<Post>(postsQuery);
+  const posts = dummyPosts as Post[];
+  const arePostsLoading = false;
+
 
   const handlePostCreated = (newPost: Post) => {
     // This function can now be simplified as useCollection handles real-time updates.
@@ -135,8 +134,8 @@ export default function FeedPage({ navigate }: FeedPageProps) {
                 </Card>
               ))
           ) : (
-            posts?.map((post) => (
-              <PostCard key={post.id} post={post} navigate={navigate} />
+            posts?.map((post, index) => (
+              <PostCard key={index} post={post} navigate={navigate} />
             ))
           )}
            {!arePostsLoading && posts?.length === 0 && (
