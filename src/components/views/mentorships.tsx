@@ -7,6 +7,7 @@ import {
   useFirestore,
   useUser,
   useMemoFirebase,
+  useDoc,
 } from '@/firebase';
 import {
   collection,
@@ -158,7 +159,8 @@ export default function MentorshipsPage({ navigate }: MentorshipsPageProps) {
   }, [firestore, currentUserAuth]);
 
   const { data: mentorships, isLoading: mentorshipsLoading } = useCollection<Mentorship>(mentorshipsQuery);
-  const { data: currentUserProfile, isLoading: profileLoading } = useDoc<User>(currentUserAuth ? doc(firestore, 'userProfiles', currentUserAuth.uid) : null);
+  const userDocRef = useMemoFirebase(() => (currentUserAuth ? doc(firestore, 'userProfiles', currentUserAuth.uid) : null), [firestore, currentUserAuth]);
+  const { data: currentUserProfile, isLoading: profileLoading } = useDoc<User>(userDocRef);
 
   useEffect(() => {
     if (mentorships && !mentorshipsLoading) {
