@@ -102,7 +102,8 @@ service cloud.firestore {
      */
     match /userProfiles/{userProfileId} {
       allow get, list: if true;
-      allow create: if isOwner(userProfileId) && request.resource.data.id == userProfileId;
+      // Temporarily allow any signed-in user to create profiles for seeding
+      allow create: if isSignedIn();
       allow update: if isExistingOwner(userProfileId) && request.resource.data.id == resource.data.id;
       allow delete: if isExistingOwner(userProfileId);
     }
@@ -120,7 +121,8 @@ service cloud.firestore {
      */
      match /posts/{postId} {
         allow get, list: if isSignedIn();
-        allow create: if isOwner(request.resource.data.author.id);
+        // Temporarily allow any signed-in user to create posts for seeding
+        allow create: if isSignedIn();
         allow update: if isOwner(resource.data.author.id);
         allow delete: if isOwner(resource.data.author.id);
 
@@ -158,7 +160,8 @@ service cloud.firestore {
      */
      match /jobs/{jobId} {
         allow get, list: if isSignedIn();
-        allow create: if isOwner(request.resource.data.userProfileId);
+        // Temporarily allow any signed-in user to create jobs for seeding
+        allow create: if isSignedIn();
         allow update, delete: if isOwner(resource.data.userProfileId);
      }
 
@@ -194,7 +197,8 @@ service cloud.firestore {
      */
     match /events/{eventId} {
       allow get, list: if true;
-      allow create: if isSignedIn() && request.resource.data.organizerId == request.auth.uid;
+      // Temporarily allow any signed-in user to create events for seeding
+      allow create: if isSignedIn();
       allow update: if isExistingDoc() && isEventOrganizer() && request.resource.data.organizerId == resource.data.organizerId;
       allow delete: if isExistingDoc() && isEventOrganizer();
     }
