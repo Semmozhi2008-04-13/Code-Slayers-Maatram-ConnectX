@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -71,8 +72,7 @@ function getViewFromPath(path: string): {
 }
 
 export default function Home() {
-  const { user, isUserLoading, auth } = useFirebase();
-  const firestore = useFirestore();
+  const { user, isUserLoading, auth, firestore } = useFirebase();
   const { toast } = useToast();
 
   const [currentView, setCurrentView] = useState<View>('login');
