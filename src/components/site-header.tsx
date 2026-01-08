@@ -66,22 +66,21 @@ export function SiteHeader({ activeView, navigate }: SiteHeaderProps) {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
+  const handleLogout = () => {
+    signOut(auth).then(() => {
       toast({
           title: "You have been logged out.",
           description: "Thank you for using Maatram ConnectX.",
       });
       // The main page component will handle redirection to login
-    } catch (error) {
+    }).catch((error) => {
       console.error("Error signing out:", error);
       toast({
         variant: "destructive",
         title: "Logout Failed",
         description: "There was an error logging you out. Please try again.",
       });
-    }
+    });
   }
   
   const handleSettings = () => {

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -77,13 +78,12 @@ export default function EmailVerificationPage({ navigate }: EmailVerificationPag
     }
   };
   
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
+  const handleLogout = () => {
+    signOut(auth).then(() => {
       navigate('login');
-    } catch (error) {
+    }).catch((error) => {
       console.error('Error signing out:', error);
-    }
+    });
   }
 
   return (
