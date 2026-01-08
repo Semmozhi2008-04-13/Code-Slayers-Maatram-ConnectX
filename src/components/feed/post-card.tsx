@@ -18,8 +18,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "../ui/textarea";
 import type { View } from '@/app/page';
 import { formatDistanceToNow } from 'date-fns';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
-import { doc, collection, writeBatch, serverTimestamp, query, orderBy, getDoc, getDocs } from "firebase/firestore";
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, setDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase";
+import { doc, collection, query, orderBy, getDoc, updateDoc } from "firebase/firestore";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const CommentCard = ({ comment }: { comment: Comment }) => {
@@ -70,7 +70,7 @@ export default function PostCard({ post, navigate }: PostCardProps) {
 
 
   const handleLike = async () => {
-    if (!user) {
+    if (!user || !postRef || !likesRef) {
       toast({
         variant: "destructive",
         title: "Authentication required",
@@ -79,46 +79,19 @@ export default function PostCard({ post, navigate }: PostCardProps) {
       return;
     }
     
-    if(!post.id) {
-       toast({
-         variant: "destructive",
-         title: "Cannot like dummy post",
-         description: "This is a dummy post and cannot be liked.",
-       });
-       return;
-    }
-
     const newIsLiked = !isLiked;
     setIsLiked(newIsLiked);
     setLikeCount(prev => newIsLiked ? prev + 1 : prev - 1);
 
-    try {
-        const batch = writeBatch(firestore);
-        const likeDocRef = doc(likesRef!, user.uid);
-        const postDocRef = doc(firestore, 'posts', post.id);
+    const likeDocRef = doc(likesRef, user.uid);
 
-        const postDoc = await getDoc(postDocRef);
-        if (!postDoc.exists()) throw new Error("Post not found");
-        const currentLikeCount = postDoc.data().likeCount || 0;
-
-        if (newIsLiked) {
-            batch.set(likeDocRef, { userId: user.uid });
-            batch.update(postDocRef, { likeCount: currentLikeCount + 1 });
-        } else {
-            batch.delete(likeDocRef);
-            batch.update(postDocRef, { likeCount: Math.max(0, currentLikeCount - 1) });
-        }
-        await batch.commit();
-    } catch (error) {
-        console.error("Error updating like:", error);
-        // Revert UI changes on error
-        setIsLiked(!newIsLiked);
-        setLikeCount(prev => newIsLiked ? prev - 1 : prev + 1);
-        toast({
-            variant: "destructive",
-            title: "Something went wrong",
-            description: "Your like could not be processed. Please try again.",
-        });
+    // Optimistically update UI, and handle Firestore update in the background
+    if (newIsLiked) {
+      setDocumentNonBlocking(likeDocRef, { userId: user.uid }, {});
+      updateDoc(postRef, { likeCount: post.likeCount + 1 });
+    } else {
+      deleteDocumentNonBlocking(likeDocRef);
+      updateDoc(postRef, { likeCount: Math.max(0, post.likeCount - 1) });
     }
   };
 
@@ -149,16 +122,7 @@ export default function PostCard({ post, navigate }: PostCardProps) {
   };
   
   const handleCommentSubmit = async () => {
-    if (!user || !comment.trim()) return;
-
-    if(!postRef) {
-        toast({
-         variant: "destructive",
-         title: "Cannot comment on dummy post",
-         description: "This is a dummy post and cannot be commented on.",
-       });
-       return;
-    }
+    if (!user || !comment.trim() || !postRef) return;
 
     const userProfileRef = doc(firestore, 'userProfiles', user.uid);
     
@@ -176,19 +140,15 @@ export default function PostCard({ post, navigate }: PostCardProps) {
           avatarUrl: userProfile.profilePictureUrl,
         },
         content: comment,
-        createdAt: serverTimestamp(),
+        createdAt: new Date(),
       };
-
-      const batch = writeBatch(firestore);
-      const newCommentRef = doc(collection(postRef, "comments"));
-      batch.set(newCommentRef, newComment);
-
-      const postDocRef = doc(firestore, "posts", post.id);
-      const postDoc = await getDoc(postDocRef);
+      
+      const commentsCollectionRef = collection(postRef, "comments");
+      addDocumentNonBlocking(commentsCollectionRef, newComment);
+      
+      const postDoc = await getDoc(postRef);
       const currentCommentCount = postDoc.data()?.commentCount || 0;
-      batch.update(postDocRef, { commentCount: currentCommentCount + 1 });
-
-      await batch.commit();
+      updateDoc(postRef, { commentCount: currentCommentCount + 1 });
 
       setComment("");
       setShowComments(true);

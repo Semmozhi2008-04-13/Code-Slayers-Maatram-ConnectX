@@ -3,8 +3,8 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
-import { doc, setDoc, addDoc, collection, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
+import { useUser, useDoc, useFirestore, useMemoFirebase, setDocumentNonBlocking, addDocumentNonBlocking } from "@/firebase";
+import { doc, collection, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -179,47 +179,29 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
         startDate: serverTimestamp(),
     };
 
-    addDoc(collection(firestore, 'mentorships'), mentorshipData)
-      .then(() => {
-        setMentorshipStatus('pending');
-        toast({
-            title: "Mentorship Request Sent",
-            description: `Your request to ${user.firstName} has been sent.`
-        });
-      })
-      .catch((error) => {
-        console.error("Error requesting mentorship:", error);
-        toast({
-            variant: 'destructive',
-            title: "Error",
-            description: "Could not send mentorship request. Please try again."
-        });
-      });
+    addDocumentNonBlocking(collection(firestore, 'mentorships'), mentorshipData)
+    setMentorshipStatus('pending');
+    toast({
+        title: "Mentorship Request Sent",
+        description: `Your request to ${user.firstName} has been sent.`
+    });
   };
 
-  const handleSaveProfile = async (data: Partial<User>) => {
+  const handleSaveProfile = (data: Partial<User>) => {
     if (!isCurrentUser) return;
-    try {
-        await setDoc(userDocRef, data, { merge: true });
-        toast({
-            title: "Profile Updated",
-            description: "Your profile information has been saved.",
-        });
-    } catch (error) {
-         toast({
-            variant: "destructive",
-            title: "Update Failed",
-            description: "Could not save your profile. Please try again.",
-        });
-    }
+    setDocumentNonBlocking(userDocRef, data, { merge: true });
+    toast({
+        title: "Profile Updated",
+        description: "Your profile information has been saved.",
+    });
   };
 
-  const handleAddCertification = async () => {
+  const handleAddCertification = () => {
     if (certName && certOrg) {
       const newCert = { name: certName, issuingOrganization: certOrg, credentialId: certId };
       const updatedCerts = [...certifications, newCert];
       setCertifications(updatedCerts);
-      await handleSaveProfile({ certifications: updatedCerts });
+      handleSaveProfile({ certifications: updatedCerts });
       
       setCertName('');
       setCertOrg('');
@@ -228,17 +210,17 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
     }
   };
   
-  const handleAddSkill = async (skillToAdd: string) => {
+  const handleAddSkill = (skillToAdd: string) => {
     if (skillToAdd && isCurrentUser) {
       const updatedSkills = [...new Set([...skills, skillToAdd])]; // Avoid duplicates
       setSkills(updatedSkills);
-      await handleSaveProfile({ skills: updatedSkills });
+      handleSaveProfile({ skills: updatedSkills });
       setNewSkill('');
       setIsSkillDialogOpen(false);
     }
   };
 
-  const handleAddExperience = async () => {
+  const handleAddExperience = () => {
     if(expTitle && expCompany && expStartDate) {
         const newExp: Experience = {
             title: expTitle,
@@ -250,7 +232,7 @@ export default function ProfilePage({ id, navigate }: ProfilePageProps) {
         };
         const updatedExperience = [...experience, newExp];
         setExperience(updatedExperience);
-        await handleSaveProfile({ experience: updatedExperience });
+        handleSaveProfile({ experience: updatedExperience });
 
         setExpTitle('');
         setExpCompany('');

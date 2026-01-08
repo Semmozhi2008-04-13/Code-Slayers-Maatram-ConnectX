@@ -6,8 +6,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
-import { collection, doc, addDoc, serverTimestamp } from "firebase/firestore";
+import { useUser, useDoc, useFirestore, useMemoFirebase, addDocumentNonBlocking } from "@/firebase";
+import { collection, doc, serverTimestamp } from "firebase/firestore";
 import { Image as ImageIcon, Video, Sparkles, Wand, Send, X } from "lucide-react";
 import { generatePost } from "@/ai/flows/ai-post-generation";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -72,7 +72,7 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
     }
   };
   
-  const handlePost = async () => {
+  const handlePost = () => {
     if (!userProfile || !user) return;
 
     if (postContent.trim() === "") {
@@ -97,24 +97,15 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
         createdAt: serverTimestamp(),
     };
     
-    try {
-      const postsCollection = collection(firestore, 'posts');
-      await addDoc(postsCollection, newPostData);
-      
-      setPostContent("");
-      setImageUrl("");
-      toast({
-          title: "Post Created",
-          description: "Your post has been successfully published.",
-      });
-    } catch (error) {
-        console.error("Error creating post:", error);
-        toast({
-            variant: "destructive",
-            title: "Failed to Create Post",
-            description: "An unexpected error occurred. Please try again.",
-        });
-    }
+    const postsCollection = collection(firestore, 'posts');
+    addDocumentNonBlocking(postsCollection, newPostData);
+    
+    setPostContent("");
+    setImageUrl("");
+    toast({
+        title: "Post Created",
+        description: "Your post has been successfully published.",
+    });
   }
 
   const handleAddMedia = () => {

@@ -61,7 +61,7 @@ export default function CreateProfilePage({ onProfileCreated }: CreateProfilePag
       location: '',
       about: '',
       major: '',
-      graduationYear: '' as any, // Initialize with empty string to avoid uncontrolled error
+      graduationYear: undefined,
     },
   });
 
