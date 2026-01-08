@@ -11,9 +11,7 @@ import MentorsPage from '@/components/views/mentors';
 import ProfilePage from '@/components/views/profile';
 import SearchView from '@/components/views/search';
 import type { View } from '@/app/page';
-import LoginPage from '@/components/views/login';
 import CreateProfilePage from '@/app/create-profile/page';
-import SignUpPage from '@/app/signup/page';
 import MentorshipsPage from './views/mentorships';
 
 type MainViewProps = {
@@ -50,22 +48,14 @@ export default function MainView({ view, profileId, searchQuery, navigate }: Mai
           return <SearchView query={searchQuery} navigate={navigate} />;
         }
         return <FeedPage navigate={navigate} />; // Fallback to feed
-      case 'login':
-        return <LoginPage navigate={navigate} />;
-       case 'signup':
-        return <SignUpPage navigate={navigate} />;
-      case 'create-profile':
-        return <CreateProfilePage onProfileCreated={() => navigate('feed')} />;
       default:
         return <FeedPage navigate={navigate} />;
     }
   };
 
-  const showHeader = !['login', 'signup', 'create-profile'].includes(view);
-
   return (
     <>
-      {showHeader && <SiteHeader activeView={view} navigate={navigate} />}
+      <SiteHeader activeView={view} navigate={navigate} />
       <div className="container mx-auto px-4 py-8 pt-20 md:pt-24">
         {renderView()}
       </div>

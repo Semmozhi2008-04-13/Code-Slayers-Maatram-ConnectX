@@ -5,12 +5,11 @@ import { useState, useEffect } from 'react';
 import MainView from '@/components/main-view';
 import { AnimatedTitle } from '@/components/animated-title';
 import { Skeleton } from '@/components/ui/skeleton';
-import LoginPage from '@/components/views/login';
-import { useUser, useFirebase } from '@/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { useFirebase } from '@/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import CreateProfilePage from '@/app/create-profile/page';
-import SignUpPage from '@/app/signup/page';
 import { useToast } from '@/hooks/use-toast';
+import { signInAnonymously } from 'firebase/auth';
 
 export type View =
   | 'feed'
@@ -21,10 +20,7 @@ export type View =
   | 'mentors'
   | 'mentorships'
   | 'profile'
-  | 'search'
-  | 'login'
-  | 'signup'
-  | 'create-profile';
+  | 'search';
 
 function getViewFromPath(path: string): {
   view: View;
@@ -32,7 +28,7 @@ function getViewFromPath(path: string): {
   query: string | null;
 } {
   if (typeof window === 'undefined') {
-    return { view: 'login', id: null, query: null };
+    return { view: 'feed', id: null, query: null };
   }
 
   const pathParts = path.split('/').filter(Boolean);
@@ -56,9 +52,6 @@ function getViewFromPath(path: string): {
       'events',
       'mentors',
       'mentorships',
-      'login',
-      'signup',
-      'create-profile',
     ].includes(view)
   ) {
     return { view, id: null, query: null };
@@ -71,7 +64,7 @@ export default function Home() {
   const { user, isUserLoading, auth, firestore } = useFirebase();
   const { toast } = useToast();
 
-  const [currentView, setCurrentView] = useState<View>('login');
+  const [currentView, setCurrentView] = useState<View>('feed');
   const [profileId, setProfileId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
   const [appLoading, setAppLoading] = useState(true);
@@ -92,10 +85,18 @@ export default function Home() {
       } = getViewFromPath(window.location.pathname);
 
       if (!user) {
-        // Not authenticated
-        setAppLoading(false);
-        const targetView = pathView === 'signup' ? 'signup' : 'login';
-        navigate(targetView);
+        // Not authenticated, sign in anonymously
+        try {
+          await signInAnonymously(auth);
+          // onAuthStateChanged will re-trigger this effect with a user
+        } catch (error) {
+          console.error("Anonymous sign-in failed:", error);
+          toast({
+            variant: "destructive",
+            title: "Authentication Failed",
+            description: "Could not sign you in. Please refresh the page.",
+          });
+        }
         return;
       }
 
@@ -105,19 +106,28 @@ export default function Home() {
         const userDoc = await getDoc(userDocRef);
         if (userDoc.exists()) {
           setProfileExists(true);
-          // Profile exists, show the intended page or default to feed
-          if (['login', 'signup', 'create-profile'].includes(pathView)) {
-            navigate('feed');
-          } else {
-            navigate(pathView, pathId, pathQuery);
-          }
+          navigate(pathView, pathId, pathQuery);
         } else {
-          setProfileExists(false);
-          navigate('create-profile');
+          // No profile, create a default one for the anonymous user
+          const defaultProfile = {
+            id: user.uid,
+            email: user.email || 'anonymous@example.com',
+            firstName: 'Guest',
+            lastName: 'User',
+            headline: 'Exploring the network',
+            location: 'Anywhere',
+            about: 'This is a guest account.',
+            profilePictureUrl: `https://picsum.photos/seed/${user.uid}/200/200`,
+            skills: [],
+            alumni: false,
+            isMentor: false,
+          };
+          await setDoc(userDocRef, defaultProfile);
+          setProfileExists(true);
+          navigate(pathView, pathId, pathQuery);
         }
       } catch (error) {
-        console.error('Error checking user profile:', error);
-        navigate('login'); // Fallback
+        console.error('Error checking/creating user profile:', error);
       } finally {
         setAppLoading(false);
       }
@@ -159,12 +169,10 @@ export default function Home() {
 
     const currentUrl = typeof window !== 'undefined' ? window.location.pathname + window.location.search : '';
 
-    if (newView !== 'login' && newView !== 'signup' && currentUrl !== newUrl) {
+    if (currentUrl !== newUrl) {
       window.history.pushState(newState, '', newUrl);
-    } else if ((newView === 'login' || newView === 'signup') && currentUrl !== '/') {
-      window.history.pushState(newState, '', newView === 'login' ? '/' : '/signup');
     }
-
+    
     setCurrentView(newView);
     setProfileId(id);
     setSearchQuery(query);
@@ -172,7 +180,7 @@ export default function Home() {
   };
 
   const renderContent = () => {
-    if (appLoading) {
+    if (appLoading || profileExists === null) {
       return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-background text-primary p-4">
           <AnimatedTitle text="Maatram ConnectX" />
@@ -191,23 +199,6 @@ export default function Home() {
             />
           </div>
         </div>
-      );
-    }
-
-    if (currentView === 'login') {
-      return <LoginPage navigate={navigate} />;
-    }
-    if (currentView === 'signup') {
-      return <SignUpPage navigate={navigate} />;
-    }
-    if (currentView === 'create-profile') {
-      return (
-        <CreateProfilePage
-          onProfileCreated={() => {
-            setProfileExists(true);
-            navigate('feed');
-          }}
-        />
       );
     }
 
