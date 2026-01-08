@@ -15,12 +15,10 @@ import { JobCard } from "@/components/job-card";
 import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
-import { collection } from "firebase/firestore";
 import type { Job } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-
+import { dummyJobs } from "@/lib/dummy-data";
 
 export default function JobsPage() {
   const [search, setSearch] = useState("");
@@ -28,10 +26,9 @@ export default function JobsPage() {
   const [location, setLocation] = useState("all");
   const [isRemote, setIsRemote] = useState(false);
   const { toast } = useToast();
-  const firestore = useFirestore();
 
-  const jobsQuery = useMemoFirebase(() => collection(firestore, "jobs"), [firestore]);
-  const { data: jobs, isLoading } = useCollection<Job>(jobsQuery);
+  const jobs = dummyJobs;
+  const isLoading = false; // Using dummy data
 
   const jobTypes = useMemo(() => {
     if (!jobs) return [];
@@ -155,3 +152,5 @@ export default function JobsPage() {
     </div>
   );
 }
+
+    

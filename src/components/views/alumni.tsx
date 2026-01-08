@@ -11,12 +11,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserCard } from "@/components/user-card";
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
-import { collection, query, where } from "firebase/firestore";
 import type { View } from '@/app/page';
 import { Skeleton } from "../ui/skeleton";
 import type { User } from "@/lib/types";
 import { Card, CardContent } from "../ui/card";
+import { dummyUsers } from "@/lib/dummy-data";
 
 
 type AlumniPageProps = {
@@ -28,13 +27,9 @@ export default function AlumniPage({ navigate }: AlumniPageProps) {
   const [search, setSearch] = useState("");
   const [industry, setIndustry] = useState("all");
   const [location, setLocation] = useState("all");
-  const firestore = useFirestore();
 
-  const alumniQuery = useMemoFirebase(
-    () => query(collection(firestore, "userProfiles"), where("alumni", "==", true)),
-    [firestore]
-  );
-  const { data: alumniUsers, isLoading } = useCollection<User>(alumniQuery);
+  const alumniUsers = useMemo(() => dummyUsers.filter(u => u.alumni), []);
+  const isLoading = false; // Using dummy data
 
   const industries = useMemo(() => {
     if (!alumniUsers) return [];
@@ -137,3 +132,5 @@ export default function AlumniPage({ navigate }: AlumniPageProps) {
     </div>
   );
 }
+
+    

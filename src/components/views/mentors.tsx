@@ -12,12 +12,10 @@ import {
 } from "@/components/ui/select";
 import { UserCard } from "@/components/user-card";
 import type { View } from '@/app/page';
-import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
-import { collection, query, where } from "firebase/firestore";
 import type { User } from "@/lib/types";
 import { Skeleton } from "../ui/skeleton";
 import { Card, CardContent } from "../ui/card";
-
+import { dummyUsers } from "@/lib/dummy-data";
 
 type MentorsPageProps = {
   navigate: (view: View, id?: string | null) => void;
@@ -27,13 +25,9 @@ export default function MentorsPage({ navigate }: MentorsPageProps) {
   const [search, setSearch] = useState("");
   const [industry, setIndustry] = useState("all");
   const [skill, setSkill] = useState("all");
-  const firestore = useFirestore();
   
-  const mentorsQuery = useMemoFirebase(
-    () => query(collection(firestore, "userProfiles"), where("isMentor", "==", true)),
-    [firestore]
-  );
-  const { data: mentorUsers, isLoading } = useCollection<User>(mentorsQuery);
+  const mentorUsers = useMemo(() => dummyUsers.filter(u => u.isMentor), []);
+  const isLoading = false; // Using dummy data
 
   const industries = useMemo(() => {
     if (!mentorUsers) return [];
@@ -133,3 +127,5 @@ export default function MentorsPage({ navigate }: MentorsPageProps) {
     </div>
   );
 }
+
+    
