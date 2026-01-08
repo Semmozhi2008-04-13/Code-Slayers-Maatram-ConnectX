@@ -24,6 +24,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@700&display=swap"
           rel="stylesheet"
         />
+        <script src="https://www.google.com/recaptcha/enterprise.js?render=6LfrMEQsAAAAAGRyiULEQyEFciiWSyWlIo6zitju"></script>
       </head>
       <body className="font-body antialiased">
         <FirebaseClientProvider>
