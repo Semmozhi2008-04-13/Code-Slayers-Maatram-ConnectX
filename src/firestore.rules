@@ -143,10 +143,9 @@ service cloud.firestore {
 
         // Comments subcollection (/posts/{postId}/comments)
         match /comments/{commentId} {
-            // Allow anyone who is signed in to read individual comments.
-            // A 'list' call will work if the query constraints match readable documents,
-            // which this broad 'get' rule helps satisfy.
-            allow get: if isSignedIn();
+            // Allow any signed-in user to read comments and list them.
+            // The 'list' operation is required by the `useCollection` hook.
+            allow get, list: if isSignedIn();
             // Any signed-in user can create a comment, as long as they are the author.
             allow create: if isSignedIn() && isOwner(request.resource.data.author.id);
             // Only the author of the comment can update or delete it.
