@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import MainView from '@/components/main-view';
 import { AnimatedTitle } from '@/components/animated-title';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -33,13 +32,17 @@ function getViewFromPath(path: string): {
   id: string | null;
   query: string | null;
 } {
+  if (typeof window === 'undefined') {
+    return { view: 'login', id: null, query: null };
+  }
+
   const pathParts = path.split('/').filter(Boolean);
   const view = (pathParts[0] as View) || 'feed';
 
   if (view === 'profile' && pathParts[1]) {
     return { view: 'profile', id: pathParts[1], query: null };
   }
-  if (view === 'search' && typeof window !== 'undefined') {
+  if (view === 'search') {
     const urlParams = new URLSearchParams(window.location.search);
     const query = urlParams.get('q');
     return { view: 'search', id: null, query };
@@ -68,38 +71,32 @@ function getViewFromPath(path: string): {
 export default function Home() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
-  const router = useRouter();
 
-  const [view, setView] = useState<View>('login');
+  const [currentView, setCurrentView] = useState<View>('login');
   const [profileId, setProfileId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
   const [appLoading, setAppLoading] = useState(true);
   const [profileExists, setProfileExists] = useState<boolean | null>(null);
-
+  
+  // This effect handles the initial routing logic and state transitions
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const currentPath = window.location.pathname;
-    const {
-      view: initialView,
-      id: initialId,
-      query: initialQuery,
-    } = getViewFromPath(currentPath);
-
     const handleState = async () => {
       setAppLoading(true);
 
       if (isUserLoading) {
         return;
       }
+      
+      const {
+        view: pathView,
+        id: pathId,
+        query: pathQuery,
+      } = getViewFromPath(window.location.pathname);
 
       if (!user) {
         // Not authenticated
-        if (initialView === 'signup') {
-          navigate('signup');
-        } else {
-          navigate('login');
-        }
+        const targetView = pathView === 'signup' ? 'signup' : 'login';
+        navigate(targetView);
         setAppLoading(false);
         return;
       }
@@ -113,8 +110,7 @@ export default function Home() {
         return;
       }
 
-
-      // Authenticated: check for profile
+      // Authenticated and verified: check for profile
       const userDocRef = doc(firestore, 'userProfiles', user.uid);
       try {
         const userDoc = await getDoc(userDocRef);
@@ -122,11 +118,11 @@ export default function Home() {
           setProfileExists(true);
           // Profile exists, show the intended page or default to feed
           if (
-            ['login', 'signup', 'create-profile', 'email-verification'].includes(initialView)
+            ['login', 'signup', 'create-profile', 'email-verification'].includes(pathView)
           ) {
             navigate('feed');
           } else {
-            navigate(initialView, initialId, initialQuery);
+            navigate(pathView, pathId, pathQuery);
           }
         } else {
           setProfileExists(false);
@@ -141,11 +137,13 @@ export default function Home() {
     };
 
     handleState();
+  }, [user, isUserLoading, firestore]);
 
+  // This effect handles browser back/forward navigation
+  useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
-      const { view, id, query } =
-        event.state || getViewFromPath(window.location.pathname);
-      setView(view);
+      const { view, id, query } = event.state || getViewFromPath(window.location.pathname);
+      setCurrentView(view);
       setProfileId(id);
       setSearchQuery(query);
     };
@@ -154,7 +152,7 @@ export default function Home() {
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [user, isUserLoading, firestore]);
+  }, []);
 
   const navigate = (
     newView: View,
@@ -166,27 +164,25 @@ export default function Home() {
       newUrl = `/profile/${id}`;
     } else if (newView === 'search' && query) {
       newUrl = `/search?q=${encodeURIComponent(query)}`;
-    } else if (newView === 'feed') {
+    } else if (newView === 'feed' || newView === 'login') {
       newUrl = `/`;
     }
 
-    const newState = { view: newView, profileId: id, searchQuery: query };
+    const newState = { view: newView, id: id, query: query };
 
-    if (
-      typeof window !== 'undefined' &&
-      window.location.pathname + window.location.search !== newUrl
-    ) {
+    // Only push state if the URL is actually different
+    if (typeof window !== 'undefined' && (window.location.pathname + window.location.search !== newUrl)) {
       window.history.pushState(newState, '', newUrl);
     }
 
-    setView(newView);
+    setCurrentView(newView);
     setProfileId(id);
     setSearchQuery(query);
     if (typeof window !== 'undefined') window.scrollTo(0, 0);
   };
 
   const renderContent = () => {
-    if (appLoading || isUserLoading) {
+    if (appLoading) {
       return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-background text-primary p-4">
           <AnimatedTitle text="Maatram ConnectX" />
@@ -207,36 +203,37 @@ export default function Home() {
         </div>
       );
     }
-
-    if (!user) {
-      if (view === 'signup') {
-        return <SignUpPage navigate={navigate} />;
-      }
+    
+    if (currentView === 'login') {
       return <LoginPage navigate={navigate} />;
     }
-    
-    if (!user.emailVerified) {
+    if (currentView === 'signup') {
+      return <SignUpPage navigate={navigate} />;
+    }
+     if (currentView === 'email-verification') {
         return <EmailVerificationPage navigate={navigate} />
     }
-
-    if (profileExists === false) {
+    if (currentView === 'create-profile') {
       return <CreateProfilePage onProfileCreated={() => {
         setProfileExists(true);
         navigate('feed');
       }} />;
     }
 
-    if (profileExists === true) {
+    // If we've reached here, the user should be authenticated and have a profile.
+    // If not, something is wrong, but we can still try to render the main view.
+    if (user && profileExists) {
         return (
-        <MainView
-            view={view}
-            profileId={profileId}
-            searchQuery={searchQuery}
-            navigate={navigate}
-        />
+          <MainView
+              view={currentView}
+              profileId={profileId}
+              searchQuery={searchQuery}
+              navigate={navigate}
+          />
         );
     }
-
+    
+    // Fallback loading state while things resolve
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-background text-primary p-4">
           <AnimatedTitle text="Maatram ConnectX" />

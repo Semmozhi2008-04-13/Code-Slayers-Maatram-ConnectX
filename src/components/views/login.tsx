@@ -114,39 +114,34 @@ export default function LoginPage({ navigate }: LoginPageProps) {
     },
   });
 
-  const handleLogin = async (values: LoginFormValues) => {
-    if (!auth) {
-       toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: "Authentication service is not available. Please try again later.",
-      });
-      return;
-    }
+  const handleLogin = (values: LoginFormValues) => {
     setIsLoading(true);
-    try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
-      toast({ title: 'Login Successful', description: 'Welcome back!' });
-    } catch (error: any) {
-      let description = 'An unexpected error occurred. Please try again.';
-      if (
-        error.code === 'auth/user-not-found' ||
-        error.code === 'auth/wrong-password' ||
-        error.code === 'auth/invalid-credential'
-      ) {
-        description = 'Invalid email or password. Please try again.';
-      }
-      toast({
-        variant: 'destructive',
-        title: 'Login Failed',
-        description: description,
+    signInWithEmailAndPassword(auth, values.email, values.password)
+      .then(() => {
+        toast({ title: 'Login Successful', description: 'Welcome back!' });
+        // The main page component will now automatically handle navigation.
+      })
+      .catch((error: any) => {
+        let description = 'An unexpected error occurred. Please try again.';
+        if (
+          error.code === 'auth/user-not-found' ||
+          error.code === 'auth/wrong-password' ||
+          error.code === 'auth/invalid-credential'
+        ) {
+          description = 'Invalid email or password. Please try again.';
+        }
+        toast({
+          variant: 'destructive',
+          title: 'Login Failed',
+          description: description,
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
-    } finally {
-      setIsLoading(false);
-    }
   };
 
-  const handleSocialLogin = async (provider: 'Google' | 'LinkedIn') => {
+  const handleSocialLogin = (provider: 'Google' | 'LinkedIn') => {
      if (!auth) {
        toast({
         variant: "destructive",
@@ -156,23 +151,25 @@ export default function LoginPage({ navigate }: LoginPageProps) {
       return;
     }
     setIsSocialLoading(provider);
-    try {
-      const authProvider = new GoogleAuthProvider(); // Only Google is implemented for now
-      await signInWithPopup(auth, authProvider);
-      toast({
-        title: 'Login Successful',
-        description: `Successfully signed in with ${provider}.`,
+    const authProvider = new GoogleAuthProvider(); // Only Google is implemented for now
+    signInWithPopup(auth, authProvider)
+      .then(() => {
+        toast({
+          title: 'Login Successful',
+          description: `Successfully signed in with ${provider}.`,
+        });
+      })
+      .catch((error) => {
+        console.error(`${provider} sign-in error:`, error);
+        toast({
+          variant: 'destructive',
+          title: 'Sign-In Failed',
+          description: `Could not sign in with ${provider}. Please try again.`,
+        });
+      })
+      .finally(() => {
+        setIsSocialLoading(false);
       });
-    } catch (error) {
-      console.error(`${provider} sign-in error:`, error);
-      toast({
-        variant: 'destructive',
-        title: 'Sign-In Failed',
-        description: `Could not sign in with ${provider}. Please try again.`,
-      });
-    } finally {
-      setIsSocialLoading(false);
-    }
   };
 
   return (

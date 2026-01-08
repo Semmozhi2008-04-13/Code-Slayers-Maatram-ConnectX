@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useUser, useDoc, useFirestore, useMemoFirebase } from "@/firebase";
 import { collection, doc, addDoc, serverTimestamp } from "firebase/firestore";
-import { Image as ImageIcon, Video, Sparkles, Wand, Send } from "lucide-react";
+import { Image as ImageIcon, Video, Sparkles, Wand, Send, X } from "lucide-react";
 import { generatePost } from "@/ai/flows/ai-post-generation";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -168,7 +168,7 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
                   <div className="mt-2 relative">
                     <Image src={imageUrl} alt="Post preview" width={100} height={100} className="rounded-md object-cover h-24 w-24" />
                     <Button variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => setImageUrl('')}>
-                        <Send className="h-4 w-4 transform rotate-45"/>
+                        <X className="h-4 w-4"/>
                     </Button>
                   </div>
               )}
@@ -251,5 +251,3 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
     </>
   );
 }
-
-    
