@@ -86,7 +86,7 @@ export default function SignUpPage({ navigate }: SignUpPageProps) {
 
       // Define actionCodeSettings to redirect user back to the app
       const actionCodeSettings = {
-        url: window.location.origin, // Redirects to the homepage
+        url: `${window.location.origin}/login?email=${values.email}`, // Redirects to login with email pre-filled
         handleCodeInApp: true,
       };
 

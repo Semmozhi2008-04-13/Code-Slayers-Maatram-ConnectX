@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -46,7 +45,7 @@ export default function VerifyEmailPage() {
     setIsSending(true);
     try {
       const actionCodeSettings = {
-        url: window.location.origin, // Redirects to the homepage
+        url: `${window.location.origin}/login?email=${user.email}`,
         handleCodeInApp: true,
       };
       await sendEmailVerification(user, actionCodeSettings);
