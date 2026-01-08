@@ -25,7 +25,7 @@ import {
 import { Loader2, Network } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useFirebase } from '@/firebase';
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import type { View } from '@/app/page';
 import PasswordStrengthChecker from '@/components/password-strength-checker';
 
@@ -83,13 +83,12 @@ export default function SignUpPage({ navigate }: SignUpPageProps) {
     setIsLoading(true);
     createUserWithEmailAndPassword(auth, values.email, values.password)
       .then((userCredential) => {
-        sendEmailVerification(userCredential.user);
         toast({
           title: 'Sign Up Successful!',
           description:
-            'A verification link has been sent to your email. Please verify to continue.',
+            "Welcome to Maatram ConnectX! Let's build your profile.",
         });
-        // The main page component will now automatically handle showing the verification page.
+        // The main page component will now automatically handle navigation.
       })
       .catch((error: any) => {
         let description = 'An unexpected error occurred. Please try again.';

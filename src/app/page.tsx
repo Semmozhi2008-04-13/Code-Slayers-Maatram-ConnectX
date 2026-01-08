@@ -10,7 +10,6 @@ import { useUser, useFirestore } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import CreateProfilePage from '@/app/create-profile/page';
 import SignUpPage from '@/app/signup/page';
-import EmailVerificationPage from '@/app/email-verification/page';
 
 
 export type View =
@@ -25,8 +24,7 @@ export type View =
   | 'search'
   | 'login'
   | 'signup'
-  | 'create-profile'
-  | 'email-verification';
+  | 'create-profile';
 
 function getViewFromPath(path: string): {
   view: View;
@@ -61,7 +59,6 @@ function getViewFromPath(path: string): {
       'login',
       'signup',
       'create-profile',
-      'email-verification',
     ].includes(view)
   ) {
     return { view, id: null, query: null };
@@ -101,17 +98,8 @@ export default function Home() {
             navigate(targetView);
             return;
         }
-        
-        // User is authenticated, force reload to get latest emailVerified status
-        await user.reload();
-        
-        if (!user.emailVerified) {
-            setAppLoading(false);
-            navigate('email-verification');
-            return;
-        }
 
-        // Authenticated and verified: check for profile
+        // Authenticated: check for profile
         try {
             const userDocRef = doc(firestore, 'userProfiles', user.uid);
             const userDoc = await getDoc(userDocRef);
@@ -119,7 +107,7 @@ export default function Home() {
                 setProfileExists(true);
                 // Profile exists, show the intended page or default to feed
                 if (
-                    ['login', 'signup', 'create-profile', 'email-verification'].includes(pathView)
+                    ['login', 'signup', 'create-profile'].includes(pathView)
                 ) {
                     navigate('feed');
                 } else {
@@ -214,9 +202,6 @@ export default function Home() {
     }
     if (currentView === 'signup') {
       return <SignUpPage navigate={navigate} />;
-    }
-     if (currentView === 'email-verification') {
-        return <EmailVerificationPage navigate={navigate} />
     }
     if (currentView === 'create-profile') {
       return <CreateProfilePage onProfileCreated={() => {
