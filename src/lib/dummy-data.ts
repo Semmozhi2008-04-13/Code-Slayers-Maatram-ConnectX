@@ -8,7 +8,7 @@ export const dummyUsers: User[] = [
     firstName: 'Arjun',
     lastName: 'Krishnamurthy',
     email: 'arjun.k@example.com',
-    profilePictureUrl: `https://picsum.photos/seed/user1/200/200`,
+    profilePictureUrl: `https://images.unsplash.com/photo-1618077360395-f3068be8e001?auto=format&fit=crop&w=200&q=80`,
     headline: 'Principal Engineer at Zoho Corporation',
     location: 'Chennai, Tamil Nadu',
     industry: 'Software Development',
@@ -29,7 +29,7 @@ export const dummyUsers: User[] = [
     firstName: 'Priya',
     lastName: 'Subramanian',
     email: 'priya.s@example.com',
-    profilePictureUrl: `https://picsum.photos/seed/user2/200/200`,
+    profilePictureUrl: `https://images.unsplash.com/photo-1624298357597-2b22f2444e2c?auto=format&fit=crop&w=200&q=80`,
     headline: 'Director of Product Management at Freshworks',
     location: 'Chennai, Tamil Nadu',
     industry: 'Product Management',
@@ -50,7 +50,7 @@ export const dummyUsers: User[] = [
     firstName: 'Rohan',
     lastName: 'Gupta',
     email: 'rohan.g@example.com',
-    profilePictureUrl: 'https://picsum.photos/seed/user8/200/200',
+    profilePictureUrl: 'https://images.unsplash.com/photo-1522556189639-b150ed9c4331?auto=format&fit=crop&w=200&q=80',
     headline: 'Lead Data Scientist at Tiger Analytics',
     location: 'Chennai, Tamil Nadu',
     industry: 'Data Science',
@@ -69,7 +69,7 @@ export const dummyUsers: User[] = [
     firstName: 'Karthik',
     lastName: 'Narayanan',
     email: 'karthik.n@example.com',
-    profilePictureUrl: `https://picsum.photos/seed/user3/200/200`,
+    profilePictureUrl: `https://images.unsplash.com/photo-1622263098276-8178a3615993?auto=format&fit=crop&w=200&q=80`,
     headline: 'Software Engineer at Microsoft',
     location: 'Bengaluru, Karnataka',
     industry: 'Software Development',
@@ -86,7 +86,7 @@ export const dummyUsers: User[] = [
     firstName: 'Divya',
     lastName: 'Rao',
     email: 'divya.r@example.com',
-    profilePictureUrl: `https://picsum.photos/seed/user4/200/200`,
+    profilePictureUrl: `https://images.unsplash.com/photo-1544717297-fa95b6ee9643?auto=format&fit=crop&w=200&q=80`,
     headline: 'Data Scientist at Amazon',
     location: 'Chennai, Tamil Nadu',
     industry: 'Data Science',
@@ -104,7 +104,7 @@ export const dummyUsers: User[] = [
     firstName: 'Sanjay',
     lastName: 'Kumar',
     email: 'sanjay.k@example.com',
-    profilePictureUrl: `https://picsum.photos/seed/user5/200/200`,
+    profilePictureUrl: `https://images.unsplash.com/photo-1555120282-57698662916b?auto=format&fit=crop&w=200&q=80`,
     headline: 'Final Year CSE Student at IIT Madras',
     location: 'Chennai, Tamil Nadu',
     industry: 'Information Technology',
@@ -118,7 +118,7 @@ export const dummyUsers: User[] = [
     firstName: 'Anusha',
     lastName: 'Menon',
     email: 'anusha.m@example.com',
-    profilePictureUrl: `https://picsum.photos/seed/user6/200/200`,
+    profilePictureUrl: `https://images.unsplash.com/photo-1601288496920-b6154fe3626a?auto=format&fit=crop&w=200&q=80`,
     headline: 'Student at Loyola College, Chennai',
     location: 'Chennai, Tamil Nadu',
     industry: 'Business',
@@ -132,7 +132,7 @@ export const dummyUsers: User[] = [
     firstName: 'Vikram',
     lastName: 'Singh',
     email: 'vikram.s@example.com',
-    profilePictureUrl: `https://picsum.photos/seed/user7/200/200`,
+    profilePictureUrl: `https://images.unsplash.com/photo-1526413227916-383412a8a589?auto=format&fit=crop&w=200&q=80`,
     headline: 'AI & Data Science Student at PSG College of Technology',
     location: 'Coimbatore, Tamil Nadu',
     industry: 'Data Science',
@@ -146,7 +146,7 @@ export const dummyUsers: User[] = [
     firstName: 'Meera',
     lastName: 'Nair',
     email: 'meera.n@example.com',
-    profilePictureUrl: 'https://picsum.photos/seed/user9/200/200',
+    profilePictureUrl: 'https://images.unsplash.com/photo-1594385313333-e2863a3952f9?auto=format&fit=crop&w=200&q=80',
     headline: 'UX Designer at ThoughtWorks',
     location: 'Coimbatore, Tamil Nadu',
     industry: 'Design',
@@ -164,7 +164,7 @@ export const dummyUsers: User[] = [
     firstName: 'Aditya',
     lastName: 'Sharma',
     email: 'aditya.s@example.com',
-    profilePictureUrl: 'https://picsum.photos/seed/user10/200/200',
+    profilePictureUrl: 'https://images.unsplash.com/photo-1578635073854-e8932f7b1e41?auto=format&fit=crop&w=200&q=80',
     headline: 'DevOps Engineer at HCL Technologies',
     location: 'Madurai, Tamil Nadu',
     industry: 'IT Services',
@@ -182,7 +182,7 @@ export const dummyUsers: User[] = [
     firstName: 'Sneha',
     lastName: 'Patel',
     email: 'sneha.p@example.com',
-    profilePictureUrl: 'https://picsum.photos/seed/user11/200/200',
+    profilePictureUrl: 'https://images.unsplash.com/photo-1574660430686-b2a255cfce68?auto=format&fit=crop&w=200&q=80',
     headline: 'Student at SRM Institute of Science and Technology',
     location: 'Chennai, Tamil Nadu',
     industry: 'Engineering',
@@ -196,7 +196,7 @@ export const dummyUsers: User[] = [
     firstName: 'Rajesh',
     lastName: 'Kumar',
     email: 'rajesh.k@example.com',
-    profilePictureUrl: 'https://picsum.photos/seed/user12/200/200',
+    profilePictureUrl: 'https://images.unsplash.com/photo-1602566356438-dd36d35e989c?auto=format&fit=crop&w=200&q=80',
     headline: 'Student at VIT Chennai',
     location: 'Chennai, Tamil Nadu',
     industry: 'Computer Science',
@@ -212,7 +212,7 @@ export const dummyJobs: Job[] = [
     id: 'job-1',
     title: 'SPARC Program Coordinator',
     company: 'Maatram Foundation',
-    companyLogoUrl: 'https://picsum.photos/seed/maatram/64/64',
+    companyLogoUrl: 'https://images.unsplash.com/photo-1707784014029-6ea4c88b7074?auto=format&fit=crop&w=64&q=80',
     location: 'Chennai, Tamil Nadu',
     type: 'Full-time',
     postedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
@@ -221,7 +221,7 @@ export const dummyJobs: Job[] = [
     id: 'job-2',
     title: 'Department Head - Community Outreach',
     company: 'Maatram Foundation',
-    companyLogoUrl: 'https://picsum.photos/seed/maatram/64/64',
+    companyLogoUrl: 'https://images.unsplash.com/photo-1707784014029-6ea4c88b7074?auto=format&fit=crop&w=64&q=80',
     location: 'Coimbatore, Tamil Nadu',
     type: 'Full-time',
     postedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
@@ -250,7 +250,7 @@ export const dummyEvents: Event[] = [
   {
     id: 'event-1',
     title: 'Alumni Networking Mixer - Chennai Chapter',
-    bannerUrl: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1NTA5ODV8MHwxfHNlYXJjaHwxfHxJbmRpYW4lMjBuZXR3b3JraW5nJTIwZXZlbnR8ZW58MHx8fHwxNzY3Mzk1MDQ2fDA&ixlib=rb-4.1.0&q=80&w=1080',
+    bannerUrl: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=1080&q=80',
     date: 'August 15, 2024',
     location: 'The Westin Chennai Velachery',
     attendees: 120,
@@ -258,7 +258,7 @@ export const dummyEvents: Event[] = [
   {
     id: 'event-2',
     title: 'SPARC: Career Guidance Workshop',
-    bannerUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1NTA5ODV8MHwxfHNlYXJjaHwxfHxJbmRpYW4lMjB1bml2ZXJzaXR5JTIwd29ya3Nob3B8ZW58MHx8fHwxNzY3Mzk1MDQ2fDA&ixlib=rb-4.1.0&q=80&w=1080',
+    bannerUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1080&q=80',
     date: 'September 5, 2024',
     location: 'Online / Virtual Event',
     attendees: 350,
@@ -266,7 +266,7 @@ export const dummyEvents: Event[] = [
   {
     id: 'event-3',
     title: 'Maatram Foundation Annual Gala',
-    bannerUrl: 'https://images.unsplash.com/photo-1604726433857-015a513c3931?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w1NTA5ODV8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBnYWxhJTIwZXZlbnR8ZW58MHx8fHwxNzY3Mzk1MDc1fDA&ixlib=rb-4.1.0&q=80&w=1080',
+    bannerUrl: 'https://images.unsplash.com/photo-1604726433857-015a513c3931?auto=format&fit=crop&w=1080&q=80',
     date: 'October 20, 2024',
     location: 'Le Méridien Coimbatore',
     attendees: 250,
@@ -279,11 +279,11 @@ export const dummyPosts: Omit<Post, 'id'>[] = [
     author: {
       id: 'user-1',
       name: 'Arjun Krishnamurthy',
-      avatarUrl: 'https://picsum.photos/seed/user1/200/200',
+      avatarUrl: 'https://images.unsplash.com/photo-1618077360395-f3068be8e001?auto=format&fit=crop&w=200&q=80',
       headline: 'Principal Engineer at Zoho Corporation'
     },
     content: 'Just wrapped up a great session mentoring students on system design principles. It\'s incredibly rewarding to see the next generation of engineers so passionate and full of potential. Keep learning, keep building! #mentorship #systemdesign #engineering',
-    imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1080&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1080&q=80',
     likeCount: 152,
     commentCount: 18,
     createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) as any
@@ -292,7 +292,7 @@ export const dummyPosts: Omit<Post, 'id'>[] = [
     author: {
       id: 'user-3',
       name: 'Karthik Narayanan',
-      avatarUrl: 'https://picsum.photos/seed/user3/200/200',
+      avatarUrl: 'https://images.unsplash.com/photo-1622263098276-8178a3615993?auto=format&fit=crop&w=200&q=80',
       headline: 'Software Engineer at Microsoft'
     },
     content: 'Thrilled to share that I\'ve officially joined Microsoft as a Software Engineer! A big thank you to my mentors and professors from SSN College. Looking forward to contributing to amazing products and learning from the best in the industry. #newbeginnings #microsoft #softwareengineer',
@@ -304,11 +304,11 @@ export const dummyPosts: Omit<Post, 'id'>[] = [
     author: {
       id: 'user-5',
       name: 'Sanjay Kumar',
-      avatarUrl: 'https://picsum.photos/seed/user5/200/200',
+      avatarUrl: 'https://images.unsplash.com/photo-1555120282-57698662916b?auto=format&fit=crop&w=200&q=80',
       headline: 'Final Year CSE Student at IIT Madras'
     },
     content: 'Our team just won the internal hackathon at IIT Madras! We built a project using computer vision to help farmers detect crop diseases early. It was an intense 24 hours, but so proud of what we accomplished. #hackathon #computervision #iitmadras #agritech',
-    imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1080&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1080&q=80',
     likeCount: 98,
     commentCount: 12,
     createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000) as any
@@ -317,7 +317,7 @@ export const dummyPosts: Omit<Post, 'id'>[] = [
     author: {
       id: 'user-2',
       name: 'Priya Subramanian',
-      avatarUrl: 'https://picsum.photos/seed/user2/200/200',
+      avatarUrl: 'https://images.unsplash.com/photo-1624298357597-2b22f2444e2c?auto=format&fit=crop&w=200&q=80',
       headline: 'Director of Product Management at Freshworks'
     },
     content: 'What are the key metrics you track for a new product launch? I find that focusing on a single "North Star Metric" often provides more clarity than a dashboard full of vanity metrics. For us, it\'s usually tied to user activation and retention. Would love to hear other perspectives! #productmanagement #kpis #saas',
@@ -329,7 +329,7 @@ export const dummyPosts: Omit<Post, 'id'>[] = [
     author: {
       id: 'user-9',
       name: 'Meera Nair',
-      avatarUrl: 'https://picsum.photos/seed/user9/200/200',
+      avatarUrl: 'https://images.unsplash.com/photo-1594385313333-e2863a3952f9?auto=format&fit=crop&w=200&q=80',
       headline: 'UX Designer at ThoughtWorks'
     },
     content: 'A reminder for all designers: you are not your user. The most beautiful interface can fail if it doesn\'t solve the user\'s problem. Always start with empathy and research. #uxdesign #uidesign #designthinking',
@@ -341,7 +341,7 @@ export const dummyPosts: Omit<Post, 'id'>[] = [
     author: {
       id: 'user-7',
       name: 'Vikram Singh',
-      avatarUrl: 'https://picsum.photos/seed/user7/200/200',
+      avatarUrl: 'https://images.unsplash.com/photo-1526413227916-383412a8a589?auto=format&fit=crop&w=200&q=80',
       headline: 'AI & Data Science Student at PSG College of Technology'
     },
     content: 'Just completed the "AI for Everyone" course by Andrew Ng. It\'s a fantastic introduction to the world of AI, even for non-technical folks. Highly recommend it to anyone curious about how AI is changing our world. #ai #machinelearning #datascience #coursera',
@@ -350,3 +350,5 @@ export const dummyPosts: Omit<Post, 'id'>[] = [
     createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000) as any
   }
 ];
+
+    
