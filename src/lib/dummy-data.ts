@@ -296,6 +296,7 @@ export const dummyPosts: Omit<Post, 'id'>[] = [
       headline: 'Software Engineer at Microsoft'
     },
     content: 'Thrilled to share that I\'ve officially joined Microsoft as a Software Engineer! A big thank you to my mentors and professors from SSN College. Looking forward to contributing to amazing products and learning from the best in the industry. #newbeginnings #microsoft #softwareengineer',
+    imageUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1080&q=80',
     likeCount: 230,
     commentCount: 45,
     createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) as any
@@ -321,6 +322,7 @@ export const dummyPosts: Omit<Post, 'id'>[] = [
       headline: 'Director of Product Management at Freshworks'
     },
     content: 'What are the key metrics you track for a new product launch? I find that focusing on a single "North Star Metric" often provides more clarity than a dashboard full of vanity metrics. For us, it\'s usually tied to user activation and retention. Would love to hear other perspectives! #productmanagement #kpis #saas',
+    imageUrl: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1080&q=80',
     likeCount: 180,
     commentCount: 32,
     createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) as any
@@ -333,6 +335,7 @@ export const dummyPosts: Omit<Post, 'id'>[] = [
       headline: 'UX Designer at ThoughtWorks'
     },
     content: 'A reminder for all designers: you are not your user. The most beautiful interface can fail if it doesn\'t solve the user\'s problem. Always start with empathy and research. #uxdesign #uidesign #designthinking',
+    imageUrl: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1080&q=80',
     likeCount: 112,
     commentCount: 20,
     createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) as any
@@ -345,6 +348,7 @@ export const dummyPosts: Omit<Post, 'id'>[] = [
       headline: 'AI & Data Science Student at PSG College of Technology'
     },
     content: 'Just completed the "AI for Everyone" course by Andrew Ng. It\'s a fantastic introduction to the world of AI, even for non-technical folks. Highly recommend it to anyone curious about how AI is changing our world. #ai #machinelearning #datascience #coursera',
+    imageUrl: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1080&q=80',
     likeCount: 75,
     commentCount: 9,
     createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000) as any
