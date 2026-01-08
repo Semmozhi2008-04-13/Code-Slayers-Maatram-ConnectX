@@ -31,7 +31,7 @@ export default function AiProfileCompletion() {
 
   useEffect(() => {
     async function fetchSuggestions() {
-      if (!userProfile) return;
+      if (!userProfile || suggestions) return; // Don't refetch if we have suggestions
 
       setLoading(true);
       try {
@@ -48,10 +48,10 @@ export default function AiProfileCompletion() {
       }
     }
     
-    if (userProfile) {
+    if (userProfile && !suggestions) {
         fetchSuggestions();
     }
-  }, [userProfile]);
+  }, [userProfile, suggestions]);
   
   const handleAddSkill = async (skill: string) => {
     if (!userProfile || !userDocRef) return;

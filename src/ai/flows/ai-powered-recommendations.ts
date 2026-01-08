@@ -30,7 +30,17 @@ const AIRecommendationsOutputSchema = z.object({
 export type AIRecommendationsOutput = z.infer<typeof AIRecommendationsOutputSchema>;
 
 export async function getAIRecommendations(input: AIRecommendationsInput): Promise<AIRecommendationsOutput> {
-  return aiRecommendationsFlow(input);
+  try {
+    return await aiRecommendationsFlow(input);
+  } catch (error) {
+    console.error('Error in getAIRecommendations flow:', error);
+    // Return a default/empty state in case of error to prevent crashes
+    return {
+      connectionRecommendations: [],
+      jobRecommendations: [],
+      contentRecommendations: [],
+    };
+  }
 }
 
 const prompt = ai.definePrompt({

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -30,7 +31,7 @@ export default function AiRecommendations() {
 
   useEffect(() => {
     async function fetchRecommendations() {
-      if (!userProfile) return;
+      if (!userProfile || recommendations) return; // Don't refetch if we have recommendations
 
       setLoading(true);
       try {
@@ -53,12 +54,12 @@ export default function AiRecommendations() {
       }
     }
     
-    if (userProfile) {
+    if (userProfile && !recommendations) {
         fetchRecommendations();
     } else if (!isUserProfileLoading) {
         setLoading(false);
     }
-  }, [userProfile, isUserProfileLoading]);
+  }, [userProfile, isUserProfileLoading, recommendations]);
 
   const renderLoading = () => (
     <div className="space-y-4">

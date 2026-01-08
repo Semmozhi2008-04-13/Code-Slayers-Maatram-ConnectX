@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -31,7 +32,16 @@ const CompleteProfileOutputSchema = z.object({
 export type CompleteProfileOutput = z.infer<typeof CompleteProfileOutputSchema>;
 
 export async function completeProfile(input: CompleteProfileInput): Promise<CompleteProfileOutput> {
-  return completeProfileFlow(input);
+  try {
+    return await completeProfileFlow(input);
+  } catch (error) {
+    console.error('Error in completeProfile flow:', error);
+    // Return a default/empty state in case of error to prevent crashes
+    return {
+      suggestedSkills: [],
+      suggestedExperiences: [],
+    };
+  }
 }
 
 const prompt = ai.definePrompt({
