@@ -26,7 +26,8 @@ import {
 import { Loader2, Network } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore } from '@/firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc } from 'firebase/firestore';
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 const profileSchema = z.object({
   firstName: z.string().min(1, 'First name is required.'),
@@ -74,39 +75,36 @@ export default function CreateProfilePage({ onProfileCreated }: CreateProfilePag
       return;
     }
     setIsLoading(true);
-    try {
-      const userProfileRef = doc(firestore, 'userProfiles', user.uid);
-      await setDoc(userProfileRef, {
-        id: user.uid,
-        email: user.email,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        headline: values.headline,
-        location: values.location,
-        about: values.about,
-        major: values.major,
-        graduationYear: values.graduationYear || null, // Store as null if empty
-        profilePictureUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
-        skills: [],
-        alumni: false, // Default value
-        isMentor: false, // Default value
-      }, { merge: true });
+    
+    const userProfileRef = doc(firestore, 'userProfiles', user.uid);
+    const profileData = {
+      id: user.uid,
+      email: user.email,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      headline: values.headline,
+      location: values.location,
+      about: values.about,
+      major: values.major,
+      graduationYear: values.graduationYear || null,
+      profilePictureUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
+      skills: [],
+      alumni: false,
+      isMentor: false,
+    };
+    
+    // Use non-blocking update
+    setDocumentNonBlocking(userProfileRef, profileData, { merge: true });
 
-      toast({
-        title: 'Profile Created!',
-        description: "Welcome to Maatram ConnectX! Let's get started.",
-      });
-      onProfileCreated();
-    } catch (error) {
-      console.error('Error creating profile:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Profile Creation Failed',
-        description: 'An unexpected error occurred. Please try again.',
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    // Since it's non-blocking, we can proceed immediately.
+    // The onAuthStateChanged or a subsequent profile check will handle the UI transition.
+    toast({
+      title: 'Profile Created!',
+      description: "Welcome to Maatram ConnectX! Let's get started.",
+    });
+    
+    onProfileCreated();
+    setIsLoading(false);
   };
 
   return (
