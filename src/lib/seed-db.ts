@@ -7,10 +7,18 @@ import {
   doc,
 } from 'firebase/firestore';
 import { dummyUsers, dummyPosts, dummyJobs, dummyEvents } from './dummy-data';
+import { getAuth } from 'firebase/auth';
 
 // This function will seed the database.
 // It's designed to be run once, for example, when the app first loads and detects an empty database.
 export const seedDatabase = async (firestore: Firestore) => {
+  const auth = getAuth();
+  // Ensure a user is logged in before attempting to seed.
+  if (!auth.currentUser) {
+    console.log("Seeding deferred: User not authenticated.");
+    return;
+  }
+
   const batch = writeBatch(firestore);
 
   // 1. Seed Users

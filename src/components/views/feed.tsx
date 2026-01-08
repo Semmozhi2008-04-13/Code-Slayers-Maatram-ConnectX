@@ -23,7 +23,7 @@ type FeedPageProps = {
 export default function FeedPage({ navigate }: FeedPageProps) {
   const { user } = useUser();
   const firestore = useFirestore();
-  const [isSeeding, setIsSeeding] = useState(false);
+  const [isSeeding, setIsSeeding] = useState(true); // Start as true
 
   const userDocRef = useMemoFirebase(
     () => (user ? doc(firestore, "userProfiles", user.uid) : null),
@@ -35,19 +35,26 @@ export default function FeedPage({ navigate }: FeedPageProps) {
   const { data: posts, isLoading: arePostsLoading } = useCollection<Post>(postsQuery);
 
   useEffect(() => {
-    // Seed the database if it's empty
-    if (posts?.length === 0 && !arePostsLoading && !isSeeding) {
-      setIsSeeding(true);
-      console.log("Database is empty, seeding with dummy data...");
-      seedDatabase(firestore).then(() => {
-        console.log("Database seeding complete.");
+    const performSeed = async () => {
+      // Only seed if user is logged in, posts have loaded, and there are no posts.
+      if (user && !arePostsLoading && posts?.length === 0) {
+        console.log("Database is empty, seeding with dummy data...");
+        try {
+          await seedDatabase(firestore);
+          console.log("Database seeding complete.");
+        } catch (error) {
+          console.error("Database seeding failed:", error);
+        } finally {
+           setIsSeeding(false);
+        }
+      } else if (!arePostsLoading) {
+        // If posts are not empty or user is not logged in, stop the seeding indicator
         setIsSeeding(false);
-      }).catch(error => {
-        console.error("Database seeding failed:", error);
-        setIsSeeding(false);
-      });
-    }
-  }, [posts, arePostsLoading, firestore, isSeeding]);
+      }
+    };
+    
+    performSeed();
+  }, [posts, arePostsLoading, user, firestore]);
 
 
   const handlePostCreated = (newPost: Post) => {
@@ -121,6 +128,8 @@ export default function FeedPage({ navigate }: FeedPageProps) {
     );
   }
 
+  const showLoadingState = arePostsLoading || isSeeding;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-10 gap-6 lg:gap-8">
       {/* Left Column */}
@@ -132,7 +141,7 @@ export default function FeedPage({ navigate }: FeedPageProps) {
       <div className="md:col-span-7 lg:col-span-5 space-y-6">
         <CreatePost onPostCreated={handlePostCreated} />
         <div className="space-y-4">
-          {arePostsLoading || isSeeding ? (
+          {showLoadingState ? (
             [...Array(3)].map((_, i) => (
                 <Card key={i}>
                   <CardHeader className="flex flex-row items-center gap-3 space-y-0">
@@ -154,7 +163,7 @@ export default function FeedPage({ navigate }: FeedPageProps) {
               <PostCard key={post.id} post={post} navigate={navigate} />
             ))
           )}
-           {!arePostsLoading && !isSeeding && posts?.length === 0 && (
+           {!showLoadingState && posts?.length === 0 && (
             <div className="text-center py-16">
               <p className="text-muted-foreground">Your feed is empty.</p>
               <p className="text-sm text-muted-foreground">Create a post to get started!</p>
