@@ -8,6 +8,7 @@ import { useCollection, useFirestore, useMemoFirebase } from "@/firebase";
 import { collection } from "firebase/firestore";
 import type { Event } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 
 export default function EventsPage() {
   const { toast } = useToast();
