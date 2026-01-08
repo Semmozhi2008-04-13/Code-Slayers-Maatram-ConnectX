@@ -45,11 +45,15 @@ export default function VerifyEmailPage() {
 
     setIsSending(true);
     try {
-      await sendEmailVerification(user);
+      const actionCodeSettings = {
+        url: window.location.origin, // Redirects to the homepage
+        handleCodeInApp: true,
+      };
+      await sendEmailVerification(user, actionCodeSettings);
       setSendTime(Date.now());
       toast({
         title: 'Verification Email Sent',
-        description: 'A new verification link has been sent to your email address.',
+        description: `A new verification link has been sent to ${user.email}.`,
       });
     } catch (error: any) {
       toast({
