@@ -80,18 +80,20 @@ export default function PostCard({ post, navigate }: PostCardProps) {
     }
     
     const newIsLiked = !isLiked;
+    const newLikeCount = newIsLiked ? (likeCount ?? 0) + 1 : Math.max(0, (likeCount ?? 0) - 1);
+    
     setIsLiked(newIsLiked);
-    setLikeCount(prev => newIsLiked ? prev + 1 : prev - 1);
+    setLikeCount(newLikeCount);
 
     const likeDocRef = doc(likesRef, user.uid);
 
     // Optimistically update UI, and handle Firestore update in the background
     if (newIsLiked) {
       setDocumentNonBlocking(likeDocRef, { userId: user.uid }, {});
-      updateDoc(postRef, { likeCount: post.likeCount + 1 });
+      updateDoc(postRef, { likeCount: newLikeCount });
     } else {
       deleteDocumentNonBlocking(likeDocRef);
-      updateDoc(postRef, { likeCount: Math.max(0, post.likeCount - 1) });
+      updateDoc(postRef, { likeCount: newLikeCount });
     }
   };
 
@@ -206,7 +208,7 @@ export default function PostCard({ post, navigate }: PostCardProps) {
               alt="Post image"
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
-              data-ai-hint="office teamwork professional"
+              data-ai-hint="office teamwork"
             />
           </div>
         )}

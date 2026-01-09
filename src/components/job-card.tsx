@@ -22,11 +22,16 @@ export function JobCard({ job }: JobCardProps) {
   const postedAtLabel = useMemo(() => {
     if (!job.postedAt) return 'N/A';
     try {
-        // postedAt could be a string or a Timestamp-like object from Firestore
-        const date = typeof job.postedAt === 'string' ? new Date(job.postedAt) : (job.postedAt as any).toDate();
+        const date = job.postedAt instanceof Date ? job.postedAt : new Date(job.postedAt);
         return formatDistanceToNow(date, { addSuffix: true });
     } catch (e) {
-        return 'N/A';
+        // Fallback for when date is a Firestore Timestamp-like object
+        try {
+            const tsDate = (job.postedAt as any).toDate();
+            return formatDistanceToNow(tsDate, { addSuffix: true });
+        } catch (e2) {
+             return 'N/A';
+        }
     }
   }, [job.postedAt]);
 

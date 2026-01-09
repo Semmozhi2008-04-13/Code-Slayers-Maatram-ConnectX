@@ -7,18 +7,11 @@ import {
   doc,
 } from 'firebase/firestore';
 import { dummyUsers, dummyPosts, dummyJobs, dummyEvents } from './dummy-data';
-import { getAuth } from 'firebase/auth';
+import { placeholderImages } from './placeholder-images';
 
 // This function will seed the database.
 // It's designed to be run once, for example, when the app first loads and detects an empty database.
 export const seedDatabase = async (firestore: Firestore) => {
-  const auth = getAuth();
-  // Ensure a user is logged in before attempting to seed.
-  if (!auth.currentUser) {
-    console.log("Seeding deferred: User not authenticated.");
-    return;
-  }
-
   const batch = writeBatch(firestore);
 
   // 1. Seed Users
@@ -27,7 +20,15 @@ export const seedDatabase = async (firestore: Firestore) => {
     // Using a predictable-but-unique-enough ID for dummy data
     const docId = `user-${(index + 1).toString().padStart(3, '0')}`;
     const userRef = collection(firestore, 'userProfiles');
-    const userDoc = { id: docId, ...user }; // Add the id to the document data
+    
+    // Assign a placeholder avatar
+    const avatar = placeholderImages.avatars[index % placeholderImages.avatars.length];
+    
+    const userDoc = { 
+      id: docId, 
+      ...user,
+      profilePictureUrl: avatar.imageUrl
+    }; 
     batch.set(doc(userRef, docId), userDoc);
     userDocs.set(docId, userDoc); // Store for later use in posts
   });
@@ -35,14 +36,17 @@ export const seedDatabase = async (firestore: Firestore) => {
   // 2. Seed Posts
   const userIds = Array.from(userDocs.keys());
   dummyPosts.forEach((post, index) => {
-    // Assign a random user as the author
     const randomUserId = userIds[index % userIds.length];
     const author = userDocs.get(randomUserId);
 
     if (author) {
       const postRef = doc(collection(firestore, 'posts'));
+      
+      const postImage = placeholderImages.postImages[index % placeholderImages.postImages.length];
+
       batch.set(postRef, {
         ...post,
+        imageUrl: postImage.imageUrl,
         createdAt: serverTimestamp(),
         author: {
           id: author.id,
@@ -55,15 +59,24 @@ export const seedDatabase = async (firestore: Firestore) => {
   });
   
   // 3. Seed Jobs
-  dummyJobs.forEach(job => {
+  dummyJobs.forEach((job, index) => {
       const jobRef = doc(collection(firestore, 'jobs'));
-      batch.set(jobRef, job);
+      const companyLogo = placeholderImages.companyLogos[index % placeholderImages.companyLogos.length];
+      batch.set(jobRef, {
+          ...job,
+          companyLogoUrl: companyLogo.imageUrl
+      });
   });
   
   // 4. Seed Events
-  dummyEvents.forEach(event => {
+  dummyEvents.forEach((event, index) => {
       const eventRef = doc(collection(firestore, 'events'));
-      batch.set(eventRef, event);
+      const eventBanner = placeholderImages.eventBanners[index % placeholderImages.eventBanners.length];
+      batch.set(eventRef, {
+          ...event,
+          bannerUrl: eventBanner.imageUrl,
+          organizerId: userIds[index % userIds.length] // Assign a random user as organizer
+      });
   });
 
   // Commit the batch
