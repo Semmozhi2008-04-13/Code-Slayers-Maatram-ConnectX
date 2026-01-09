@@ -8,6 +8,7 @@ import {
   useUser,
   useMemoFirebase,
   useDoc,
+  useDocuments,
 } from '@/firebase';
 import {
   collection,
@@ -33,53 +34,21 @@ type MentorshipsPageProps = {
   navigate: (view: View, id?: string | null) => void;
 };
 
-// Function to fetch user profiles for mentorships
-const fetchMentorshipUsers = async (
-  firestore: any,
-  mentorships: Mentorship[]
-) => {
-  const userIds = new Set<string>();
-  mentorships.forEach((m) => {
-    userIds.add(m.mentorId);
-    userIds.add(m.menteeId);
-  });
-
-  if (userIds.size === 0) return [];
-
-  const userPromises = Array.from(userIds).map((id) =>
-    getDoc(doc(firestore, 'userProfiles', id))
-  );
-  const userDocs = await Promise.all(userPromises);
-
-  const usersMap = new Map<string, User>();
-  userDocs.forEach((doc) => {
-    if (doc.exists()) {
-      usersMap.set(doc.id, doc.data() as User);
-    }
-  });
-
-  return mentorships.map((m) => ({
-    ...m,
-    mentor: usersMap.get(m.mentorId),
-    mentee: usersMap.get(m.menteeId),
-  }));
-};
 
 const MentorshipCard = ({
   mentorship,
   currentUser,
   onAction,
 }: {
-  mentorship: Mentorship;
+  mentorship: Mentorship & { mentor?: User; mentee?: User };
   currentUser: User;
   onAction: (id: string, status: 'active' | 'declined') => void;
 }) => {
   const isMentor = mentorship.mentorId === currentUser.id;
   const otherUser = isMentor ? mentorship.mentee : mentorship.mentor;
-  const { toast } = useToast();
 
   if (!otherUser) {
-    return <Skeleton className="h-24 w-full" />;
+    return <Skeleton className="h-24 w-full rounded-lg" />;
   }
 
   const handleAction = (status: 'active' | 'declined') => {
@@ -142,10 +111,6 @@ export default function MentorshipsPage({ navigate }: MentorshipsPageProps) {
   const { user: currentUserAuth } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const [detailedMentorships, setDetailedMentorships] = useState<
-    (Mentorship & { mentor?: User; mentee?: User })[]
-  >([]);
-  const [dataLoading, setDataLoading] = useState(true);
 
   const mentorshipsQuery = useMemoFirebase(() => {
     if (!currentUserAuth) return null;
@@ -162,25 +127,33 @@ export default function MentorshipsPage({ navigate }: MentorshipsPageProps) {
   const userDocRef = useMemoFirebase(() => (currentUserAuth ? doc(firestore, 'userProfiles', currentUserAuth.uid) : null), [firestore, currentUserAuth]);
   const { data: currentUserProfile, isLoading: profileLoading } = useDoc<User>(userDocRef);
 
-  useEffect(() => {
-    if (mentorships && !mentorshipsLoading) {
-      setDataLoading(true);
-      fetchMentorshipUsers(firestore, mentorships)
-        .then((detailedData) => {
-          setDetailedMentorships(detailedData);
-          setDataLoading(false);
-        })
-        .catch(() => setDataLoading(false));
-    } else if (!mentorshipsLoading) {
-      setDataLoading(false);
-    }
-  }, [mentorships, mentorshipsLoading, firestore]);
+  const userIdsToFetch = useMemo(() => {
+      if (!mentorships) return null;
+      const ids = new Set<string>();
+      mentorships.forEach(m => {
+          ids.add(m.mentorId);
+          ids.add(m.menteeId);
+      });
+      return Array.from(ids);
+  }, [mentorships]);
+
+  const { data: mentorshipUsers, isLoading: usersLoading } = useDocuments<User>('userProfiles', userIdsToFetch);
+
+  const detailedMentorships = useMemo(() => {
+      if (!mentorships || !mentorshipUsers) return [];
+      const usersMap = new Map(mentorshipUsers.map(u => [u.id, u]));
+      return mentorships.map(m => ({
+          ...m,
+          mentor: usersMap.get(m.mentorId),
+          mentee: usersMap.get(m.menteeId),
+      }));
+  }, [mentorships, mentorshipUsers]);
+  
 
   const handleAction = async (id: string, status: 'active' | 'declined') => {
     const mentorshipRef = doc(firestore, 'mentorships', id);
     try {
         await updateDoc(mentorshipRef, { status });
-        setDetailedMentorships(prev => prev.map(m => m.id === id ? {...m, status} : m));
         toast({
             title: `Request ${status === 'active' ? 'Accepted' : 'Declined'}`,
             description: `The mentorship has been updated.`
@@ -196,6 +169,7 @@ export default function MentorshipsPage({ navigate }: MentorshipsPageProps) {
 
 
   const { mentoring, menteeOf, pendingRequests } = useMemo(() => {
+    if (!detailedMentorships) return { mentoring: [], menteeOf: [], pendingRequests: [] };
     const mentoring = detailedMentorships.filter(
       (m) => m.mentorId === currentUserAuth?.uid && m.status === 'active'
     );
@@ -208,7 +182,7 @@ export default function MentorshipsPage({ navigate }: MentorshipsPageProps) {
     return { mentoring, menteeOf, pendingRequests };
   }, [detailedMentorships, currentUserAuth]);
   
-  const isLoading = mentorshipsLoading || profileLoading || dataLoading;
+  const isLoading = mentorshipsLoading || profileLoading || usersLoading;
   
   if (isLoading || !currentUserProfile) {
     return (
