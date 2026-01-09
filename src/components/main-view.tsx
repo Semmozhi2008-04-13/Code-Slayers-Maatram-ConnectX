@@ -13,6 +13,9 @@ import SearchView from '@/components/views/search';
 import type { View } from '@/app/page';
 import CreateProfilePage from '@/app/create-profile/page';
 import MentorshipsPage from './views/mentorships';
+import LoginPage from './views/login';
+import SignUpPage from '@/app/signup/page';
+import VerifyEmail from './views/verify-email';
 
 type MainViewProps = {
   view: View;
@@ -48,6 +51,12 @@ export default function MainView({ view, profileId, searchQuery, navigate }: Mai
           return <SearchView query={searchQuery} navigate={navigate} />;
         }
         return <FeedPage navigate={navigate} />; // Fallback to feed
+       case 'login':
+        return <LoginPage navigate={navigate} />;
+      case 'signup':
+        return <SignUpPage navigate={navigate} />;
+      case 'verify-email':
+        return <VerifyEmail />;
       default:
         return <FeedPage navigate={navigate} />;
     }

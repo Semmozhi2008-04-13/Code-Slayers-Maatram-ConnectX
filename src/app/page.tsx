@@ -6,10 +6,11 @@ import MainView from '@/components/main-view';
 import { AnimatedTitle } from '@/components/animated-title';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useFirebase } from '@/firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
+import LoginPage from '@/components/views/login';
 import CreateProfilePage from '@/app/create-profile/page';
+import VerifyEmail from '@/components/views/verify-email';
 import { useToast } from '@/hooks/use-toast';
-import { signInAnonymously } from 'firebase/auth';
 
 export type View =
   | 'feed'
@@ -20,7 +21,10 @@ export type View =
   | 'mentors'
   | 'mentorships'
   | 'profile'
-  | 'search';
+  | 'search'
+  | 'login'
+  | 'signup'
+  | 'verify-email';
 
 function getViewFromPath(path: string): {
   view: View;
@@ -42,6 +46,11 @@ function getViewFromPath(path: string): {
     const query = urlParams.get('q');
     return { view: 'search', id: null, query };
   }
+  
+  if (['login', 'signup'].includes(view)) {
+    return { view, id: null, query: null };
+  }
+
 
   if (
     [
@@ -52,6 +61,7 @@ function getViewFromPath(path: string): {
       'events',
       'mentors',
       'mentorships',
+      'verify-email'
     ].includes(view)
   ) {
     return { view, id: null, query: null };
@@ -60,76 +70,66 @@ function getViewFromPath(path: string): {
   return { view: 'feed', id: null, query: null };
 }
 
+type AppState = 'loading' | 'login' | 'verify-email' | 'create-profile' | 'app';
+
+
 export default function Home() {
-  const { user, isUserLoading, auth, firestore } = useFirebase();
+  const { user, isUserLoading, firestore } = useFirebase();
   const { toast } = useToast();
 
   const [currentView, setCurrentView] = useState<View>('feed');
   const [profileId, setProfileId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
-  const [appLoading, setAppLoading] = useState(true);
-  const [profileExists, setProfileExists] = useState<boolean | null>(null);
+  const [appState, setAppState] = useState<AppState>('loading');
   
   // This effect handles the main routing logic and state transitions
   useEffect(() => {
     const handleState = async () => {
       if (isUserLoading) {
-        setAppLoading(true);
+        setAppState('loading');
         return;
       }
 
-      const {
-        view: pathView,
-        id: pathId,
-        query: pathQuery,
-      } = getViewFromPath(window.location.pathname);
-
       if (!user) {
-        // Not authenticated, sign in anonymously
-        try {
-          await signInAnonymously(auth);
-          // onAuthStateChanged will re-trigger this effect with a user
-        } catch (error) {
-          console.error("Anonymous sign-in failed:", error);
-          toast({
-            variant: "destructive",
-            title: "Authentication Failed",
-            description: "Could not sign you in. Please refresh the page.",
-          });
+        setAppState('login');
+        const { view } = getViewFromPath(window.location.pathname);
+        if (view === 'signup') {
+            navigate('signup');
+        } else {
+            navigate('login');
         }
         return;
       }
 
-      // Authenticated: check for profile
+      if (user && !user.emailVerified) {
+        setAppState('verify-email');
+        navigate('verify-email');
+        return;
+      }
+
+      // User is logged in and email is verified, check for profile
       try {
         const userDocRef = doc(firestore, 'userProfiles', user.uid);
         const userDoc = await getDoc(userDocRef);
         if (userDoc.exists()) {
-          setProfileExists(true);
+          setAppState('app');
+           const {
+            view: pathView,
+            id: pathId,
+            query: pathQuery,
+          } = getViewFromPath(window.location.pathname);
           navigate(pathView, pathId, pathQuery);
         } else {
-          // No profile, create a default one for the anonymous user
-          const defaultProfile = {
-            id: user.uid,
-            email: user.email || 'anonymous@example.com',
-            firstName: 'Guest',
-            lastName: 'User',
-            headline: 'Exploring the network',
-            location: 'Anywhere',
-            about: 'This is a guest account.',
-            profilePictureUrl: `https://picsum.photos/seed/${user.uid}/200/200`,
-            skills: [],
-            alumni: false,
-            isMentor: false,
-          };
-          await setDoc(userDocRef, defaultProfile);
-          setProfileExists(true);
-          navigate(pathView, pathId, pathQuery);
+          setAppState('create-profile');
         }
       } catch (error) {
-        console.error('Error checking/creating user profile:', error);
-      } finally {
-        setAppLoading(false);
+        console.error('Error checking user profile:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Could not load your profile. Please try again later.'
+        });
+        setAppState('login');
       }
     };
 
@@ -170,63 +170,50 @@ export default function Home() {
     const currentUrl = typeof window !== 'undefined' ? window.location.pathname + window.location.search : '';
 
     if (currentUrl !== newUrl) {
-      window.history.pushState(newState, '', newUrl);
+        // Only push state if the URL is actually changing
+        if (newView === 'login' || newView === 'signup' || newView === 'verify-email') {
+             window.history.replaceState(newState, '', newUrl);
+        } else {
+             window.history.pushState(newState, '', newUrl);
+        }
     }
     
     setCurrentView(newView);
     setProfileId(id);
     setSearchQuery(query);
-    if (typeof window !== 'undefined') window.scrollTo(0, 0);
+    if (typeof window !== 'undefined' && ['feed', 'profile', 'search'].includes(newView)) window.scrollTo(0, 0);
   };
+  
+  const onProfileCreated = () => {
+    setAppState('app');
+    navigate('feed');
+  }
 
   const renderContent = () => {
-    if (appLoading || profileExists === null) {
-      return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-background text-primary p-4">
-          <AnimatedTitle text="Maatram ConnectX" />
-          <div className="mt-4 flex items-center space-x-2">
-            <Skeleton
-              className="h-4 w-4 rounded-full animate-pulse"
-              style={{ animationDelay: '0.2s' }}
-            />
-            <Skeleton
-              className="h-4 w-4 rounded-full animate-pulse"
-              style={{ animationDelay: '0.4s' }}
-            />
-            <Skeleton
-              className="h-4 w-4 rounded-full animate-pulse"
-              style={{ animationDelay: '0.6s' }}
-            />
-          </div>
-        </div>
-      );
-    }
+    switch(appState) {
+        case 'loading':
+            return (
+                <div className="flex flex-col items-center justify-center min-h-screen bg-background text-primary p-4">
+                <AnimatedTitle text="Maatram ConnectX" />
+                <div className="mt-4 flex items-center space-x-2">
+                    <Skeleton className="h-4 w-4 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}/>
+                    <Skeleton className="h-4 w-4 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}/>
+                    <Skeleton className="h-4 w-4 rounded-full animate-pulse" style={{ animationDelay: '0.6s' }}/>
+                </div>
+                </div>
+            );
+        case 'login':
+            return <LoginPage navigate={navigate} />;
+        case 'verify-email':
+            return <VerifyEmail />;
+        case 'create-profile':
+            return <CreateProfilePage onProfileCreated={onProfileCreated} />;
+        case 'app':
+            return <MainView view={currentView} profileId={profileId} searchQuery={searchQuery} navigate={navigate} />;
+        default:
+             return <LoginPage navigate={navigate} />;
 
-    // If we've reached here, the user should be authenticated and have a profile.
-    if (user && profileExists) {
-      return <MainView view={currentView} profileId={profileId} searchQuery={searchQuery} navigate={navigate} />;
     }
-
-    // Fallback loading state while things resolve
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-background text-primary p-4">
-        <AnimatedTitle text="Maatram ConnectX" />
-        <div className="mt-4 flex items-center space-x-2">
-          <Skeleton
-            className="h-4 w-4 rounded-full animate-pulse"
-            style={{ animationDelay: '0.2s' }}
-          />
-          <Skeleton
-            className="h-4 w-4 rounded-full animate-pulse"
-            style={{ animationDelay: '0.4s' }}
-          />
-          <Skeleton
-            className="h-4 w-4 rounded-full animate-pulse"
-            style={{ animationDelay: '0.6s' }}
-          />
-        </div>
-      </div>
-    );
   };
 
   return <>{renderContent()}</>;

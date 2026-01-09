@@ -26,8 +26,7 @@ import {
 import { Loader2, Network } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore } from '@/firebase';
-import { doc } from 'firebase/firestore';
-import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { doc, setDoc } from 'firebase/firestore';
 
 const profileSchema = z.object({
   firstName: z.string().min(1, 'First name is required.'),
@@ -93,18 +92,23 @@ export default function CreateProfilePage({ onProfileCreated }: CreateProfilePag
       isMentor: false,
     };
     
-    // Use non-blocking update
-    setDocumentNonBlocking(userProfileRef, profileData, { merge: true });
-
-    // Since it's non-blocking, we can proceed immediately.
-    // The onAuthStateChanged or a subsequent profile check will handle the UI transition.
-    toast({
-      title: 'Profile Created!',
-      description: "Welcome to Maatram ConnectX! Let's get started.",
-    });
-    
-    onProfileCreated();
-    setIsLoading(false);
+    try {
+        await setDoc(userProfileRef, profileData, { merge: true });
+        toast({
+          title: 'Profile Created!',
+          description: "Welcome to Maatram ConnectX! Let's get started.",
+        });
+        onProfileCreated();
+    } catch (error) {
+        console.error("Error creating profile:", error);
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Could not create your profile. Please try again.'
+        });
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   return (
