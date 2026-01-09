@@ -9,8 +9,8 @@ import { useFirebase } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import LoginPage from '@/components/views/login';
 import CreateProfilePage from '@/app/create-profile/page';
-import VerifyEmail from '@/components/views/verify-email';
 import { useToast } from '@/hooks/use-toast';
+import SignUpPage from '@/app/signup/page';
 
 export type View =
   | 'feed'
@@ -23,8 +23,7 @@ export type View =
   | 'profile'
   | 'search'
   | 'login'
-  | 'signup'
-  | 'verify-email';
+  | 'signup';
 
 function getViewFromPath(path: string): {
   view: View;
@@ -61,7 +60,6 @@ function getViewFromPath(path: string): {
       'events',
       'mentors',
       'mentorships',
-      'verify-email'
     ].includes(view)
   ) {
     return { view, id: null, query: null };
@@ -70,7 +68,7 @@ function getViewFromPath(path: string): {
   return { view: 'feed', id: null, query: null };
 }
 
-type AppState = 'loading' | 'login' | 'verify-email' | 'create-profile' | 'app';
+type AppState = 'loading' | 'login' | 'signup' | 'create-profile' | 'app';
 
 
 export default function Home() {
@@ -91,23 +89,18 @@ export default function Home() {
       }
 
       if (!user) {
-        setAppState('login');
         const { view } = getViewFromPath(window.location.pathname);
         if (view === 'signup') {
+            setAppState('signup');
             navigate('signup');
         } else {
+            setAppState('login');
             navigate('login');
         }
         return;
       }
 
-      if (user && !user.emailVerified) {
-        setAppState('verify-email');
-        navigate('verify-email');
-        return;
-      }
-
-      // User is logged in and email is verified, check for profile
+      // User is logged in, check for profile
       try {
         const userDocRef = doc(firestore, 'userProfiles', user.uid);
         const userDoc = await getDoc(userDocRef);
@@ -171,7 +164,7 @@ export default function Home() {
 
     if (currentUrl !== newUrl) {
         // Only push state if the URL is actually changing
-        if (newView === 'login' || newView === 'signup' || newView === 'verify-email') {
+        if (newView === 'login' || newView === 'signup') {
              window.history.replaceState(newState, '', newUrl);
         } else {
              window.history.pushState(newState, '', newUrl);
@@ -204,8 +197,8 @@ export default function Home() {
             );
         case 'login':
             return <LoginPage navigate={navigate} />;
-        case 'verify-email':
-            return <VerifyEmail />;
+        case 'signup':
+            return <SignUpPage navigate={navigate} />;
         case 'create-profile':
             return <CreateProfilePage onProfileCreated={onProfileCreated} />;
         case 'app':

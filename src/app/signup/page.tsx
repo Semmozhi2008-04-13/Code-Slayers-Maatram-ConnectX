@@ -26,7 +26,7 @@ import {
 import { Loader2, UserPlus, Network } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useFirebase } from '@/firebase';
-import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import PasswordStrengthChecker from '@/components/password-strength-checker';
 import type { View } from '@/app/page';
 
@@ -70,19 +70,12 @@ export default function SignUpPage({ navigate }: { navigate: (view: View) => voi
         displayName: `${values.firstName} ${values.lastName}`,
       });
       
-      const actionCodeSettings = {
-        url: `${window.location.origin}/?email=${userCredential.user.email}`,
-        handleCodeInApp: true,
-      };
-      
-      await sendEmailVerification(userCredential.user, actionCodeSettings);
-
       toast({
-        title: 'Verification Email Sent',
-        description: 'Please check your inbox to verify your email address.',
+        title: 'Account Created!',
+        description: "Let's complete your profile.",
       });
       
-      // onAuthStateChanged in Home will handle navigating to the verify-email page
+      // onAuthStateChanged in Home will handle navigating to the create-profile page
       
     } catch (error: any) {
        console.error("Sign up failed:", error);
@@ -196,4 +189,3 @@ export default function SignUpPage({ navigate }: { navigate: (view: View) => voi
     </div>
   );
 }
-
